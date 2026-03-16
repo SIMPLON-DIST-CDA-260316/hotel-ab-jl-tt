@@ -9,18 +9,18 @@ Application de gestion hôtelière.
 - **Base de données** : SQLite
 - **ORM** : Drizzle ORM
 - **Authentification** : Better Auth
-- **Runtime / Package manager** : [Bun](https://bun.sh/)
+- **Runtime / Package manager** : [Bun](https://bun.com/)
 
 ## Installation en local
 
 ### Prérequis
 
-- [Bun](https://bun.sh/) >= 1.0
+- [Bun](https://bun.com/) >= 1.0
 
 ### 1. Cloner le dépôt
 
 ```bash
-git clone <url-du-repo>
+git clone https://github.com/SIMPLON-DIST-CDA-260316/hotel-ab-jl-tt.git
 cd hotel-ab-jl-tt
 ```
 
@@ -59,10 +59,10 @@ L'application est accessible sur [http://localhost:3000](http://localhost:3000).
 
 ## Scripts disponibles
 
-| Commande | Description |
-|---|---|
-| `bun run dev` | Lance le serveur de développement |
-| `bun run build` | Compile l'application pour la production |
-| `bun run start` | Démarre le serveur de production |
-| `bun run lint` | Vérifie le code avec ESLint |
+| Commande          | Description                                     |
+|-------------------|-------------------------------------------------|
+| `bun run dev`     | Lance le serveur de développement               |
+| `bun run build`   | Compile l'application pour la production        |
+| `bun run start`   | Démarre le serveur de production                |
+| `bun run lint`    | Vérifie le code avec ESLint                     |
 | `bun run db:push` | Applique le schéma Drizzle à la base de données |
