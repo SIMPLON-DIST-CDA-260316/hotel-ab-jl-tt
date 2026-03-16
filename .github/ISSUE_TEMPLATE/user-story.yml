@@ -1,0 +1,50 @@
+name: User Story
+description: Créer une user story
+title: "[US] "
+labels: ["user-story"]
+body:
+  - type: textarea
+    id: user-story
+    attributes:
+      label: User Story
+      description: "Format : En tant que [rôle], je veux [action] afin de [bénéfice]"
+      placeholder: "En tant que [rôle], je veux [action] afin de [bénéfice]"
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Critères d'acceptation
+      description: Liste des conditions à remplir pour valider la story
+      placeholder: |
+        - [ ] Critère 1
+        - [ ] Critère 2
+        - [ ] Critère 3
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priorité
+      options:
+        - Must have
+        - Should have
+        - Could have
+        - Won't have
+    validations:
+      required: true
+
+  - type: input
+    id: story-points
+    attributes:
+      label: Story Points
+      description: Estimation de la complexité
+      placeholder: "1, 2, 3, 5, 8, 13..."
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes / Contexte
+      description: Informations complémentaires, maquettes, dépendances...
