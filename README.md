@@ -1,103 +1,79 @@
-# Hôtel Clair de Lune
+# Hotel Clair de Lune
 
-Application web de réservation pour la chaîne hôtelière **Hôtel Clair de Lune**, spécialisée dans les hôtels ruraux en France.
-
-## Présentation
-
-L'Hôtel Clair de Lune souhaite permettre à ses clients de réserver directement leurs chambres sans passer par des plateformes tierces. L'application couvre la gestion des établissements, des suites, des réservations et des contacts.
-
-### Rôles utilisateurs
-
-| Rôle | Droits |
-|------|--------|
-| **Administrateur** | Gestion des établissements et des gérants |
-| **Gérant** | Gestion des suites de son établissement |
-| **Client** | Consultation, réservation et gestion de ses séjours |
-| **Visiteur** | Consultation des établissements/suites, formulaire de contact |
-
-### Fonctionnalités principales
-
-- CRUD établissements et gérants (admin)
-- CRUD suites avec galerie d'images (gérant)
-- Consultation publique des établissements et suites
-- Réservation en ligne avec vérification de disponibilité
-- Espace client : historique et annulation de réservations
-- Formulaire de contact par établissement
+Application de gestion hôtelière.
 
 ## Stack technique
 
-> _À compléter lors du choix des technologies_
+- **Framework** : [Next.js](https://nextjs.org/) (App Router)
+- **UI** : React 19 + Tailwind CSS 4
+- **Base de données** : SQLite
+- **ORM** : Drizzle ORM
+- **Authentification** : Better Auth
+- **Runtime / Package manager** : [Bun](https://bun.com/)
 
-| Couche | Technologie |
-|--------|-------------|
-| Framework | - |
-| Base de données | - |
-| Frontend | - |
-| Authentification | - |
+## Installation en local
 
-## Prérequis
+### Prérequis
 
-- PHP 8.x / Python 3.x _(selon le framework choisi)_
-- Composer / pip
-- MySQL / PostgreSQL
-- Node.js (pour les assets frontend)
-- Git
+- [Bun](https://bun.com/) >= 1.0
 
-## Installation
+### 1. Cloner le dépôt
 
 ```bash
-# 1. Cloner le dépôt
 git clone https://github.com/SIMPLON-DIST-CDA-260316/hotel-ab-jl-tt.git
 cd hotel-ab-jl-tt
-
-# 2. Installer les dépendances
-# À compléter selon le framework choisi
-
-# 3. Configurer l'environnement
-cp .env.example .env
-# Renseigner les variables de connexion à la base de données
-
-# 4. Créer la base de données et appliquer les migrations
-# À compléter selon le framework choisi
-
-# 5. Charger les fixtures (données de test)
-# À compléter selon le framework choisi
-
-# 6. Lancer le serveur de développement
-# À compléter selon le framework choisi
 ```
 
-## Compte administrateur
-
-Pour accéder au back-office, un compte administrateur doit être créé :
+### 2. Installer les dépendances
 
 ```bash
-# À compléter selon le framework choisi
-# Exemple Symfony : php bin/console app:create-admin
-# Exemple Django : python manage.py createsuperuser
+bun install
 ```
 
-> Les identifiants par défaut seront documentés ici une fois le framework choisi.
+### 3. Configurer les variables d'environnement
 
-## Structure du projet
-
-```
-hotel-ab-jl-tt/
-├── .github/            # Templates d'issues et CI
-├── docs/               # Documentation projet
-│   ├── cahier-des-charges.md  # Cahier des charges
-│   └── user-stories.md # User stories détaillées
-└── README.md
+```bash
+cp .env.example .env
 ```
 
-> _Structure à mettre à jour après l'installation du framework._
+Remplir les valeurs dans `.env` :
+
+```env
+DATABASE_URL=file:./dev.db
+BETTER_AUTH_SECRET=your_secret_key
+```
+
+### 4. Initialiser la base de données
+
+```bash
+bun run db:push
+```
+
+### 5. Lancer le serveur de développement
+
+```bash
+bun run dev
+```
+
+L'application est accessible sur [http://localhost:3000](http://localhost:3000).
+
+## Scripts disponibles
+
+| Commande          | Description                                     |
+|-------------------|-------------------------------------------------|
+| `bun run dev`     | Lance le serveur de développement               |
+| `bun run build`   | Compile l'application pour la production        |
+| `bun run start`   | Démarre le serveur de production                |
+| `bun run lint`    | Vérifie le code avec ESLint                     |
+| `bun run db:push` | Applique le schéma Drizzle à la base de données |
 
 ## Documentation
 
+- [Présentation produit](docs/product.md)
 - [User Stories](docs/user-stories.md)
-- [GitHub Project Board](https://github.com/orgs/SIMPLON-DIST-CDA-260316/projects) _(à configurer)_
-- Documentation technique (diagrammes MERISE, cas d'utilisation) : _à venir en PDF_
-- Charte graphique : _à venir en PDF_
+- [Cahier des charges](docs/cahier-des-charges.md)
+- [Architecture technique](docs/ARCHITECTURE.md)
+- [GitHub Project Board](https://github.com/orgs/SIMPLON-DIST-CDA-260316/projects/4)
 
 ## Équipe
 
