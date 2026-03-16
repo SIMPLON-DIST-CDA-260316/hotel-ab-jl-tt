@@ -66,3 +66,25 @@ L'application est accessible sur [http://localhost:3000](http://localhost:3000).
 | `bun run start`   | Démarre le serveur de production                |
 | `bun run lint`    | Vérifie le code avec ESLint                     |
 | `bun run db:push` | Applique le schéma Drizzle à la base de données |
+
+## Documentation
+
+- [Présentation produit](docs/product.md)
+- [User Stories](docs/user-stories.md)
+- [Cahier des charges](docs/cahier-des-charges.md)
+- [Architecture technique](docs/ARCHITECTURE.md)
+- [GitHub Project Board](https://github.com/orgs/SIMPLON-DIST-CDA-260316/projects/4)
+
+## Équipe
+
+| Membre | Rôle |
+|--------|------|
+| **Julien Lemarchand** | Base de données, persistance, documentation |
+| **Thélio Trinité** | Logique métier, couche applicative |
+| **Agathe Boncompain** | UX/UI design, charte graphique, implémentation |
+
+> Ownership partagé : code reviews croisées et décisions techniques prises collectivement.
+
+## Licence
+
+Projet réalisé dans le cadre de la formation CDA — SIMPLON.
