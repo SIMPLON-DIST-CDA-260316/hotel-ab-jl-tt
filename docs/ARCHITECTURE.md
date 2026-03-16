@@ -1,5 +1,9 @@
 # Architecture technique — Hôtel Clair de Lune
 
+> **Auteur :** Julien Lemarchand
+> **Créé le :** 2026-03-16
+> **Dernière mise à jour :** 2026-03-16
+
 ## 1. Vue d'ensemble
 
 ```

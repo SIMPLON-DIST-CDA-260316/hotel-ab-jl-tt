@@ -1,5 +1,9 @@
 # Architecture MVC avec Next.js, Drizzle ORM, SQLite, Tailwind CSS & Better Auth
 
+> **Auteur :** Julien Lemarchand
+> **Créé le :** 2026-03-16
+> **Dernière mise à jour :** 2026-03-16
+
 ## Vue d'ensemble
 
 Ce document décrit comment structurer une application Next.js (App Router) en suivant une approche **MVC claire et maintenable**, en utilisant :

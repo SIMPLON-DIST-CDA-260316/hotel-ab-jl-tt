@@ -1,5 +1,9 @@
 # Cahier des charges
 
+> **Auteur :** Julien Lemarchand
+> **Créé le :** 2026-03-16
+> **Dernière mise à jour :** 2026-03-16
+
 ## Contexte du projet
 
 L'Hôtel Clair de Lune est une chaîne d'hôtels ruraux, située dans des régions calmes et naturelles en France. L'établissement souhaite développer une application web pour permettre à ses clients de réserver directement leurs chambres, sans passer par des plateformes tierces. L'application doit aussi permettre une gestion efficace des établissements, des suites, et des réservations.
