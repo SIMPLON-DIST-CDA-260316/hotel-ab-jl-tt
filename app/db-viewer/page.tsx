@@ -1,6 +1,6 @@
-import { db } from "@/db";
+import { db } from "@/lib/db";
 import { getTableColumns } from "drizzle-orm";
-import * as schema from "@/db/schema";
+import * as schema from "@/lib/db/schema";
 
 export const dynamic = "force-dynamic";
 
@@ -15,10 +15,7 @@ type ColumnInfo = {
 
 type TableDef = {
   title: string;
-  table: Parameters<typeof db.select>[0] extends undefined
-    ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      any
-    : never;
+  table: any;
 };
 
 const tables: TableDef[] = [
@@ -32,13 +29,13 @@ function extractColumns(table: TableDef["table"]): ColumnInfo[] {
   const cols = getTableColumns(table);
   return Object.entries(cols).map(([key, col]) => ({
     name: key,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     dbName: (col as any).name,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     dataType: (col as any).dataType,
-    notNull: col.notNull,
-    hasDefault: col.hasDefault,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    notNull: (col as any).notNull,
+    hasDefault: (col as any).hasDefault,
+     
     primaryKey: (col as any).primary ?? false,
   }));
 }
