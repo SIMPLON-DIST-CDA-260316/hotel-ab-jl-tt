@@ -5,6 +5,11 @@
 > **Dernière mise à jour :** 2026-03-17\
 > **Décisions validées le :** 2026-03-17
 
+### Cible technique
+
+**SGBD cible : PostgreSQL** (via Drizzle ORM + `drizzle-orm/pg-core`).
+Les types physiques (SQL) n'apparaissent qu'au niveau MPD (section 3).
+
 ### Convention de nommage
 
 Ce document utilise un **nommage bilingue** : les descriptions et titres de sections sont en français,
@@ -20,111 +25,120 @@ mais tous les noms de tables et d'attributs apparaissent en **anglais** — iden
 | Option | `option` |
 | Réservation | `booking` |
 | Avis | `review` |
-| Demande de inquiry | `inquiry` |
+| Demande de renseignement | `inquiry` |
 
 ---
 
 ## 1. MCD — Modèle Conceptuel de Données
 
+> Le MCD décrit le domaine métier de manière **indépendante de toute technologie**.
+> Il utilise le formalisme Entité-Association : des **entités** (objets métier), des **propriétés**
+> (caractéristiques), des **associations** (liens entre entités) et des **cardinalités** (règles de participation).
+>
+> **Ce qui n'apparaît PAS au niveau MCD :** clés étrangères, types SQL, contraintes physiques (NOT NULL, CHECK, DEFAULT),
+> indexes, tables de jointure. Ces concepts relèvent du MLD ou du MPD.
+
 ### 1.1 Dictionnaire de données
+
+> Les types ci-dessous sont des **types conceptuels** (texte, numérique, etc.), pas des types SQL.
+> Les types physiques PostgreSQL seront formalisés au MPD (section 3).
+> Les clés étrangères n'apparaissent pas ici — les liens entre entités sont exprimés
+> par les associations (section 1.3).
 
 #### UTILISATEUR (`user`)
 
-| Attribut | Type | Obligatoire | Description |
+| Propriété | Type conceptuel | Obligatoire | Description |
 |---|---|---|---|
-| `id` | text | Oui | Clé primaire (géré par Better Auth) |
-| `name` | text | Oui | Nom complet |
-| `email` | text | Oui | Adresse e-mail (unique) |
-| `email_verified` | boolean | Oui | E-mail vérifié |
-| `image` | text | Non | Avatar / photo de profil |
-| `role` | text | Oui | Rôle : `client`, `manager`, `admin` |
-| `created_at` | timestamp | Oui | Date de création |
-| `updated_at` | timestamp | Oui | Date de dernière modification |
-| `deleted_at` | timestamp | Non | Soft delete (null = actif) |
+| `id` | texte | Oui | Identifiant (géré par Better Auth) |
+| `name` | texte | Oui | Nom complet |
+| `email` | texte | Oui | Adresse e-mail (unique) |
+| `email_verified` | booléen | Oui | E-mail vérifié |
+| `image` | texte | Non | Avatar / photo de profil |
+| `role` | texte | Oui | Rôle : `client`, `manager`, `admin` |
+| `created_at` | horodatage | Oui | Date de création |
+| `updated_at` | horodatage | Oui | Date de dernière modification |
+| `deleted_at` | horodatage | Non | Soft delete (null = actif) |
 
 > **Note :** Les tables `session`, `account` et `verification` de Better Auth ne sont pas représentées
 > dans le MCD car elles relèvent de l'infrastructure d'authentification, pas du domaine métier.
 
 #### ÉTABLISSEMENT (`establishment`)
 
-| Attribut | Type | Obligatoire | Description |
+| Propriété | Type conceptuel | Obligatoire | Description |
 |---|---|---|---|
-| `id` | text | Oui | Clé primaire |
-| `name` | text | Oui | Nom de l'établissement |
-| `address` | text | Oui | Adresse postale |
-| `postal_code` | text | Oui | Code postal |
-| `city` | text | Oui | Ville |
-| `description` | text | Non | Description de l'établissement |
-| `image` | text | Non | Image principale (URL) |
-| `phone` | text | Non | Numéro de téléphone |
-| `email` | text | Non | E-mail de inquiry |
-| `check_in_time` | time | Oui | Heure d'arrivée (ex: 15:00) |
-| `check_out_time` | time | Oui | Heure de départ (ex: 11:00) |
-| `manager_id` | text | Oui | FK → `user` (gérant) |
-| `created_at` | timestamp | Oui | Date de création |
-| `updated_at` | timestamp | Oui | Date de dernière modification |
-| `deleted_at` | timestamp | Non | Soft delete (null = actif) |
+| `id` | texte | Oui | Identifiant |
+| `name` | texte | Oui | Nom de l'établissement |
+| `address` | texte | Oui | Adresse postale |
+| `postal_code` | texte | Oui | Code postal |
+| `city` | texte | Oui | Ville |
+| `description` | texte | Non | Description de l'établissement |
+| `image` | texte | Non | Image principale (URL) |
+| `phone` | texte | Non | Numéro de téléphone |
+| `email` | texte | Non | E-mail de contact |
+| `check_in_time` | heure | Oui | Heure d'arrivée (ex: 15:00) |
+| `check_out_time` | heure | Oui | Heure de départ (ex: 11:00) |
+| `created_at` | horodatage | Oui | Date de création |
+| `updated_at` | horodatage | Oui | Date de dernière modification |
+| `deleted_at` | horodatage | Non | Soft delete (null = actif) |
 
 #### SUITE (`suite`)
 
-| Attribut | Type | Obligatoire | Description |
+| Propriété | Type conceptuel | Obligatoire | Description |
 |---|---|---|---|
-| `id` | text | Oui | Clé primaire |
-| `title` | text | Oui | Nom de la suite |
-| `description` | text | Non | Description détaillée |
-| `price` | decimal | Oui | Prix par nuit (fixe) |
-| `main_image` | text | Oui | URL de l'image principale |
-| `capacity` | integer | Oui | Nombre de personnes max |
-| `area` | decimal | Non | Surface en m² |
-| `establishment_id` | text | Oui | FK → `establishment` |
-| `created_at` | timestamp | Oui | Date de création |
-| `updated_at` | timestamp | Oui | Date de dernière modification |
-| `deleted_at` | timestamp | Non | Soft delete (null = actif) |
+| `id` | texte | Oui | Identifiant |
+| `title` | texte | Oui | Nom de la suite |
+| `description` | texte | Non | Description détaillée |
+| `price` | décimal | Oui | Prix par nuit (fixe) |
+| `main_image` | texte | Oui | URL de l'image principale |
+| `capacity` | entier | Oui | Nombre de personnes max |
+| `area` | décimal | Non | Surface en m² |
+| `created_at` | horodatage | Oui | Date de création |
+| `updated_at` | horodatage | Oui | Date de dernière modification |
+| `deleted_at` | horodatage | Non | Soft delete (null = actif) |
 
 #### IMAGE (`image`)
 
-| Attribut | Type | Obligatoire | Description |
+| Propriété | Type conceptuel | Obligatoire | Description |
 |---|---|---|---|
-| `id` | text | Oui | Clé primaire |
-| `url` | text | Oui | URL de l'image |
-| `alt` | text | Non | Texte alternatif (accessibilité) |
-| `position` | integer | Oui | Ordre dans la galerie (UNIQUE par suite) |
-| `suite_id` | text | Oui | FK → `suite` |
-| `created_at` | timestamp | Oui | Date de création |
+| `id` | texte | Oui | Identifiant |
+| `url` | texte | Oui | URL de l'image |
+| `alt` | texte | Non | Texte alternatif (accessibilité) |
+| `position` | entier | Oui | Ordre dans la galerie (unique par suite) |
+| `created_at` | horodatage | Oui | Date de création |
 
 #### AMÉNITÉ (`amenity`)
 
 Caractéristique d'un établissement ou d'une suite (WiFi, piscine, douche, PMR…).
 Pas de prix associé — c'est un attribut booléen "on l'a ou on ne l'a pas".
 
-| Attribut | Type | Obligatoire | Description |
+| Propriété | Type conceptuel | Obligatoire | Description |
 |---|---|---|---|
-| `id` | text | Oui | Clé primaire |
-| `name` | text | Oui | Libellé (ex: "WiFi gratuit") |
-| `slug` | text | Oui | Identifiant URL/i18n (ex: `wifi-gratuit`) |
-| `category` | text | Oui | Catégorie d'affichage (ex: "Salle de bain", "Technologie") |
-| `scope` | text | Oui | `property`, `room` ou `both` |
-| `icon` | text | Non | Identifiant d'icône UI |
+| `id` | texte | Oui | Identifiant |
+| `name` | texte | Oui | Libellé (ex: "WiFi gratuit") |
+| `slug` | texte | Oui | Identifiant URL/i18n (ex: `wifi-gratuit`) |
+| `category` | texte | Oui | Catégorie d'affichage (ex: "Salle de bain", "Technologie") |
+| `scope` | texte | Oui | `property`, `room` ou `both` |
+| `icon` | texte | Non | Identifiant d'icône UI |
 
 > **Règle de cascade :** si une aménité est cochée au niveau établissement,
 > elle s'applique automatiquement à toutes ses suites et ne peut pas être décochée suite par suite.
-> En base, on ne duplique pas : on stocke dans `establishment_amenity`, et à l'affichage
-> on fusionne avec `suite_amenity` (amenités supplémentaires propres à la suite).
+> En base, on ne duplique pas : on stocke le lien au niveau établissement, et à l'affichage
+> on fusionne avec les aménités supplémentaires propres à la suite.
 
 #### OPTION (`option`)
 
 Service achetable ajouté à une réservation (petit-déjeuner, lit supplémentaire, parking…).
 A un prix et un modèle de tarification.
 
-| Attribut | Type | Obligatoire | Description |
+| Propriété | Type conceptuel | Obligatoire | Description |
 |---|---|---|---|
-| `id` | text | Oui | Clé primaire |
-| `name` | text | Oui | Libellé (ex: "Petit-déjeuner") |
-| `slug` | text | Oui | Identifiant URL (ex: `breakfast`) |
-| `description` | text | Non | Description détaillée |
-| `icon` | text | Non | Identifiant d'icône UI |
-| `pricing_model` | text | Oui | Modèle de tarification par défaut |
-| `default_price` | decimal | Oui | Prix par défaut |
+| `id` | texte | Oui | Identifiant |
+| `name` | texte | Oui | Libellé (ex: "Petit-déjeuner") |
+| `slug` | texte | Oui | Identifiant URL (ex: `breakfast`) |
+| `description` | texte | Non | Description détaillée |
+| `icon` | texte | Non | Identifiant d'icône UI |
+| `pricing_model` | texte | Oui | Modèle de tarification par défaut |
+| `default_price` | décimal | Oui | Prix par défaut |
 
 **Modèles de tarification (`pricing_model`) :**
 
@@ -136,245 +150,102 @@ A un prix et un modèle de tarification.
 | `per_stay` | Forfait par séjour | Pack romantique |
 | `per_unit` | À l'unité | Panier pique-nique, vélos |
 
-#### OPTION ÉTABLISSEMENT (`establishment_option`)
-
-Configure quelles options sont proposées par chaque établissement, à quel prix,
-et si elles sont incluses d'office dans le tarif.
-Le modèle de tarification est défini une seule fois dans la table `option` (pas de surcharge par établissement).
-
-| Attribut | Type | Obligatoire | Description |
-|---|---|---|---|
-| `establishment_id` | text | Oui | FK → `establishment` (PK composite) |
-| `option_id` | text | Oui | FK → `option` (PK composite) |
-| `price` | decimal | Oui | Prix pratiqué par cet établissement (peut différer du prix par défaut) |
-| `included` | boolean | Oui | `true` = inclus dans le tarif (ex: PDJ offert), `false` = en supplément |
-
-#### OPTION RÉSERVATION (`booking_option`)
-
-Options effectivement sélectionnées par le client pour une réservation donnée.
-Snapshot du prix au moment de la réservation. Le total par option (`quantity × unit_price`)
-est calculé à la volée — pas stocké en base (donnée dérivée).
-
-| Attribut | Type | Obligatoire | Description |
-|---|---|---|---|
-| `id` | text | Oui | Clé primaire |
-| `booking_id` | text | Oui | FK → `booking` |
-| `option_id` | text | Oui | FK → `option` |
-| `quantity` | integer | Oui | Quantité (ex: nb de vélos loués) |
-| `unit_price` | decimal | Oui | Prix unitaire au moment de la réservation (snapshot) |
-
 #### RÉSERVATION (`booking`)
 
-| Attribut | Type | Obligatoire | Description |
+| Propriété | Type conceptuel | Obligatoire | Description |
 |---|---|---|---|
-| `id` | text | Oui | Clé primaire |
-| `reference` | text | Oui | Référence lisible unique (ex: CDL-2026-0042) |
+| `id` | texte | Oui | Identifiant |
+| `reference` | texte | Oui | Référence lisible unique (ex: CDL-2026-0042) |
 | `check_in` | date | Oui | Date d'arrivée |
 | `check_out` | date | Oui | Date de départ |
-| `guest_count` | integer | Oui | Nombre de personnes |
-| `price_per_night` | decimal | Oui | Snapshot du prix/nuit au moment de la réservation |
-| `subtotal` | decimal | Oui | Sous-total hébergement (nb nuits × prix/nuit) |
-| `options_total` | decimal | Oui | Total des options sélectionnées |
-| `total_price` | decimal | Oui | Prix total (subtotal + options_total) |
-| `status` | text | Oui | `confirmed`, `cancelled`, `completed` |
-| `cancelled_at` | timestamp | Non | Date d'annulation (si applicable) |
-| `client_id` | text | Oui | FK → `user` |
-| `suite_id` | text | Oui | FK → `suite` |
-| `created_at` | timestamp | Oui | Date de création de la réservation |
-| `updated_at` | timestamp | Oui | Date de dernière modification |
+| `guest_count` | entier | Oui | Nombre de personnes |
+| `price_per_night` | décimal | Oui | Snapshot du prix/nuit au moment de la réservation |
+| `total_price` | décimal | Oui | Prix total facturé, figé (hébergement + options) |
+| `status` | texte | Oui | `confirmed`, `cancelled`, `completed` |
+| `cancelled_at` | horodatage | Non | Date d'annulation (si applicable) |
+| `created_at` | horodatage | Oui | Date de création de la réservation |
+| `updated_at` | horodatage | Oui | Date de dernière modification |
 
 #### AVIS (`review`)
 
-| Attribut | Type | Obligatoire | Description |
+| Propriété | Type conceptuel | Obligatoire | Description |
 |---|---|---|---|
-| `id` | text | Oui | Clé primaire |
-| `rating` | integer | Oui | Note de 1 à 5 |
-| `comment` | text | Non | Commentaire textuel |
-| `flagged` | boolean | Oui | Signalé par un gérant (défaut: false) |
-| `booking_id` | text | Oui | FK → `booking` (UNIQUE — 1 avis par réservation) |
-| `user_id` | text | Non | FK → `user` (SET NULL pour anonymisation RGPD) |
-| `created_at` | timestamp | Oui | Date de publication |
-| `updated_at` | timestamp | Oui | Date de dernière modification |
+| `id` | texte | Oui | Identifiant |
+| `rating` | entier | Oui | Note de 1 à 5 |
+| `comment` | texte | Non | Commentaire textuel |
+| `flagged` | booléen | Oui | Signalé par un gérant (défaut: false) |
+| `created_at` | horodatage | Oui | Date de publication |
+| `updated_at` | horodatage | Oui | Date de dernière modification |
 
 > **RGPD :** Un client peut demander la suppression de ses données. L'avis est alors **anonymisé**
-> (user_id → null), pas supprimé. Le contenu reste visible.
+> (lien vers l'utilisateur supprimé), pas supprimé. Le contenu reste visible.
 > **Modération :** Un gérant peut **signaler** un avis (`flagged = true`) mais ne peut pas le supprimer.
 > La suppression d'avis négatifs authentiques est interdite (article L121-1 Code de la consommation).
 
-#### DEMANDE DE INQUIRY (`inquiry`)
+#### DEMANDE DE RENSEIGNEMENT (`inquiry`)
 
-Message de prise de inquiry soumis via le formulaire du site. Ce n'est pas un thread
+Message de prise de contact soumis via le formulaire du site. Ce n'est pas un thread
 conversationnel : c'est un message one-shot. La réponse du gérant/admin est envoyée
 par email (via Resend) et le statut passe à `replied`.
 
-| Attribut | Type | Obligatoire | Description |
+| Propriété | Type conceptuel | Obligatoire | Description |
 |---|---|---|---|
-| `id` | text | Oui | Clé primaire |
-| `name` | text | Oui | Nom de l'expéditeur |
-| `email` | text | Oui | E-mail de l'expéditeur |
-| `subject` | text | Oui | Sujet prédéfini (enum) |
-| `message` | text | Oui | Corps du message |
-| `status` | text | Oui | `unread`, `read`, `replied` |
-| `establishment_id` | text | Non | FK → `establishment` (nullable : null = sujet technique global) |
-| `user_id` | text | Non | FK → `user` (nullable : null = visiteur non connecté) |
-| `created_at` | timestamp | Oui | Date d'envoi |
+| `id` | texte | Oui | Identifiant |
+| `name` | texte | Oui | Nom de l'expéditeur |
+| `email` | texte | Oui | E-mail de l'expéditeur |
+| `subject` | texte | Oui | Sujet prédéfini (enum) |
+| `message` | texte | Oui | Corps du message |
+| `status` | texte | Oui | `unread`, `read`, `replied` |
+| `created_at` | horodatage | Oui | Date d'envoi |
 
-### 1.2 Entités et associations
+### 1.2 Diagramme entité-association (MCD)
 
-> Le diagramme ci-dessous utilise la notation ERD de Mermaid pour représenter
-> le MCD. Les cardinalités sont exprimées avec la notation Crow's Foot.
+> Diagramme entité-association au format Mermaid ERD (notation Crow's Foot pour les cardinalités).
+> Conformément au formalisme MCD, ce diagramme ne montre **ni clés étrangères, ni types, ni contraintes**.
+> Les propriétés de chaque entité sont détaillées dans le dictionnaire (section 1.1).
+> Les associations porteuses de données (PROVIDE, SELECT) sont documentées en section 1.3.
 
 ```mermaid
 erDiagram
-    %% ─── Associations principales ───
 
-    USER ||--o{ ESTABLISHMENT : "MANAGE (1,n)-(1,1)"
-    ESTABLISHMENT ||--o{ SUITE : "OFFER (1,1)-(0,n)"
-    SUITE ||--o{ IMAGE : "ILLUSTRATE (1,1)-(0,n)"
+    %% ─── Associations 1:N ───
+
+    USER ||--o{ ESTABLISHMENT : "MANAGE (0,n)-(1,1)"
+    USER ||--o{ BOOKING : "BOOK (0,n)-(1,1)"
+    ESTABLISHMENT ||--o{ SUITE : "OFFER (0,n)-(1,1)"
+    SUITE ||--o{ IMAGE : "ILLUSTRATE (0,n)-(1,1)"
+    SUITE ||--o{ BOOKING : "CONCERN (0,n)-(1,1)"
+
+    %% ─── Associations N:N ───
 
     AMENITY }o--o{ ESTABLISHMENT : "EQUIP property (0,n)-(0,n)"
     AMENITY }o--o{ SUITE : "EQUIP room (0,n)-(0,n)"
+    OPTION }o--o{ ESTABLISHMENT : "PROVIDE (0,n)-(0,n) [price, included]"
+    OPTION }o--o{ BOOKING : "SELECT (0,n)-(0,n) [quantity, unit_price]"
 
-    OPTION }o--o{ ESTABLISHMENT : "PROVIDE (0,n)-(0,n)"
-    OPTION }o--o{ BOOKING : "SELECT (0,n)-(0,n)"
+    %% ─── Associations 1:1 et optionnelles ───
 
-    USER ||--o{ BOOKING : "BOOK (1,1)-(0,n)"
-    SUITE ||--o{ BOOKING : "CONCERN (0,n)-(1,1)"
-    BOOKING |o--|| REVIEW : "EVALUATE (0,1)-(1,1)"
-    ESTABLISHMENT ||--o{ INQUIRY : "RECEIVE (0,n)-(0,1)"
-    USER |o--o{ INQUIRY : "SEND (0,1)-(0,n)"
-
-    %% ─── Entités ───
-
-    USER {
-        text id PK
-        text name "NOT NULL"
-        text email UK "NOT NULL"
-        boolean email_verified "NOT NULL"
-        text image
-        text role "client | manager | admin"
-        timestamp created_at "NOT NULL"
-        timestamp updated_at "NOT NULL"
-        timestamp deleted_at "Soft delete"
-    }
-
-    ESTABLISHMENT {
-        text id PK
-        text name "NOT NULL"
-        text address "NOT NULL"
-        text postal_code "NOT NULL"
-        text city "NOT NULL"
-        text description
-        text image
-        text phone
-        text email
-        time check_in_time "NOT NULL, ex: 15:00"
-        time check_out_time "NOT NULL, ex: 11:00"
-        text manager_id FK "NOT NULL"
-        timestamp created_at "NOT NULL"
-        timestamp updated_at "NOT NULL"
-        timestamp deleted_at "Soft delete"
-    }
-
-    SUITE {
-        text id PK
-        text title "NOT NULL"
-        text description
-        decimal price "NOT NULL, > 0"
-        text main_image "NOT NULL"
-        int capacity "NOT NULL, > 0"
-        decimal area
-        text establishment_id FK "NOT NULL"
-        timestamp created_at "NOT NULL"
-        timestamp updated_at "NOT NULL"
-        timestamp deleted_at "Soft delete"
-    }
-
-    IMAGE {
-        text id PK
-        text url "NOT NULL"
-        text alt
-        int position "NOT NULL"
-        text suite_id FK "NOT NULL"
-        timestamp created_at "NOT NULL"
-    }
-
-    AMENITY {
-        text id PK
-        text name UK "NOT NULL"
-        text slug UK "NOT NULL"
-        text category "NOT NULL"
-        text scope "property | room | both"
-        text icon
-    }
-
-    OPTION {
-        text id PK
-        text name "NOT NULL"
-        text slug UK "NOT NULL"
-        text description
-        text icon
-        text pricing_model "NOT NULL"
-        decimal default_price "NOT NULL"
-    }
-
-    BOOKING {
-        text id PK
-        text reference UK "CDL-2026-XXXX"
-        date check_in "NOT NULL"
-        date check_out "NOT NULL"
-        int guest_count "NOT NULL, > 0"
-        decimal price_per_night "NOT NULL, snapshot"
-        decimal subtotal "NOT NULL"
-        decimal options_total "NOT NULL"
-        decimal total_price "NOT NULL"
-        text status "confirmed | cancelled | completed"
-        timestamp cancelled_at
-        text client_id FK "NOT NULL"
-        text suite_id FK "NOT NULL"
-        timestamp created_at "NOT NULL"
-        timestamp updated_at "NOT NULL"
-    }
-
-    REVIEW {
-        text id PK
-        int rating "1-5, NOT NULL"
-        text comment
-        text booking_id FK "NOT NULL, UNIQUE"
-        text user_id FK "NOT NULL"
-        timestamp created_at "NOT NULL"
-        timestamp updated_at "NOT NULL"
-    }
-
-    INQUIRY {
-        text id PK
-        text name "NOT NULL"
-        text email "NOT NULL"
-        text subject "NOT NULL, enum"
-        text message "NOT NULL"
-        text status "unread | read | replied"
-        text establishment_id FK "NULLABLE"
-        text user_id FK "NULLABLE"
-        timestamp created_at "NOT NULL"
-    }
+    BOOKING ||--o| REVIEW : "EVALUATE (0,1)-(1,1)"
+    ESTABLISHMENT |o--o{ INQUIRY : "RECEIVE (0,n)-(0,1)"
+    USER |o--o{ INQUIRY : "SEND (0,n)-(0,1)"
 ```
 
 ### 1.3 Détail des associations et cardinalités
 
-| Association | Entité A | Card. A | Entité B | Card. B | Description |
-|---|---|---|---|---|---|
-| **MANAGE** | User (manager) | 1,n | Establishment | 1,1 | Un gérant gère 1 à N établissements. Un établissement a exactement un gérant. |
-| **OFFER** | Establishment | 1,1 | Suite | 0,n | Un établissement propose 0 à N suites. Une suite appartient à un seul établissement. |
-| **ILLUSTRATE** | Suite | 1,1 | Image | 0,n | Une suite possède 0 à N images dans sa galerie. |
-| **EQUIP (property)** | Establishment | 0,n | Amenity | 0,n | Un établissement dispose de 0 à N aménités. Many-to-many via `establishment_amenity`. |
-| **EQUIP (room)** | Suite | 0,n | Amenity | 0,n | Une suite dispose de 0 à N aménités supplémentaires. Many-to-many via `suite_amenity`. |
-| **PROVIDE** | Establishment | 0,n | Option | 0,n | Un établissement propose 0 à N options payantes. Many-to-many via `establishment_option` (avec prix et flag `included`). |
-| **BOOK** | User (client) | 1,1 | Booking | 0,n | Un client effectue 0 à N réservations. |
-| **SELECT** | Booking | 0,n | Option | 0,n | Une réservation inclut 0 à N options. Many-to-many via `booking_option` (avec quantité et prix snapshot). |
-| **CONCERN** | Suite | 0,n | Booking | 1,1 | Une suite est concernée par 0 à N réservations. |
-| **EVALUATE** | Booking | 0,1 | Review | 1,1 | Une réservation peut avoir 0 ou 1 avis. |
-| **RECEIVE** | Establishment | 0,n | Inquiry | 0,1 | Un établissement reçoit 0 à N messages (nullable si sujet technique). |
-| **SEND** | User | 0,n | Inquiry | 0,1 | Un user connecté peut envoyer 0 à N messages (nullable si visiteur anonyme). |
+| Association | Entité A | Card. A | Entité B | Card. B | Propriétés portées | Description |
+|---|---|---|---|---|---|---|
+| **MANAGE** | User (manager) | 0,n | Establishment | 1,1 | — | Un gérant gère 0 à N établissements (un user n'est pas forcément gérant). Un établissement a exactement un gérant. |
+| **OFFER** | Establishment | 0,n | Suite | 1,1 | — | Un établissement propose 0 à N suites. Une suite appartient à un seul établissement. |
+| **ILLUSTRATE** | Suite | 0,n | Image | 1,1 | — | Une suite possède 0 à N images dans sa galerie. |
+| **EQUIP (property)** | Establishment | 0,n | Amenity | 0,n | — | Un établissement dispose de 0 à N aménités. |
+| **EQUIP (room)** | Suite | 0,n | Amenity | 0,n | — | Une suite dispose de 0 à N aménités supplémentaires. |
+| **PROVIDE** | Establishment | 0,n | Option | 0,n | `price` (décimal), `included` (booléen) | Un établissement propose 0 à N options payantes, avec un prix spécifique et un flag d'inclusion. |
+| **BOOK** | User (client) | 0,n | Booking | 1,1 | — | Un client effectue 0 à N réservations. |
+| **SELECT** | Booking | 0,n | Option | 0,n | `quantity` (entier), `unit_price` (décimal) | Une réservation inclut 0 à N options, avec quantité et prix snapshot. |
+| **CONCERN** | Suite | 0,n | Booking | 1,1 | — | Une suite est concernée par 0 à N réservations. |
+| **EVALUATE** | Booking | 0,1 | Review | 1,1 | — | Une réservation peut avoir 0 ou 1 avis. |
+| **RECEIVE** | Establishment | 0,n | Inquiry | 0,1 | — | Un établissement reçoit 0 à N messages (nullable si sujet technique). |
+| **SEND** | User | 0,n | Inquiry | 0,1 | — | Un user connecté peut envoyer 0 à N messages (nullable si visiteur anonyme). |
 
 ### 1.4 Règles de gestion
 
@@ -387,29 +258,306 @@ erDiagram
 7. **Suppression douce :** Les établissements, suites et utilisateurs ne sont jamais supprimés physiquement. Le champ `deleted_at` est renseigné.
 8. **Aménités — cascade :** Si une aménité est cochée au niveau établissement, elle s'applique à toutes ses suites automatiquement et ne peut pas être décochée suite par suite. Les suites peuvent avoir des aménités supplémentaires.
 9. **Options — inclusion :** Un établissement peut marquer une option comme `included = true` (ex: petit-déjeuner offert). Les options incluses ne sont pas facturées au client.
-10. **Options — snapshot prix :** Au moment de la réservation, les prix des options sélectionnées sont copiés dans `booking_option` pour garantir l'intégrité historique.
-11. **Prix total :** `total_price = subtotal + options_total`, où `subtotal = nb_nuits × price_per_night` et `options_total = somme des (booking_option.quantity × booking_option.unit_price)`.
+10. **Options — snapshot prix :** Au moment de la réservation, les prix des options sélectionnées sont copiés pour garantir l'intégrité historique.
+11. **Prix total :** `total_price = subtotal + options_total`, où `subtotal = nb_nuits × price_per_night` et `options_total = somme des (quantity × unit_price)`.
 12. **Review :** Un avis ne peut être laissé que sur une réservation au statut `completed`, et un seul avis par réservation. Un gérant peut signaler un avis (`flagged = true`) mais ne peut pas le supprimer (article L121-1 Code de la consommation).
-13. **Review — RGPD :** En cas de demande de suppression de données, l'avis est anonymisé (`user_id → null`), pas supprimé.
-14. **Inquiry :** Message one-shot via formulaire. Les sujets sont prédéfinis (`complaint`, `extra_service`, `suite_info`, `app_issue`). Le champ `establishment_id` est null pour les sujets techniques (routés vers l'admin). Le champ `user_id` est null pour les visiteurs anonymes. La réponse est envoyée par email via Resend, pas de thread in-app.
+13. **Review — RGPD :** En cas de demande de suppression de données, l'avis est anonymisé (lien vers l'utilisateur supprimé), pas supprimé.
+14. **Inquiry :** Message one-shot via formulaire. Les sujets sont prédéfinis (`complaint`, `extra_service`, `suite_info`, `app_issue`). Le lien vers l'établissement est optionnel (null pour les sujets techniques, routés vers l'admin). Le lien vers l'utilisateur est optionnel (null pour les visiteurs anonymes). La réponse est envoyée par email via Resend, pas de thread in-app.
 
 ---
 
 ## 2. MLD — Modèle Logique de Données
 
-> Le MLD est la traduction du MCD en tables relationnelles. Chaque entité devient une table,
-> chaque association se traduit par une clé étrangère (relation 1:N) ou une table de jointure (relation N:N).
+> Le MLD traduit le MCD en **modèle relationnel**. Chaque entité devient une **relation** (table),
+> les associations 1:N produisent des **clés étrangères**, et les associations N:N produisent
+> des **tables de jointure**.
+>
+> **Ce qui apparaît au MLD :** relations, attributs, clés primaires (PK), clés étrangères (FK).
+> **Ce qui n'apparaît PAS :** types SQL, contraintes physiques (NOT NULL, CHECK, DEFAULT, ON DELETE),
+> indexes. Ces éléments relèvent du MPD (section 3).
 
 ### 2.1 Règles de passage MCD → MLD appliquées
 
 | Règle | Application dans notre modèle |
 |---|---|
-| Entité → Table | Chaque entité du MCD devient une table |
-| Association 1:N → FK | La clé étrangère est placée côté "N" (ex: `establishment.manager_id`) |
-| Association N:N → Table de jointure | EQUIP → `establishment_amenity` + `suite_amenity` ; PROVIDE → `establishment_option` ; SELECT → `booking_option` |
-| Association 1:1 → FK + contrainte UNIQUE | EVALUATE → `review.booking_id` UNIQUE |
+| Entité → Relation | Chaque entité du MCD devient une relation |
+| Identifiant → Clé primaire | L'identifiant de chaque entité devient la PK |
+| Association 1:N → FK | La clé étrangère est placée côté "N" (ex: `establishment.#manager_id`) |
+| Association N:N → Table de jointure | PK composite formée des FK des deux entités liées |
+| Association N:N avec propriétés → Table de jointure enrichie | Les propriétés de l'association deviennent des attributs de la table de jointure |
+| Association 1:1 → FK + contrainte UNIQUE | EVALUATE → `review.#booking_id` (unique) |
 
 ### 2.2 Schéma relationnel
+
+> Notation standard MERISE : `_souligné_` = clé primaire, `#préfixé` = clé étrangère.
+> Pas de types ni de contraintes physiques à ce niveau.
+
+#### Relations issues de Better Auth (infrastructure — déjà en place)
+
+```
+session (_id_, expires_at, token, created_at, updated_at, ip_address, user_agent, #user_id)
+account (_id_, account_id, provider_id, #user_id, access_token, refresh_token, id_token,
+         access_token_expires_at, refresh_token_expires_at, scope, password, created_at, updated_at)
+verification (_id_, identifier, value, expires_at, created_at, updated_at)
+```
+
+> Ces relations ne sont pas modifiées. Elles sont gérées par Better Auth.
+
+#### Relations métier
+
+```
+user (_id_, name, email, email_verified, image, role, created_at, updated_at, deleted_at)
+
+establishment (_id_, name, address, postal_code, city, description, image, phone, email,
+               check_in_time, check_out_time, created_at, updated_at, deleted_at, #manager_id)
+
+suite (_id_, title, description, price, main_image, capacity, area,
+       created_at, updated_at, deleted_at, #establishment_id)
+
+image (_id_, url, alt, position, created_at, #suite_id)
+
+amenity (_id_, name, slug, category, scope, icon)
+
+establishment_amenity (_#establishment_id, #amenity_id_)
+
+suite_amenity (_#suite_id, #amenity_id_)
+
+option (_id_, name, slug, description, icon, pricing_model, default_price)
+
+establishment_option (_#establishment_id, #option_id_, price, included)
+
+booking (_id_, reference, check_in, check_out, guest_count, price_per_night,
+         total_price, status, cancelled_at, created_at, updated_at, #client_id, #suite_id)
+
+booking_option (_#booking_id, #option_id_, quantity, unit_price)
+
+review (_id_, rating, comment, flagged, created_at, updated_at, #booking_id, #user_id)
+
+inquiry (_id_, name, email, subject, message, status, created_at, #establishment_id, #user_id)
+```
+
+### 2.3 Diagramme relationnel (MLD)
+
+> Ce diagramme Mermaid ERD montre la structure relationnelle issue du passage MCD → MLD.
+> Les relations, clés primaires et clés étrangères sont visibles.
+>
+> **Note Mermaid :** La syntaxe ERD de Mermaid exige un type pour chaque attribut.
+> Les types indiqués ici sont une contrainte d'outil, pas du formalisme MLD.
+> En MLD strict, seuls les PK et FK sont spécifiés.
+
+```mermaid
+erDiagram
+    %% ─── Relations issues des associations 1:N ───
+
+    user ||--o{ establishment : "manager_id"
+    user ||--o{ booking : "client_id"
+    user ||--o{ review : "user_id"
+    user |o--o{ inquiry : "user_id"
+
+    establishment ||--o{ suite : "establishment_id"
+    establishment |o--o{ inquiry : "establishment_id"
+
+    suite ||--o{ image : "suite_id"
+    suite ||--o{ booking : "suite_id"
+
+    booking ||--o| review : "booking_id"
+
+    %% ─── Tables de jointure (associations N:N) ───
+
+    establishment ||--o{ establishment_amenity : ""
+    amenity ||--o{ establishment_amenity : ""
+
+    suite ||--o{ suite_amenity : ""
+    amenity ||--o{ suite_amenity : ""
+
+    establishment ||--o{ establishment_option : ""
+    option ||--o{ establishment_option : ""
+
+    booking ||--o{ booking_option : ""
+    option ||--o{ booking_option : ""
+
+    %% ─── Tables Better Auth ───
+
+    user ||--o{ session : "user_id"
+    user ||--o{ account : "user_id"
+
+    session {
+        _ id PK
+        _ expires_at
+        _ token
+        _ user_id FK
+        _ ip_address
+        _ user_agent
+        _ created_at
+        _ updated_at
+    }
+
+    account {
+        _ id PK
+        _ account_id
+        _ provider_id
+        _ user_id FK
+        _ password
+        _ created_at
+        _ updated_at
+    }
+
+    verification {
+        _ id PK
+        _ identifier
+        _ value
+        _ expires_at
+        _ created_at
+        _ updated_at
+    }
+
+    %% ─── Relations métier ───
+
+    user {
+        _ id PK
+        _ name
+        _ email
+        _ email_verified
+        _ image
+        _ role
+        _ created_at
+        _ updated_at
+        _ deleted_at
+    }
+
+    establishment {
+        _ id PK
+        _ name
+        _ address
+        _ postal_code
+        _ city
+        _ description
+        _ image
+        _ phone
+        _ email
+        _ check_in_time
+        _ check_out_time
+        _ manager_id FK
+        _ created_at
+        _ updated_at
+        _ deleted_at
+    }
+
+    suite {
+        _ id PK
+        _ title
+        _ description
+        _ price
+        _ main_image
+        _ capacity
+        _ area
+        _ establishment_id FK
+        _ created_at
+        _ updated_at
+        _ deleted_at
+    }
+
+    image {
+        _ id PK
+        _ url
+        _ alt
+        _ position
+        _ suite_id FK
+        _ created_at
+    }
+
+    amenity {
+        _ id PK
+        _ name
+        _ slug
+        _ category
+        _ scope
+        _ icon
+    }
+
+    establishment_amenity {
+        _ establishment_id PK, FK
+        _ amenity_id PK, FK
+    }
+
+    suite_amenity {
+        _ suite_id PK, FK
+        _ amenity_id PK, FK
+    }
+
+    option {
+        _ id PK
+        _ name
+        _ slug
+        _ description
+        _ icon
+        _ pricing_model
+        _ default_price
+    }
+
+    establishment_option {
+        _ establishment_id PK, FK
+        _ option_id PK, FK
+        _ price
+        _ included
+    }
+
+    booking {
+        _ id PK
+        _ reference
+        _ check_in
+        _ check_out
+        _ guest_count
+        _ price_per_night
+        _ total_price
+        _ status
+        _ cancelled_at
+        _ client_id FK
+        _ suite_id FK
+        _ created_at
+        _ updated_at
+    }
+
+    booking_option {
+        _ booking_id PK, FK
+        _ option_id PK, FK
+        _ quantity
+        _ unit_price
+    }
+
+    review {
+        _ id PK
+        _ rating
+        _ comment
+        _ flagged
+        _ booking_id FK
+        _ user_id FK
+        _ created_at
+        _ updated_at
+    }
+
+    inquiry {
+        _ id PK
+        _ name
+        _ email
+        _ subject
+        _ message
+        _ status
+        _ establishment_id FK
+        _ user_id FK
+        _ created_at
+    }
+```
+
+---
+
+## 3. MPD — Modèle Physique de Données
+
+> Le MPD enrichit le MLD avec tous les détails nécessaires à l'implémentation physique :
+> **types SQL**, **contraintes** (NOT NULL, UNIQUE, CHECK, DEFAULT), **stratégies ON DELETE**,
+> et spécificités du SGBD cible (PostgreSQL).
+
+### 3.1 Schéma physique détaillé
 
 #### Tables issues de Better Auth (infrastructure — déjà en place)
 
@@ -482,27 +630,25 @@ establishment_option (#establishment_id, #option_id, price, included)
   DEFAULT: included = false
 
 booking (id, reference, check_in, check_out, guest_count, price_per_night,
-         subtotal, options_total, total_price, status, cancelled_at,
-         created_at, updated_at, #client_id, #suite_id)
+         total_price, status, cancelled_at, created_at, updated_at,
+         #client_id, #suite_id)
   PK: id
   UNIQUE: reference
   FK: client_id → user(id) ON DELETE RESTRICT
   FK: suite_id → suite(id) ON DELETE RESTRICT
   NOT NULL: reference, check_in, check_out, guest_count, price_per_night,
-            subtotal, options_total, total_price, status, client_id, suite_id
+            total_price, status, client_id, suite_id
   CHECK: status IN ('confirmed', 'cancelled', 'completed')
   CHECK: check_out > check_in
-  CHECK: price_per_night > 0, subtotal > 0, total_price > 0, guest_count > 0
-  CHECK: options_total >= 0
+  CHECK: price_per_night > 0, total_price > 0, guest_count > 0
   CONTRAINTE METIER: pas de chevauchement de dates pour une même suite
 
-booking_option (id, quantity, unit_price, #booking_id, #option_id)
-  PK: id
+booking_option (#booking_id, #option_id, quantity, unit_price)
+  PK: (booking_id, option_id)
   FK: booking_id → booking(id) ON DELETE CASCADE
   FK: option_id → option(id) ON DELETE RESTRICT
-  NOT NULL: quantity, unit_price, booking_id, option_id
+  NOT NULL: quantity, unit_price
   CHECK: quantity > 0, unit_price >= 0
-  UNIQUE: (booking_id, option_id) — une même option ne peut être ajoutée qu'une fois par réservation
   NOTE: total par option = quantity × unit_price (calculé à la volée, pas stocké)
 
 review (id, rating, comment, flagged, created_at, updated_at, #booking_id, #user_id)
@@ -525,10 +671,45 @@ inquiry (id, name, email, subject, message, status, created_at, #establishment_i
   DEFAULT: status = 'unread'
 ```
 
-### 2.3 Diagramme relationnel (MLD)
+### 3.2 Récapitulatif des clés étrangères et ON DELETE
 
-> Ce diagramme ERD Mermaid représente le MLD complet avec toutes les tables,
-> y compris les tables de jointure issues des relations N:N.
+| Table source | Colonne FK | Table cible | Cardinalité | ON DELETE |
+|---|---|---|---|---|
+| `establishment` | `manager_id` | `user` | N:1 | RESTRICT |
+| `suite` | `establishment_id` | `establishment` | N:1 | RESTRICT |
+| `image` | `suite_id` | `suite` | N:1 | CASCADE |
+| `establishment_amenity` | `establishment_id` | `establishment` | N:N | CASCADE |
+| `establishment_amenity` | `amenity_id` | `amenity` | N:N | CASCADE |
+| `suite_amenity` | `suite_id` | `suite` | N:N | CASCADE |
+| `suite_amenity` | `amenity_id` | `amenity` | N:N | CASCADE |
+| `establishment_option` | `establishment_id` | `establishment` | N:N | CASCADE |
+| `establishment_option` | `option_id` | `option` | N:N | CASCADE |
+| `booking` | `client_id` | `user` | N:1 | RESTRICT |
+| `booking` | `suite_id` | `suite` | N:1 | RESTRICT |
+| `booking_option` | `booking_id` | `booking` | N:1 | CASCADE |
+| `booking_option` | `option_id` | `option` | N:1 | RESTRICT |
+| `review` | `booking_id` | `booking` | 1:1 | CASCADE |
+| `review` | `user_id` | `user` | N:1 (nullable) | SET NULL |
+| `inquiry` | `establishment_id` | `establishment` | N:1 (nullable) | SET NULL |
+| `inquiry` | `user_id` | `user` | N:1 (nullable) | SET NULL |
+
+### 3.3 Stratégies ON DELETE
+
+| Stratégie | Appliquée quand | Exemple |
+|---|---|---|
+| **RESTRICT** | Empêcher la suppression si des données liées existent | Supprimer un user qui a des réservations → bloqué |
+| **CASCADE** | La suppression en cascade est logique métier | Supprimer une suite → ses images de galerie et ses amenity links disparaissent |
+| **SET NULL** | Le lien peut devenir orphelin sans casser la logique | Supprimer un établissement → les demandes restent (establishment_id = null) |
+
+> **Note :** En pratique, grâce au soft delete (`deleted_at`), les suppressions physiques sont rarissimes.
+> Les contraintes ON DELETE (RESTRICT, SET NULL, CASCADE) servent de **filet de sécurité** au niveau
+> base de données — elles ne se déclenchent que si un DELETE physique est exécuté, ce qui ne devrait
+> arriver qu'en cas de purge administrative ou de conformité RGPD (droit à l'effacement).
+
+### 3.4 Diagramme physique (MPD)
+
+> Ce diagramme ERD Mermaid représente le MPD complet avec types PostgreSQL,
+> contraintes et annotations physiques.
 
 ```mermaid
 erDiagram
@@ -690,9 +871,7 @@ erDiagram
         date check_out "NOT NULL"
         int guest_count "NOT NULL"
         decimal price_per_night "NOT NULL, snapshot"
-        decimal subtotal "NOT NULL"
-        decimal options_total "NOT NULL"
-        decimal total_price "NOT NULL"
+        decimal total_price "NOT NULL, facture finale"
         text status "NOT NULL"
         timestamp cancelled_at
         text client_id FK "NOT NULL → user"
@@ -702,9 +881,8 @@ erDiagram
     }
 
     booking_option {
-        text id PK
-        text booking_id FK "NOT NULL, CASCADE"
-        text option_id FK "NOT NULL"
+        text booking_id FK "PK, CASCADE"
+        text option_id FK "PK"
         int quantity "NOT NULL"
         decimal unit_price "NOT NULL, snapshot"
     }
@@ -733,44 +911,15 @@ erDiagram
     }
 ```
 
-### 2.4 Récapitulatif des clés étrangères
+### 3.5 Implémentation
 
-| Table source | Colonne FK | Table cible | Cardinalité | ON DELETE |
-|---|---|---|---|---|
-| `establishment` | `manager_id` | `user` | N:1 | RESTRICT |
-| `suite` | `establishment_id` | `establishment` | N:1 | RESTRICT |
-| `image` | `suite_id` | `suite` | N:1 | CASCADE |
-| `establishment_amenity` | `establishment_id` | `establishment` | N:N | CASCADE |
-| `establishment_amenity` | `amenity_id` | `amenity` | N:N | CASCADE |
-| `suite_amenity` | `suite_id` | `suite` | N:N | CASCADE |
-| `suite_amenity` | `amenity_id` | `amenity` | N:N | CASCADE |
-| `establishment_option` | `establishment_id` | `establishment` | N:N | CASCADE |
-| `establishment_option` | `option_id` | `option` | N:N | CASCADE |
-| `booking` | `client_id` | `user` | N:1 | RESTRICT |
-| `booking` | `suite_id` | `suite` | N:1 | RESTRICT |
-| `booking_option` | `booking_id` | `booking` | N:1 | CASCADE |
-| `booking_option` | `option_id` | `option` | N:1 | RESTRICT |
-| `review` | `booking_id` | `booking` | 1:1 | CASCADE |
-| `review` | `user_id` | `user` | N:1 (nullable) | SET NULL |
-| `inquiry` | `establishment_id` | `establishment` | N:1 (nullable) | SET NULL |
-| `inquiry` | `user_id` | `user` | N:1 (nullable) | SET NULL |
-
-### 2.5 Choix des ON DELETE
-
-| Stratégie | Appliquée quand | Exemple |
-|---|---|---|
-| **RESTRICT** | Empêcher la suppression si des données liées existent | Supprimer un user qui a des réservations → bloqué |
-| **CASCADE** | La suppression en cascade est logique métier | Supprimer une suite → ses images de galerie et ses amenity links disparaissent |
-| **SET NULL** | Le lien peut devenir orphelin sans casser la logique | Supprimer un établissement → les inquirys restent (establishment_id = null) |
-
-> **Note :** En pratique, grâce au soft delete (`deleted_at`), on ne supprime presque jamais physiquement
-> un établissement, une suite ou un user. Les ON DELETE RESTRICT servent de filet de sécurité.
+_Le schéma Drizzle dans `src/lib/db/schema.ts` constitue l'implémentation directe de ce MPD._
 
 ---
 
-## 3. Diagrammes complémentaires
+## 4. Diagrammes complémentaires
 
-### 3.1 Modèle de domaine (Class Diagram)
+### 4.1 Modèle de domaine (Class Diagram)
 
 > Vue orientée objet du domaine métier. Ce diagramme montre les entités
 > avec leurs attributs clés, les relations typées (composition, agrégation,
@@ -862,8 +1011,6 @@ classDiagram
         +date check_out
         +int guest_count
         +decimal price_per_night
-        +decimal subtotal
-        +decimal options_total
         +decimal total_price
         +BookingStatus status
         +cancel()
@@ -971,7 +1118,7 @@ classDiagram
     Inquiry --> InquiryStatus
 ```
 
-### 3.2 Cycle de vie d'une réservation (State Diagram)
+### 4.2 Cycle de vie d'une réservation (State Diagram)
 
 > Ce diagramme d'état modélise les transitions possibles du statut
 > d'une réservation (`booking.status`), avec les conditions de garde.
@@ -1007,7 +1154,7 @@ stateDiagram-v2
     end note
 ```
 
-### 3.3 Cycle de vie d'un message de inquiry (State Diagram)
+### 4.3 Cycle de vie d'une demande de renseignement (State Diagram)
 
 ```mermaid
 stateDiagram-v2
@@ -1021,7 +1168,7 @@ stateDiagram-v2
     replied --> [*]
 ```
 
-### 3.4 Flux de réservation (Flowchart)
+### 4.4 Flux de réservation (Flowchart)
 
 > Processus complet de création d'une réservation, du point de vue utilisateur
 > et des contrôles métier côté serveur. Inclut la sélection d'options.
@@ -1064,9 +1211,9 @@ flowchart TD
 
 ---
 
-## 4. Données de seed
+## 5. Données de seed
 
-### 4.1 Aménités par défaut (~35)
+### 5.1 Aménités par défaut (~35)
 
 #### Niveau établissement (`scope: property` ou `both`)
 
@@ -1092,7 +1239,7 @@ flowchart TD
 | **Extérieur** | Balcon, Terrasse privée |
 | **Accessibilité** | Accessible fauteuil roulant, Salle de bain PMR |
 
-### 4.2 Options par défaut (10)
+### 5.2 Options par défaut (10)
 
 | Option | `pricing_model` | Prix par défaut |
 |---|---|---|
@@ -1106,9 +1253,3 @@ flowchart TD
 | Panier pique-nique | `per_unit` | 18 EUR |
 | Location vélos | `per_unit` | 15 EUR |
 | Pack romantique | `per_stay` | 45 EUR |
-
----
-
-## 5. MPD — Modèle Physique de Données
-
-_Correspondra au schéma Drizzle dans `src/lib/db/schema.ts`._
