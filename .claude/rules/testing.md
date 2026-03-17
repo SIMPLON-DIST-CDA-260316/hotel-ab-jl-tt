@@ -25,7 +25,7 @@ Test Data:
 
 Unit Tests:
 - Test one functional unit only
-- Mock all external dependencies
+- Mock external dependencies (API, DB, browser APIs)
 - Keep tests fast and independent
 - Test input/output contract only — never spy on internal functions
 - Reserve unit tests for pure logic (utils, calculations, transforms)
@@ -36,5 +36,6 @@ Flaky Tests:
 
 Mocking:
 - Mock only external dependencies (API, browser)
+- Integration tests: prefer real implementations over mocks — test the actual data flow
 - Do not test presentational components (dumb in smart/dumb pattern)
 - Test smart components: user interactions, conditional rendering

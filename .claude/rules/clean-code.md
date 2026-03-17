@@ -12,10 +12,10 @@ Code Quality:
 - Avoid double negatives
 - Use long, readable variable names
 - Write the simplest code possible
-- Eliminate duplication (DRY)
+- Prefer duplication over the wrong abstraction — DRY only when the pattern is proven (3+ occurrences)
 
 Length Limits:
-- Max 30 lines per function
+- Max 30 lines per function (relaxed for async Server Components with co-located data fetching)
 - Max 5 params per function
 - Max 300 lines per file
 

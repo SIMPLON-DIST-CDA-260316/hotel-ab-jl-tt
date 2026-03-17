@@ -5,7 +5,7 @@ globs: src/**/*.tsx
 Component Structure:
 - Functional components only
 - Props interface named `{ComponentName}Props`
-- No default exports — named exports only
+- Named exports only — except Next.js conventions (`page.tsx`, `layout.tsx`, `error.tsx`, `loading.tsx`, `not-found.tsx`) which require `export default`
 - Keep components light and small
 - One component per file (except tiny private components)
 - Return `null` if mandatory props are missing
@@ -27,8 +27,11 @@ Hooks:
 - Follow Rules of Hooks (no conditionals, loops)
 
 Performance:
-- `React.memo()` for expensive components
-- `useMemo` / `useCallback` for expensive computations / stable callbacks
+- Don't memoize by default — only when profiling shows a real problem
+- `React.memo()` only for components with expensive render and frequent parent re-renders
+- `useMemo` only for genuinely costly computations — never for simple primitives or expressions
+- `useCallback` only when passing callbacks to memoized children or as effect dependencies
+- Prefer extracting a sub-component over wrapping in `React.memo()`
 
 Error Boundaries:
 - Wrap routes in `error.tsx` (Next.js App Router convention)
