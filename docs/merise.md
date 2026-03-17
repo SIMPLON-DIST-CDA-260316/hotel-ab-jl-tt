@@ -1,8 +1,8 @@
 # MERISE — Hôtel Clair de Lune
 
-> **Auteur :** Julien Lemarchand
-> **Créé le :** 2026-03-17
-> **Dernière mise à jour :** 2026-03-17
+> **Auteur :** Julien Lemarchand\
+> **Créé le :** 2026-03-17\
+> **Dernière mise à jour :** 2026-03-17\
 > **Décisions validées le :** 2026-03-17
 
 ### Convention de nommage
@@ -20,7 +20,7 @@ mais tous les noms de tables et d'attributs apparaissent en **anglais** — iden
 | Option | `option` |
 | Réservation | `booking` |
 | Avis | `review` |
-| Contact | `contact` |
+| Demande de inquiry | `inquiry` |
 
 ---
 
@@ -57,7 +57,7 @@ mais tous les noms de tables et d'attributs apparaissent en **anglais** — iden
 | `description` | text | Non | Description de l'établissement |
 | `image` | text | Non | Image principale (URL) |
 | `phone` | text | Non | Numéro de téléphone |
-| `email` | text | Non | E-mail de contact |
+| `email` | text | Non | E-mail de inquiry |
 | `check_in_time` | time | Oui | Heure d'arrivée (ex: 15:00) |
 | `check_out_time` | time | Oui | Heure de départ (ex: 11:00) |
 | `manager_id` | text | Oui | FK → `user` (gérant) |
@@ -88,7 +88,7 @@ mais tous les noms de tables et d'attributs apparaissent en **anglais** — iden
 | `id` | text | Oui | Clé primaire |
 | `url` | text | Oui | URL de l'image |
 | `alt` | text | Non | Texte alternatif (accessibilité) |
-| `position` | integer | Oui | Ordre dans la galerie |
+| `position` | integer | Oui | Ordre dans la galerie (UNIQUE par suite) |
 | `suite_id` | text | Oui | FK → `suite` |
 | `created_at` | timestamp | Oui | Date de création |
 
@@ -140,19 +140,20 @@ A un prix et un modèle de tarification.
 
 Configure quelles options sont proposées par chaque établissement, à quel prix,
 et si elles sont incluses d'office dans le tarif.
+Le modèle de tarification est défini une seule fois dans la table `option` (pas de surcharge par établissement).
 
 | Attribut | Type | Obligatoire | Description |
 |---|---|---|---|
 | `establishment_id` | text | Oui | FK → `establishment` (PK composite) |
 | `option_id` | text | Oui | FK → `option` (PK composite) |
 | `price` | decimal | Oui | Prix pratiqué par cet établissement (peut différer du prix par défaut) |
-| `pricing_model` | text | Oui | Modèle de tarification (peut différer du défaut) |
 | `included` | boolean | Oui | `true` = inclus dans le tarif (ex: PDJ offert), `false` = en supplément |
 
 #### OPTION RÉSERVATION (`booking_option`)
 
 Options effectivement sélectionnées par le client pour une réservation donnée.
-Snapshot des prix au moment de la réservation.
+Snapshot du prix au moment de la réservation. Le total par option (`quantity × unit_price`)
+est calculé à la volée — pas stocké en base (donnée dérivée).
 
 | Attribut | Type | Obligatoire | Description |
 |---|---|---|---|
@@ -161,7 +162,6 @@ Snapshot des prix au moment de la réservation.
 | `option_id` | text | Oui | FK → `option` |
 | `quantity` | integer | Oui | Quantité (ex: nb de vélos loués) |
 | `unit_price` | decimal | Oui | Prix unitaire au moment de la réservation (snapshot) |
-| `total_price` | decimal | Oui | Prix total pour cette option |
 
 #### RÉSERVATION (`booking`)
 
@@ -190,12 +190,22 @@ Snapshot des prix au moment de la réservation.
 | `id` | text | Oui | Clé primaire |
 | `rating` | integer | Oui | Note de 1 à 5 |
 | `comment` | text | Non | Commentaire textuel |
+| `flagged` | boolean | Oui | Signalé par un gérant (défaut: false) |
 | `booking_id` | text | Oui | FK → `booking` (UNIQUE — 1 avis par réservation) |
-| `user_id` | text | Oui | FK → `user` |
+| `user_id` | text | Non | FK → `user` (SET NULL pour anonymisation RGPD) |
 | `created_at` | timestamp | Oui | Date de publication |
 | `updated_at` | timestamp | Oui | Date de dernière modification |
 
-#### CONTACT (`contact`)
+> **RGPD :** Un client peut demander la suppression de ses données. L'avis est alors **anonymisé**
+> (user_id → null), pas supprimé. Le contenu reste visible.
+> **Modération :** Un gérant peut **signaler** un avis (`flagged = true`) mais ne peut pas le supprimer.
+> La suppression d'avis négatifs authentiques est interdite (article L121-1 Code de la consommation).
+
+#### DEMANDE DE INQUIRY (`inquiry`)
+
+Message de prise de inquiry soumis via le formulaire du site. Ce n'est pas un thread
+conversationnel : c'est un message one-shot. La réponse du gérant/admin est envoyée
+par email (via Resend) et le statut passe à `replied`.
 
 | Attribut | Type | Obligatoire | Description |
 |---|---|---|---|
@@ -231,8 +241,8 @@ erDiagram
     USER ||--o{ BOOKING : "BOOK (1,1)-(0,n)"
     SUITE ||--o{ BOOKING : "CONCERN (0,n)-(1,1)"
     BOOKING |o--|| REVIEW : "EVALUATE (0,1)-(1,1)"
-    ESTABLISHMENT ||--o{ CONTACT : "RECEIVE (0,n)-(0,1)"
-    USER |o--o{ CONTACT : "SEND (0,1)-(0,n)"
+    ESTABLISHMENT ||--o{ INQUIRY : "RECEIVE (0,n)-(0,1)"
+    USER |o--o{ INQUIRY : "SEND (0,1)-(0,n)"
 
     %% ─── Entités ───
 
@@ -336,7 +346,7 @@ erDiagram
         timestamp updated_at "NOT NULL"
     }
 
-    CONTACT {
+    INQUIRY {
         text id PK
         text name "NOT NULL"
         text email "NOT NULL"
@@ -363,8 +373,8 @@ erDiagram
 | **SELECT** | Booking | 0,n | Option | 0,n | Une réservation inclut 0 à N options. Many-to-many via `booking_option` (avec quantité et prix snapshot). |
 | **CONCERN** | Suite | 0,n | Booking | 1,1 | Une suite est concernée par 0 à N réservations. |
 | **EVALUATE** | Booking | 0,1 | Review | 1,1 | Une réservation peut avoir 0 ou 1 avis. |
-| **RECEIVE** | Establishment | 0,n | Contact | 0,1 | Un établissement reçoit 0 à N messages (nullable si sujet technique). |
-| **SEND** | User | 0,n | Contact | 0,1 | Un user connecté peut envoyer 0 à N messages (nullable si visiteur anonyme). |
+| **RECEIVE** | Establishment | 0,n | Inquiry | 0,1 | Un établissement reçoit 0 à N messages (nullable si sujet technique). |
+| **SEND** | User | 0,n | Inquiry | 0,1 | Un user connecté peut envoyer 0 à N messages (nullable si visiteur anonyme). |
 
 ### 1.4 Règles de gestion
 
@@ -378,9 +388,10 @@ erDiagram
 8. **Aménités — cascade :** Si une aménité est cochée au niveau établissement, elle s'applique à toutes ses suites automatiquement et ne peut pas être décochée suite par suite. Les suites peuvent avoir des aménités supplémentaires.
 9. **Options — inclusion :** Un établissement peut marquer une option comme `included = true` (ex: petit-déjeuner offert). Les options incluses ne sont pas facturées au client.
 10. **Options — snapshot prix :** Au moment de la réservation, les prix des options sélectionnées sont copiés dans `booking_option` pour garantir l'intégrité historique.
-11. **Prix total :** `total_price = subtotal + options_total`, où `subtotal = nb_nuits × price_per_night` et `options_total = somme des booking_option.total_price`.
-12. **Review :** Un avis ne peut être laissé que sur une réservation au statut `completed`, et un seul avis par réservation.
-13. **Contact :** Les sujets sont prédéfinis (`complaint`, `extra_service`, `suite_info`, `app_issue`). Le champ `establishment_id` est null pour les sujets techniques (routés vers l'admin). Le champ `user_id` est null pour les visiteurs anonymes.
+11. **Prix total :** `total_price = subtotal + options_total`, où `subtotal = nb_nuits × price_per_night` et `options_total = somme des (booking_option.quantity × booking_option.unit_price)`.
+12. **Review :** Un avis ne peut être laissé que sur une réservation au statut `completed`, et un seul avis par réservation. Un gérant peut signaler un avis (`flagged = true`) mais ne peut pas le supprimer (article L121-1 Code de la consommation).
+13. **Review — RGPD :** En cas de demande de suppression de données, l'avis est anonymisé (`user_id → null`), pas supprimé.
+14. **Inquiry :** Message one-shot via formulaire. Les sujets sont prédéfinis (`complaint`, `extra_service`, `suite_info`, `app_issue`). Le champ `establishment_id` est null pour les sujets techniques (routés vers l'admin). Le champ `user_id` est null pour les visiteurs anonymes. La réponse est envoyée par email via Resend, pas de thread in-app.
 
 ---
 
@@ -438,6 +449,7 @@ image (id, url, alt, position, created_at, #suite_id)
   PK: id
   FK: suite_id → suite(id) ON DELETE CASCADE
   NOT NULL: url, position, suite_id
+  UNIQUE: (suite_id, position) — pas deux images au même rang dans une suite
 
 amenity (id, name, slug, category, scope, icon)
   PK: id
@@ -462,11 +474,11 @@ option (id, name, slug, description, icon, pricing_model, default_price)
          'per_person_per_stay', 'per_stay', 'per_unit')
   NOT NULL: name, slug, pricing_model, default_price
 
-establishment_option (#establishment_id, #option_id, price, pricing_model, included)
+establishment_option (#establishment_id, #option_id, price, included)
   PK: (establishment_id, option_id)
   FK: establishment_id → establishment(id) ON DELETE CASCADE
   FK: option_id → option(id) ON DELETE CASCADE
-  NOT NULL: price, pricing_model, included
+  NOT NULL: price, included
   DEFAULT: included = false
 
 booking (id, reference, check_in, check_out, guest_count, price_per_night,
@@ -484,24 +496,26 @@ booking (id, reference, check_in, check_out, guest_count, price_per_night,
   CHECK: options_total >= 0
   CONTRAINTE METIER: pas de chevauchement de dates pour une même suite
 
-booking_option (id, quantity, unit_price, total_price, #booking_id, #option_id)
+booking_option (id, quantity, unit_price, #booking_id, #option_id)
   PK: id
   FK: booking_id → booking(id) ON DELETE CASCADE
   FK: option_id → option(id) ON DELETE RESTRICT
-  NOT NULL: quantity, unit_price, total_price, booking_id, option_id
-  CHECK: quantity > 0, unit_price >= 0, total_price >= 0
+  NOT NULL: quantity, unit_price, booking_id, option_id
+  CHECK: quantity > 0, unit_price >= 0
   UNIQUE: (booking_id, option_id) — une même option ne peut être ajoutée qu'une fois par réservation
+  NOTE: total par option = quantity × unit_price (calculé à la volée, pas stocké)
 
-review (id, rating, comment, created_at, updated_at, #booking_id, #user_id)
+review (id, rating, comment, flagged, created_at, updated_at, #booking_id, #user_id)
   PK: id
   UNIQUE: booking_id  (un seul avis par réservation)
   FK: booking_id → booking(id) ON DELETE CASCADE
-  FK: user_id → user(id) ON DELETE RESTRICT
-  NOT NULL: rating, booking_id, user_id
+  FK: user_id → user(id) ON DELETE SET NULL  -- anonymisation RGPD
+  NOT NULL: rating, booking_id
+  DEFAULT: flagged = false
   CHECK: rating BETWEEN 1 AND 5
   CONTRAINTE METIER: réservation au statut 'completed' uniquement
 
-contact (id, name, email, subject, message, status, created_at, #establishment_id, #user_id)
+inquiry (id, name, email, subject, message, status, created_at, #establishment_id, #user_id)
   PK: id
   FK: establishment_id → establishment(id) ON DELETE SET NULL  -- NULLABLE
   FK: user_id → user(id) ON DELETE SET NULL  -- NULLABLE
@@ -523,10 +537,10 @@ erDiagram
     user ||--o{ establishment : "manager_id"
     user ||--o{ booking : "client_id"
     user ||--o{ review : "user_id"
-    user |o--o{ contact : "user_id (nullable)"
+    user |o--o{ inquiry : "user_id (nullable)"
 
     establishment ||--o{ suite : "establishment_id"
-    establishment ||--o{ contact : "establishment_id (nullable)"
+    establishment ||--o{ inquiry : "establishment_id (nullable)"
     establishment ||--o{ establishment_amenity : "establishment_id"
     establishment ||--o{ establishment_option : "establishment_id"
 
@@ -666,7 +680,6 @@ erDiagram
         text establishment_id FK "PK"
         text option_id FK "PK"
         decimal price "NOT NULL"
-        text pricing_model "NOT NULL"
         boolean included "DEFAULT false"
     }
 
@@ -694,20 +707,20 @@ erDiagram
         text option_id FK "NOT NULL"
         int quantity "NOT NULL"
         decimal unit_price "NOT NULL, snapshot"
-        decimal total_price "NOT NULL"
     }
 
     review {
         text id PK
         int rating "NOT NULL, 1-5"
         text comment
+        boolean flagged "DEFAULT false"
         text booking_id FK "NOT NULL, UNIQUE"
-        text user_id FK "NOT NULL"
+        text user_id FK "NULLABLE, SET NULL"
         timestamp created_at "NOT NULL"
         timestamp updated_at "NOT NULL"
     }
 
-    contact {
+    inquiry {
         text id PK
         text name "NOT NULL"
         text email "NOT NULL"
@@ -738,9 +751,9 @@ erDiagram
 | `booking_option` | `booking_id` | `booking` | N:1 | CASCADE |
 | `booking_option` | `option_id` | `option` | N:1 | RESTRICT |
 | `review` | `booking_id` | `booking` | 1:1 | CASCADE |
-| `review` | `user_id` | `user` | N:1 | RESTRICT |
-| `contact` | `establishment_id` | `establishment` | N:1 (nullable) | SET NULL |
-| `contact` | `user_id` | `user` | N:1 (nullable) | SET NULL |
+| `review` | `user_id` | `user` | N:1 (nullable) | SET NULL |
+| `inquiry` | `establishment_id` | `establishment` | N:1 (nullable) | SET NULL |
+| `inquiry` | `user_id` | `user` | N:1 (nullable) | SET NULL |
 
 ### 2.5 Choix des ON DELETE
 
@@ -748,7 +761,7 @@ erDiagram
 |---|---|---|
 | **RESTRICT** | Empêcher la suppression si des données liées existent | Supprimer un user qui a des réservations → bloqué |
 | **CASCADE** | La suppression en cascade est logique métier | Supprimer une suite → ses images de galerie et ses amenity links disparaissent |
-| **SET NULL** | Le lien peut devenir orphelin sans casser la logique | Supprimer un établissement → les contacts restent (establishment_id = null) |
+| **SET NULL** | Le lien peut devenir orphelin sans casser la logique | Supprimer un établissement → les inquirys restent (establishment_id = null) |
 
 > **Note :** En pratique, grâce au soft delete (`deleted_at`), on ne supprime presque jamais physiquement
 > un établissement, une suite ou un user. Les ON DELETE RESTRICT servent de filet de sécurité.
@@ -838,7 +851,6 @@ classDiagram
     class EstablishmentOption {
         <<value object>>
         +decimal price
-        +PricingModel pricing_model
         +boolean included
     }
 
@@ -862,7 +874,6 @@ classDiagram
         <<value object>>
         +int quantity
         +decimal unit_price
-        +decimal total_price
     }
 
     class Review {
@@ -870,17 +881,20 @@ classDiagram
         +text id
         +int rating
         +text comment
+        +boolean flagged
     }
 
-    class Contact {
+    class Inquiry {
         <<entity>>
         +text id
         +text name
         +text email
-        +ContactSubject subject
+        +InquirySubject subject
         +text message
-        +ContactStatus status
+        +InquiryStatus status
     }
+
+    note for Inquiry "Message one-shot via formulaire.\nRéponse par email (Resend).\nPas de thread conversationnel."
 
     %% ─── Enums ───
 
@@ -914,7 +928,7 @@ classDiagram
         completed
     }
 
-    class ContactSubject {
+    class InquirySubject {
         <<enumeration>>
         complaint
         extra_service
@@ -922,7 +936,7 @@ classDiagram
         app_issue
     }
 
-    class ContactStatus {
+    class InquiryStatus {
         <<enumeration>>
         unread
         read
@@ -933,10 +947,10 @@ classDiagram
 
     User "1" --> "1..*" Establishment : manages
     User "1" --> "0..*" Booking : books
-    User "0..1" --> "0..*" Contact : sends
+    User "0..1" --> "0..*" Inquiry : sends
 
     Establishment "1" *-- "0..*" Suite : offers
-    Establishment "1" o-- "0..*" Contact : receives
+    Establishment "1" o-- "0..*" Inquiry : receives
     Establishment "0..*" -- "0..*" Amenity : has amenities
     Establishment "0..*" -- "0..*" Option : provides options
     Establishment .. EstablishmentOption : configures
@@ -953,8 +967,8 @@ classDiagram
     Amenity --> AmenityScope
     Option --> PricingModel
     Booking --> BookingStatus
-    Contact --> ContactSubject
-    Contact --> ContactStatus
+    Inquiry --> InquirySubject
+    Inquiry --> InquiryStatus
 ```
 
 ### 3.2 Cycle de vie d'une réservation (State Diagram)
@@ -993,7 +1007,7 @@ stateDiagram-v2
     end note
 ```
 
-### 3.3 Cycle de vie d'un message de contact (State Diagram)
+### 3.3 Cycle de vie d'un message de inquiry (State Diagram)
 
 ```mermaid
 stateDiagram-v2
