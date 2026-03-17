@@ -1,0 +1,579 @@
+╭─── Claude Code v2.1.74 ──────────────────────────────────────────────────────╮
+│                           │ Tips for getting started                         │
+│    Welcome back Julien!   │ Run /init to create a CLAUDE.md file with instr… │
+│                           │ ──────────────────────────────────────────────── │
+│          ▐▛███▜▌          │ Recent activity                                  │
+│         ▝▜█████▛▘         │ No recent activity                               │
+│           ▘▘ ▝▝           │                                                  │
+│                           │                                                  │
+│   Opus 4.6 · Claude Max   │                                                  │
+│   ~\Code\CDA\hotel-exo    │                                                  │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+❯ /docker-expert review le git diff                                             
+
+● Let me gather the diff and existing Docker files.
+
+● Bash(git diff)
+  ⎿  warning: in the working copy of 'bun.lock', LF will be replaced by CRL
+     F the next time Git touches it
+     diff --git a/.env.example b/.env.example
+     … +192 lines (ctrl+o to expand)
+
+● Now let me read the new Docker files.
+
+● Read 1 file (ctrl+o to expand)
+
+● Docker Setup Review
+
+  Overall Assessment
+
+  Bonne base de travail. Migration SQLite → PostgreSQL propre, Dockerfile
+  multi-stage bien structuré. Voici les points par catégorie :
+
+  ---
+  Dockerfile — Issues
+
+  1. Volume /app/data inutile (lignes 28-29)
+  C'est un vestige de SQLite. Avec PostgreSQL, les données sont dans le
+  container db, pas dans l'app.
+
+  # À supprimer :
+  RUN mkdir -p /app/data && chown nextjs:nextjs /app/data
+  VOLUME /app/data
+
+  2. HEALTHCHECK fragile
+  bun -e "fetch(...)" peut échouer si le runtime Bun n'est pas dans le PATH ou
+  si fetch n'est pas disponible dans bun:1-slim. Préférer curl ou wget :
+
+  # Alternative plus robuste :
+  HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
+
+  Mais bun:1-slim ne contient probablement ni curl ni wget. Deux options :
+  - Installer wget (RUN apt-get update && apt-get install -y wget && rm -rf 
+  /var/lib/apt/lists/*)
+  - Garder la version Bun si elle fonctionne (à tester)
+
+  3. Pas de .env dans le build context
+  Le .dockerignore exclut correctement .env, c'est bien. Mais attention : COPY .
+   . dans le stage builder copie .env.example — pas bloquant mais à noter.
+
+  ---
+  docker-compose.yml — Issues
+
+  4. Credentials PostgreSQL en dur (lignes 5-7)
+  Les credentials sont en clair dans le compose. Pour un exercice c'est
+  acceptable, mais en prod il faudrait utiliser des variables d'environnement ou
+   Docker secrets.
+
+  5. DATABASE_URL dans l'app doit pointer vers db, pas localhost
+  Le .env.example montre localhost:5432, ce qui fonctionne en dev local mais pas
+   dans Docker Compose. Quand l'app tourne dans un container, elle doit
+  atteindre le service db par son nom de service :
+
+  DATABASE_URL=postgresql://hotel:hotel@db:5432/hotel_clair_de_lune
+
+  C'est le bug le plus critique — l'app ne pourra pas se connecter à la DB en
+  mode Docker.
+
+  6. Port 5432 exposé sur l'hôte (ligne 9)
+  Le port Postgres est exposé publiquement. Pour le dev c'est pratique (accès
+  avec un client SQL local), mais en prod il faudrait le retirer ou utiliser un
+  réseau interne.
+
+  7. Pas de réseau custom
+  Ajouter un réseau dédié isolerait les services :
+  networks:
+    backend:
+      driver: bridge
+
+  ---
+  Schema Migration (SQLite → PostgreSQL)
+
+  8. timestamp vs timestamp_ms
+  Le passage de integer("...", { mode: "timestamp_ms" }) à timestamp("...") est
+  correct. Drizzle gère bien le mapping. Mais vérifier que better-auth attend
+  bien des timestamp PostgreSQL natifs (et pas des integers).
+
+  9. drizzle-orm/node-postgres au lieu de drizzle-orm/bun-sql
+  Tu utilises Bun comme runtime (Dockerfile) mais node-postgres (package pg)
+  comme driver. Ça fonctionne car Bun est compatible Node, mais tu pourrais
+  aussi utiliser drizzle-orm/bun-sql avec le driver natif Bun pour PostgreSQL
+  (bun:sql). Ce n'est pas bloquant — pg est plus stable et mieux documenté.
+
+  ---
+  .dockerignore
+
+  Correct et bien fait. Le !.env.example est un bon pattern.
+
+  ---
+  Checklist Résumé
+
+  ┌───────────────────────────────────────┬──────────────────────────────┐
+  │                 Check                 │            Status            │
+  ├───────────────────────────────────────┼──────────────────────────────┤
+  │ Multi-stage build                     │ OK                           │
+  ├───────────────────────────────────────┼──────────────────────────────┤
+  │ Non-root user                         │ OK                           │
+  ├───────────────────────────────────────┼──────────────────────────────┤
+  │ Layer caching (deps avant source)     │ OK                           │
+  ├───────────────────────────────────────┼──────────────────────────────┤
+  │ output: "standalone" dans next.config │ OK                           │
+  ├───────────────────────────────────────┼──────────────────────────────┤
+  │ Healthcheck Dockerfile                │ A tester                     │
+  ├───────────────────────────────────────┼──────────────────────────────┤
+  │ Healthcheck Compose (db)              │ OK                           │
+  ├───────────────────────────────────────┼──────────────────────────────┤
+  │ depends_on avec service_healthy       │ OK                           │
+  ├───────────────────────────────────────┼──────────────────────────────┤
+  │ Resource limits                       │ OK                           │
+  ├───────────────────────────────────────┼──────────────────────────────┤
+  │ .dockerignore complet                 │ OK                           │
+  ├───────────────────────────────────────┼──────────────────────────────┤
+  │ DATABASE_URL pour Docker              │ KO — localhost au lieu de db │
+  ├───────────────────────────────────────┼──────────────────────────────┤
+  │ Volume SQLite résiduel                │ A supprimer                  │
+  ├───────────────────────────────────────┼──────────────────────────────┤
+  │ Secrets en clair                      │ Acceptable (exercice)        │
+  └───────────────────────────────────────┴──────────────────────────────┘
+
+  Le fix prioritaire est le DATABASE_URL — veux-tu que je corrige les problèmes
+  identifiés ?
+
+✻ Worked for 53s
+
+❯ vasy                                                                          
+
+● Update(docker-compose.yml)
+  ⎿  Added 1 line, removed 1 line
+       6        POSTGRES_PASSWORD: hotel
+       7        POSTGRES_DB: hotel_clair_de_lune
+       8      ports:
+       9 -      - "5432:5432"                                            
+       9 +      - "5432:5432" # Exposé pour accès dev local, retirer en p
+         +rod                                                            
+      10      volumes:
+      11        - pg-data:/var/lib/postgresql/data
+      12      restart: unless-stopped
+
+● Done. Voici ce qui a été corrigé :
+
+  1. Supprimé le volume /app/data — vestige SQLite inutile avec PostgreSQL
+  2. DATABASE_URL pointe vers db dans .env.example — avec un commentaire pour
+  rappeler la différence dev local vs Docker
+  3. Commentaire sur le port 5432 exposé — rappel de le retirer en prod
+
+  Le healthcheck Bun, je l'ai laissé tel quel — il faudra le valider au premier
+  docker compose up. Si ça échoue on passera à wget.
+
+!  code .                                                                       
+  ⎿  (Bash completed with no output)
+
+❯ est ce que le front permet déja de vérifier le bon foncitonnement ?           
+
+● Explore(Explore frontend pages/routes)
+  ⎿  Done (18 tool uses · 51.9k tokens · 48s)
+  (ctrl+o to expand)
+
+● Non, pas vraiment. La page d'accueil (app/page.tsx) affiche juste "landing
+  page" en texte brut — il n'y a aucune interaction avec la DB ni l'auth.
+
+  Pour vérifier que le stack Docker fonctionne, tu peux :
+
+  1. Tester le démarrage : docker compose up --build — si l'app démarre et
+  répond sur http://localhost:3000, le build et la connexion DB sont OK.
+  2. Tester la DB : vérifier que Drizzle peut se connecter en lançant une
+  migration :
+  docker compose up db -d
+  bunx drizzle-kit push
+  3. Tester l'auth : Better Auth expose par défaut des routes API sous
+  /api/auth/* — tu peux vérifier que http://localhost:3000/api/auth répond (si
+  le handler est configuré dans un route handler Next.js).
+
+  Veux-tu que je vérifie s'il y a un route handler pour l'auth, ou qu'on lance
+  un docker compose up pour tester ?
+
+❯ ok verifie ooption 1                                                          
+
+● Bash(cd /c/Users/JulienLEMARCHAND/code/CDA/hotel-exo && docker compose up
+      --build 2>&1)
+  ⎿  Error: Exit code 1
+     env file C:\Users\JulienLEMARCHAND\code\CDA\hotel-exo\.env not found: 
+     CreateFile C:\Users\JulienLEMARCHAND\code\CDA\hotel-exo\.env: The system 
+     cannot find the file specified.
+
+● Il manque le fichier .env. Je le crée à partir de .env.example.
+
+● Read 1 file (ctrl+o to expand)
+
+● Bash(cd /c/Users/JulienLEMARCHAND/code/CDA/hotel-exo && cp .env.example .env
+      && openssl rand -base64 32 | tr -d '\n' > /tmp/secret && sed -i
+      "s/^BETTER_AUTH_SECRET=$…)
+  ⎿  Error: Exit code 1
+     sed: -e expression #1, char 53: unknown option to `s'
+
+● Bash(cd /c/Users/JulienLEMARCHAND/code/CDA/hotel-exo && SECRET=$(openssl rand
+      -base64 32) && printf "# Local dev (sans Docker): localhost\n# Docker
+      Compose: db (nom…)
+  ⎿  # Local dev (sans Docker): localhost
+     # Docker Compose: db (nom du service)
+     DATABASE_URL=postgresql://hotel:hotel@db:5432/hotel_clair_de_lune
+     BETTER_AUTH_SECRET=goo+wHetY794aeFNVdXgJACNzFPj92mEcpzNFXqjBiA=
+
+● Bien, .env créé. On relance.
+
+● Bash(docker compose up --build 2>&1)
+  ⎿  Error: Exit code 1
+     unable to get image 'postgres:16-alpine': error during connect: Get 
+     "http://%2F%2F.%2Fpipe%2FdockerDesktopLinuxEngine/v1.51/images/postgres:16-
+     alpine/json": open //./pipe/dockerDesktopLinuxEngine: The system cannot 
+     find the file specified.
+
+● Docker Desktop ne tourne pas. Tu peux le lancer ? Le daemon Docker n'est pas
+  accessible.
+
+✻ Cooked for 48s
+
+❯ ok verifie ooption 1                                                          
+
+● Bash(docker info 2>&1 | head -5)
+  ⎿  Client:
+      Version:    29.1.3
+      Context:    desktop-linux
+     … +2 lines (ctrl+o to expand)
+
+● Bash(docker compose up --build 2>&1)
+  ⎿  Error: Exit code 1
+      db Pulling 
+      4a8dcc9ff6fd Pulling fs layer 
+      bfb0a9f61bdf Pulling fs layer 
+      d513847b8a76 Pulling fs layer 
+      bf295aa7a64c Pulling fs layer 
+      385079160787 Pulling fs layer 
+      dc66e2c13be5 Pulling fs layer 
+      fffbff44edaf Pulling fs layer 
+      6b36925b3510 Pulling fs layer 
+     … +239 lines (ctrl+o to see all)
+
+● Le build est en cours mais a timeout. Je relance en background avec un timeout
+   plus long.
+
+● Bash(docker compose up --build 2>&1 | tail -100)
+  ⎿  #1 [internal] load local bake definitions
+     #1 reading from stdin 544B 0.0s done
+     #1 DONE 0.0s
+     … +32 lines (ctrl+o to expand)
+
+● Le build échoue : bun:1-slim est basé sur Debian (pas Alpine), donc
+  addgroup/adduser n'existent pas. Il faut utiliser groupadd/useradd.
+
+● Read 1 file (ctrl+o to expand)
+
+● Update(Dockerfile)
+  ⎿  Added 2 lines, removed 2 lines
+      18  WORKDIR /app
+      19  ENV NODE_ENV=production
+      20  
+      21 -RUN addgroup --system --gid 1001 nextjs && \                   
+      22 -    adduser --system --uid 1001 nextjs                         
+      21 +RUN groupadd --system --gid 1001 nextjs && \                   
+      22 +    useradd --system --uid 1001 --gid nextjs nextjs            
+      23  
+      24  COPY --from=builder --chown=nextjs:nextjs /app/public ./public
+      25  COPY --from=builder --chown=nextjs:nextjs /app/.next/standalone
+           ./
+
+● Bash(docker compose up --build 2>&1 | tail -80)
+  ⎿  #13 42.26
+     #13 42.26 + @tailwindcss/postcss@4.2.1
+     #13 42.26 + @types/bun@1.3.10
+     … +35 lines (ctrl+o to expand)
+
+● Le build Next.js passe, mais il n'y a pas de dossier public/. Je le crée avec
+  un fichier placeholder, et je rends le COPY conditionnel.
+
+● Read 1 file (ctrl+o to expand)
+
+● Pas de dossier public. Deux options : le créer, ou adapter le Dockerfile. Je
+  vais créer le dossier (il sera nécessaire tôt ou tard pour les assets) et
+  ajouter un .gitkeep.
+
+● Bash(mkdir -p /c/Users/JulienLEMARCHAND/code/CDA/hotel-exo/public && touch
+      /c/Users/JulienLEMARCHAND/code/CDA/hotel-exo/public/.gitkeep)
+  ⎿  Done
+
+● Bash(docker compose up --build 2>&1 | tail -60)
+  ⎿  Interrupted · What should Claude do instead?
+
+❯ donc ?                                                                        
+
+● Voici le bilan des builds successifs :
+
+  1. addgroup not found → Corrigé (groupadd/useradd pour Debian)
+  2. Build Next.js → OK (compile avec succès)
+  3. /app/public not found → Corrigé (créé public/.gitkeep)
+
+  Le dernier build s'est arrêté car tu as interrompu le docker compose up. On en
+   était au point où les deux premiers problèmes sont résolus. Il reste à
+  relancer pour voir si le container démarre correctement.
+
+  Tu veux que je relance docker compose up --build ?
+
+❯ vérifie d'abord parce que moi j'iaun container qui tourne                     
+
+● Bash(docker ps --format "table
+      {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}")
+  ⎿  NAMES             IMAGE                STATUS                   PORTS
+     hotel-exo-app-1   hotel-exo-app        Up 6 minutes (healthy)   0.0.0.
+     0:3000->3000/tcp, [::]:3000->3000/tcp
+     … +2 lines (ctrl+o to expand)
+
+● Les deux containers tournent et sont healthy. L'app répond sur le port 3000.
+
+● Bash(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/)
+  ⎿  200
+
+● Tout est OK :
+  - DB PostgreSQL : healthy
+  - App Next.js : healthy, HTTP 200 sur localhost:3000
+  - Healthchecks : fonctionnels (le bun -e "fetch(...)" marche finalement)
+
+  Le stack Docker est opérationnel.
+
+❯ Si on veut créer une documentation sur le step-by-step pour déployer sur      
+Versel et Subabase, tu proposes quoi ?                                          
+
+● Pour ce projet, la doc devrait couvrir deux scénarios distincts :
+
+  Structure proposée
+
+  1. Supabase (DB)
+  - Créer un projet Supabase
+  - Récupérer la DATABASE_URL (connection string pooling)
+  - Lancer bunx drizzle-kit push pour pousser le schema
+  - Point d'attention : Supabase utilise un pooler (port 6543) vs connexion
+  directe (port 5432) — Drizzle a besoin de la connexion directe pour les
+  migrations
+
+  2. Vercel (App)
+  - Connecter le repo GitHub
+  - Configurer les env vars (DATABASE_URL, BETTER_AUTH_SECRET)
+  - Le output: "standalone" dans next.config n'est pas nécessaire pour Vercel
+  (c'est pour Docker) — ça ne casse rien mais c'est inutile
+  - Vercel détecte automatiquement Next.js, pas de config build spéciale
+
+  3. Points de vigilance
+  - Le driver pg (node-postgres) fonctionne sur Vercel, mais
+  drizzle-orm/vercel-postgres avec @vercel/postgres serait l'option native
+  - Better Auth : configurer les URLs de callback en prod
+  - .env.local pour le dev local vs variables Vercel en prod
+
+  Mon conseil
+
+  Plutôt qu'un doc statique, je ferais un guide dans le README avec deux
+  sections courtes (Supabase setup + Vercel deploy). C'est un projet
+  d'apprentissage — un Markdown simple et maintenable vaut mieux qu'une doc
+  séparée qui va devenir obsolète.
+
+  Tu veux que je le rédige ?
+
+❯ atten si tu me doit qu'on devrait passé à  drizzle-orm/vercel-postgres, on le 
+ ferait pas d'baord ?                                                           
+
+● Bonne remarque, mais non — pas besoin de changer. Le driver pg (node-postgres)
+   que tu utilises déjà fonctionne parfaitement sur Vercel. C'est le plus
+  standard et le plus documenté.
+
+  @vercel/postgres / drizzle-orm/vercel-postgres est juste un wrapper autour de
+  pg optimisé pour les Serverless Functions de Vercel (connection pooling via
+  Neon). Mais Supabase fournit son propre pooler (Supavisor), donc tu n'en as
+  pas besoin.
+
+  En résumé : garde pg + drizzle-orm/node-postgres, ça marche partout (Docker,
+  Vercel, local). Un seul driver, moins de complexité.
+
+  On passe à la rédaction du guide de déploiement ?
+
+❯ ok et sinon Neon vs supabase ?                                                
+
+● Pour ton cas, Supabase est le meilleur choix :
+
+  Supabase
+
+  - PostgreSQL complet avec dashboard, auth intégrée, storage, realtime
+  - Gratuit : 500 MB, 2 projets
+  - Tu utilises déjà Better Auth → Supabase te donne juste la DB, pas de conflit
+  - Écosystème plus riche (si besoin de storage fichiers, etc. plus tard)
+
+  Neon
+
+  - PostgreSQL serverless pur — scale-to-zero (la DB s'éteint quand inactive)
+  - Gratuit : 512 MB, branching (comme des branches git pour ta DB)
+  - Plus minimaliste : juste une DB, rien d'autre
+  - Cold starts de ~500ms après inactivité
+
+  Verdict
+
+  Pour un projet d'apprentissage CDA avec Better Auth + Drizzle :
+  - Supabase si tu veux un écosystème complet et un dashboard visuel pour
+  explorer tes données
+  - Neon si tu veux juste une DB PostgreSQL sans fioritures
+
+  Les deux marchent avec ton driver pg actuel sans aucun changement de code. Je
+  partirais sur Supabase — le dashboard est pratique pour debug et c'est le plus
+   courant dans l'écosystème Next.js.
+
+  On rédige le guide de déploiement Vercel + Supabase ?
+
+❯ ok et supabase fait pas de l'auth aussi ? complementaire ou concurent avec    
+better auth ?                                                                   
+
+● Concurrent direct. Supabase Auth et Better Auth font la même chose
+  (inscription, login, sessions, OAuth, etc.).
+
+  Ta situation
+
+  Tu as déjà Better Auth configuré avec Drizzle → garde-le. Tu utilises Supabase
+   uniquement comme base de données PostgreSQL, sans activer Supabase Auth.
+
+  Pourquoi garder Better Auth
+
+  - Self-hosted : tes tables auth sont dans ta DB, tu contrôles tout
+  - Déjà intégré avec Drizzle (ton schema user, session, account, verification)
+  - Portable : si tu quittes Supabase demain, rien ne change
+  - Pas de vendor lock-in
+
+  Si tu avais utilisé Supabase Auth
+
+  - Auth gérée par Supabase (leurs tables, leur SDK @supabase/supabase-js)
+  - Plus rapide à setup, mais couplé à Supabase
+  - Tu perds le contrôle sur le schema auth
+
+  En résumé
+
+  ┌─────────────┬──────────────┬───────────────┐
+  │             │ Better Auth  │ Supabase Auth │
+  ├─────────────┼──────────────┼───────────────┤
+  │ Contrôle    │ Total        │ Limité        │
+  ├─────────────┼──────────────┼───────────────┤
+  │ Portabilité │ Oui          │ Non           │
+  ├─────────────┼──────────────┼───────────────┤
+  │ Setup       │ Plus de code │ Plus rapide   │
+  ├─────────────┼──────────────┼───────────────┤
+  │ Dépendance  │ Aucune       │ Supabase      │
+  └─────────────┴──────────────┴───────────────┘
+
+  Ne mélange pas les deux — c'est l'un ou l'autre. Dans ton cas, Better Auth +
+  Supabase comme simple DB PostgreSQL, c'est le bon combo.
+
+  On passe au guide ?
+
+❯ ok j'ai besooin que tu inspectes L'architecture feature base que l'on a mis   
+en place dans le projet Code/oryjin/mvp/develop/app/frontend . Cette            
+architecture se veut la plus clean possible avec une structure très définie,    
+avec des éléments à la racine qui sont chaînes, puis des features qui           
+colloquent toutes les dépendances nécessaires, avec un flux aussi d'import très 
+ contrôlé. shared -> app ; shared -> feature ; feature -> app.                  
+
+● Explore(Explore feature-based architecture)
+  ⎿  Done (36 tool uses · 76.6k tokens · 5m 48s)
+  (ctrl+o to expand)
+
+❯ est ce que notre porjet next js est compatible et aurait un intéret à opter   
+pour cette archi ?                                                              
+
+● Voici l'architecture Oryjin que j'ai inspectée :
+
+  Structure résumée
+
+  src/
+  ├── components/      # UI partagé (layout, form, ui/shadcn)
+  ├── hooks/           # Hooks partagés (use-mobile, use-locale...)
+  ├── lib/             # Libs partagées (api client, query client, config)
+  ├── types/           # Types partagés (api.types, domain.types)
+  ├── stores/          # État global UI uniquement (Zustand)
+  ├── features/        # Modules métier auto-contenus
+  │   ├── auth/        →  components/ + hooks/ + queries
+  │   ├── chat/        →  components/ + hooks/ + lib/ + types
+  │   ├── projects/    →  components/ + hooks/ + lib/
+  │   └── activity/    →  components/ + hooks/
+  └── routes/          # Couche app (TanStack Router)
+
+  Règles d'import
+
+  shared (components, hooks, lib, types)
+      ↓
+  features (importent du shared, JAMAIS entre features)
+      ↓
+  routes (composent features + shared)
+
+  - Pas de barrel files (pas d'index.ts) — pour la perf Vite
+  - Layouts dumb — reçoivent les données via props depuis les routes
+  - Query hooks co-localisés dans chaque feature avec queryOptions factories
+
+  ---
+  Est-ce compatible avec ton projet Next.js hotel-exo ?
+
+  Oui, c'est compatible, mais avec des adaptations car Next.js App Router change
+   la donne :
+
+  ┌─────────────┬────────────────────────────┬──────────────────────────────┐
+  │   Aspect    │  Oryjin (Vite + TanStack   │   Hotel-exo (Next.js App     │
+  │             │          Router)           │           Router)            │
+  ├─────────────┼────────────────────────────┼──────────────────────────────┤
+  │ Routing     │ src/routes/ fichiers       │ app/ fichiers Next.js        │
+  │             │ TanStack                   │                              │
+  ├─────────────┼────────────────────────────┼──────────────────────────────┤
+  │ Data        │ TanStack Query (client)    │ Server Components + Server   │
+  │ fetching    │                            │ Actions                      │
+  ├─────────────┼────────────────────────────┼──────────────────────────────┤
+  │ État        │ TanStack Query             │ Souvent inutile (RSC fait le │
+  │ serveur     │                            │  job)                        │
+  ├─────────────┼────────────────────────────┼──────────────────────────────┤
+  │ Couche      │ routes/ compose features   │ app/ compose features        │
+  │ "app"       │                            │                              │
+  └─────────────┴────────────────────────────┴──────────────────────────────┘
+
+  Ce qui s'adapte bien
+
+  - features/ avec components/, hooks/, lib/ → identique
+  - components/ partagés (UI, layout) → identique
+  - lib/ (utils, config) → identique
+  - types/ partagés → identique
+  - Règle d'import shared → feature → app → identique
+
+  Ce qui change
+
+  - Pas besoin de TanStack Query dans la plupart des cas — les Server Components
+   fetch directement
+  - Server Actions remplacent les mutations API côté client
+  - stores/ quasi inutile — moins d'état client avec RSC
+  - La couche "routes" c'est app/ directement (convention Next.js)
+
+  Mon avis
+
+  Pour un projet d'apprentissage CDA, oui ça vaut le coup d'adopter cette
+  structure. Ça te donne une architecture propre et scalable. La version Next.js
+   ressemblerait à :
+
+  src/
+  ├── components/      # UI partagé
+  ├── lib/             # Utils, config, db
+  ├── types/           # Types partagés
+  ├── features/
+  │   ├── auth/        →  components/ + actions/ + queries/
+  │   ├── rooms/       →  components/ + actions/ + queries/
+  │   └── bookings/    →  components/ + actions/ + queries/
+  app/
+  ├── page.tsx         # Compose depuis features/
+  ├── rooms/
+  │   └── page.tsx     # Importe depuis features/rooms
+  └── layout.tsx
+
+  Tu veux que je mette ça en place sur hotel-exo ?
+
+✻ Sautéed for 4m 3s
+
+❯ /rename                                                                       
+  ⎿  Session renamed to: nextjs-rsc-architecture-refactor
