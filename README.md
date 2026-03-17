@@ -6,16 +6,18 @@ Application de gestion hôtelière.
 
 - **Framework** : [Next.js](https://nextjs.org/) (App Router)
 - **UI** : React 19 + Tailwind CSS 4
-- **Base de données** : SQLite
+- **Base de données** : PostgreSQL 16
 - **ORM** : Drizzle ORM
 - **Authentification** : Better Auth
 - **Runtime / Package manager** : [Bun](https://bun.com/)
+- **Conteneurisation** : Docker + Docker Compose
 
-## Installation en local
+## Démarrage rapide
 
 ### Prérequis
 
-- [Bun](https://bun.com/) >= 1.0
+- [Bun](https://bun.sh/) >= 1.0
+- [Docker](https://docs.docker.com/get-docker/) et Docker Compose
 
 ### 1. Cloner le dépôt
 
@@ -24,35 +26,40 @@ git clone https://github.com/SIMPLON-DIST-CDA-260316/hotel-ab-jl-tt.git
 cd hotel-ab-jl-tt
 ```
 
-### 2. Installer les dépendances
-
-```bash
-bun install
-```
-
-### 3. Configurer les variables d'environnement
+### 2. Configurer les variables d'environnement
 
 ```bash
 cp .env.example .env
 ```
 
-Remplir les valeurs dans `.env` :
+Remplir `BETTER_AUTH_SECRET` dans `.env`. Pour le dev local, adapter `DATABASE_URL` :
 
 ```env
-DATABASE_URL=file:./dev.db
-BETTER_AUTH_SECRET=your_secret_key
+# Dev local (Bun + Docker Postgres)
+DATABASE_URL=postgresql://hotel:hotel@localhost:5432/hotel_clair_de_lune
+# Docker Compose (tout conteneurisé)
+DATABASE_URL=postgresql://hotel:hotel@db:5432/hotel_clair_de_lune
 ```
 
-### 4. Initialiser la base de données
+### Option A — Dev local
+
+Postgres dans Docker, Next.js en local pour le hot-reload.
 
 ```bash
-bun run db:push
+docker compose up -d db    # Lance PostgreSQL
+bun install                # Installe les dépendances
+bun run db:push            # Applique le schéma
+bun run dev                # Démarre Next.js
 ```
 
-### 5. Lancer le serveur de développement
+L'application est accessible sur [http://localhost:3000](http://localhost:3000).
+
+### Option B — Tout en Docker
+
+Environnement complet conteneurisé (Postgres + Next.js).
 
 ```bash
-bun run dev
+docker compose up -d       # Lance tous les services
 ```
 
 L'application est accessible sur [http://localhost:3000](http://localhost:3000).
