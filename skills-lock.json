@@ -11,6 +11,11 @@
       "sourceType": "github",
       "computedHash": "c5132317134698624d023cbbbb612b99d2b20f532f6d1417639607cf401f03cd"
     },
+    "mermaid-diagrams": {
+      "source": "softaworks/agent-toolkit",
+      "sourceType": "github",
+      "computedHash": "b6c206a3cab0333a1d3d3cf27114099d0d5f25eb07d86c8f12472b7aa7d59a4c"
+    },
     "vercel-composition-patterns": {
       "source": "vercel-labs/agent-skills",
       "sourceType": "github",
