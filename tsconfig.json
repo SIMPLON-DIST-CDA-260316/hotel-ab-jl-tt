@@ -13,10 +13,6 @@
     "incremental": true,
     "module": "esnext",
     "esModuleInterop": true,
-    "moduleResolution": "node",
-    "paths": {
-      "@/*": ["./*"]
-    },
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
