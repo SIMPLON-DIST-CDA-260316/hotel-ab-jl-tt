@@ -1,159 +1,17 @@
-import { db } from "@/db";
-import { getTableColumns } from "drizzle-orm";
-import * as schema from "@/db/schema";
+import { db } from "@/lib/db";
+import * as schema from "@/lib/db/schema";
+import { extractColumns } from "@/features/db-viewer/lib/extract-columns";
+import { SchemaTable } from "@/features/db-viewer/components/SchemaTable";
+import { DataTable } from "@/features/db-viewer/components/DataTable";
 
 export const dynamic = "force-dynamic";
 
-type ColumnInfo = {
-  name: string;
-  dbName: string;
-  dataType: string;
-  notNull: boolean;
-  hasDefault: boolean;
-  primaryKey: boolean;
-};
-
-type TableDef = {
-  title: string;
-  table: Parameters<typeof db.select>[0] extends undefined
-    ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      any
-    : never;
-};
-
-const tables: TableDef[] = [
+const tables = [
   { title: "user", table: schema.user },
   { title: "session", table: schema.session },
   { title: "account", table: schema.account },
   { title: "verification", table: schema.verification },
 ];
-
-function extractColumns(table: TableDef["table"]): ColumnInfo[] {
-  const cols = getTableColumns(table);
-  return Object.entries(cols).map(([key, col]) => ({
-    name: key,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    dbName: (col as any).name,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    dataType: (col as any).dataType,
-    notNull: col.notNull,
-    hasDefault: col.hasDefault,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    primaryKey: (col as any).primary ?? false,
-  }));
-}
-
-function TypeBadge({ type }: { type: string }) {
-  const colors: Record<string, string> = {
-    string: "bg-blue-100 text-blue-800",
-    boolean: "bg-purple-100 text-purple-800",
-    date: "bg-amber-100 text-amber-800",
-    number: "bg-green-100 text-green-800",
-  };
-  return (
-    <span
-      className={`text-xs px-1.5 py-0.5 rounded font-mono ${colors[type] ?? "bg-gray-100 text-gray-700"}`}
-    >
-      {type}
-    </span>
-  );
-}
-
-function SchemaTable({ columns }: { columns: ColumnInfo[] }) {
-  return (
-    <table className="min-w-full border border-gray-200 text-sm mb-2">
-      <thead>
-        <tr className="bg-gray-100">
-          <th className="px-3 py-1.5 text-left border-b border-gray-200 text-gray-700">
-            Colonne
-          </th>
-          <th className="px-3 py-1.5 text-left border-b border-gray-200 text-gray-700">
-            DB name
-          </th>
-          <th className="px-3 py-1.5 text-left border-b border-gray-200 text-gray-700">
-            Type
-          </th>
-          <th className="px-3 py-1.5 text-left border-b border-gray-200 text-gray-700">
-            Contraintes
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {columns.map((col) => (
-          <tr key={col.name} className="even:bg-gray-50">
-            <td className="px-3 py-1.5 border-b border-gray-200 font-mono text-gray-900">
-              {col.name}
-            </td>
-            <td className="px-3 py-1.5 border-b border-gray-200 font-mono text-gray-500">
-              {col.dbName}
-            </td>
-            <td className="px-3 py-1.5 border-b border-gray-200">
-              <TypeBadge type={col.dataType} />
-            </td>
-            <td className="px-3 py-1.5 border-b border-gray-200 space-x-1">
-              {col.primaryKey && (
-                <span className="text-xs px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-800">
-                  PK
-                </span>
-              )}
-              {col.notNull && (
-                <span className="text-xs px-1.5 py-0.5 rounded bg-red-100 text-red-800">
-                  NOT NULL
-                </span>
-              )}
-              {col.hasDefault && (
-                <span className="text-xs px-1.5 py-0.5 rounded bg-gray-200 text-gray-700">
-                  DEFAULT
-                </span>
-              )}
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-}
-
-function DataTable({ rows }: { rows: Record<string, unknown>[] }) {
-  if (rows.length === 0) {
-    return <p className="text-gray-500 italic text-sm">Aucune donnée</p>;
-  }
-
-  const columns = Object.keys(rows[0]);
-
-  return (
-    <table className="min-w-full border border-gray-200 text-sm">
-      <thead>
-        <tr className="bg-gray-100">
-          {columns.map((col) => (
-            <th
-              key={col}
-              className="px-3 py-1.5 text-left border-b border-gray-200 font-mono text-gray-700"
-            >
-              {col}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((row, i) => (
-          <tr key={i} className="even:bg-gray-50">
-            {columns.map((col) => (
-              <td
-                key={col}
-                className="px-3 py-1.5 border-b border-gray-200 max-w-xs truncate text-gray-900"
-              >
-                {row[col] instanceof Date
-                  ? row[col].toISOString()
-                  : String(row[col] ?? "")}
-              </td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-}
 
 export default async function DbViewerPage() {
   const results = await Promise.all(
