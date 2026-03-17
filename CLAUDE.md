@@ -21,41 +21,64 @@ bun run db:push    # Applique le schéma Drizzle à la base SQLite
 
 ## Architecture (feature-based)
 
+Flux d'import unidirectionnel : `shared → features → app`
+
 ```
+app/                        # Couche APP — routes Next.js (App Router)
 src/
-  app/                    # Routes Next.js (App Router) — couche composition
   components/
-    ui/                   # Composants shadcn/ui (pas de barrel index.ts)
-    layout/               # Composants de mise en page (dumb, props only)
-    form/                 # Composants de formulaire partagés
-  hooks/                  # Hooks partagés
+    ui/                     # shadcn/ui (pas de barrel index.ts)
+    layout/                 # Header, Footer, etc. (dumb, props only)
+    form/                   # Composants de formulaire partagés
+  hooks/                    # Hooks partagés
   lib/
     db/
-      index.ts            # Connexion Drizzle (drizzle-orm/bun-sql)
-      schema.ts           # Schéma des tables Better Auth + métier
-    auth.ts               # Instance Better Auth exportée
-    utils.ts              # Utilitaire cn() pour shadcn
-  stores/                 # État app-wide uniquement (préférences UI)
-  types/                  # Types partagés (OpenAPI, etc.)
-  config/                 # Configuration applicative
-  features/{domain}/      # Modules métier auto-suffisants
-    components/           # UI spécifique au domaine
-    hooks/                # Hooks spécifiques au domaine
-docs/                     # Cahier des charges, user stories, architecture
-drizzle/                  # Migrations générées par drizzle-kit
-components.json           # Configuration shadcn/ui
+      index.ts              # Connexion Drizzle (drizzle-orm/bun-sql)
+      schema.ts             # Schéma des tables
+    auth.ts                 # Instance Better Auth exportée
+    utils.ts                # cn() pour shadcn
+  stores/                   # État app-wide uniquement (préférences UI)
+  types/                    # Types partagés
+  config/                   # Configuration applicative
+  features/
+    auth/
+      components/           # LoginForm, RegisterForm
+      actions/              # login.ts, register.ts
+    etablissements/
+      components/           # EtablissementCard, EtablissementList
+      queries/              # get-etablissements.ts, get-etablissement-by-id.ts
+    suites/
+      components/           # SuiteCard, SuiteDetail
+      queries/              # get-suite-by-id.ts, get-suites-by-etablissement.ts
+    reservations/
+      components/           # ReservationForm, ReservationList
+      queries/              # get-reservations.ts, get-available-suites.ts
+      actions/              # create-reservation.ts, cancel-reservation.ts
+docs/                       # Cahier des charges, user stories, architecture
+components.json             # Configuration shadcn/ui
 ```
 
-**Règles de dépendance :**
-- `components/`, `hooks/`, `lib/`, `stores/`, `types/` sont importables par tous
-- `features/*` importe depuis shared, jamais depuis d'autres features
-- `app/` (routes) importe depuis shared ET features
-- Pas de barrel files (`index.ts`) sauf `@/components/ui/*` (shadcn, coût négligeable)
+**Règles de dépendance (enforced par eslint-plugin-boundaries) :**
+- `shared` (components, hooks, lib, stores, types, config) : importable par tous
+- `features/*` : importe depuis shared uniquement, jamais depuis d'autres features
+- `app/` : importe depuis shared ET features
+- Pas de barrel files (`index.ts`) sauf `@/components/ui/*` (shadcn)
 - Alias `@/*` → `./src/*`
 
-Le schéma `src/lib/db/schema.ts` contient uniquement les tables Better Auth pour le moment. Les tables métier sont à créer.
+**Anatomie d'une feature** (créer uniquement les sous-dossiers nécessaires) :
 
-L'instance `auth` de `src/lib/auth.ts` est le point d'entrée pour tout ce qui touche à l'authentification. Les route handlers Better Auth doivent être exposés via `src/app/api/auth/[...all]/route.ts`.
+| Dossier | Rôle |
+|---------|------|
+| `components/` | Composants React du domaine |
+| `actions/` | Server Actions (mutations, `"use server"`) |
+| `queries/` | Fonctions de lecture serveur (appelées dans Server Components) |
+| `hooks/` | Hooks client spécifiques |
+| `lib/` | Logique métier pure (pas de React) |
+| `types/` | Types TypeScript spécifiques |
+
+Le schéma `src/lib/db/schema.ts` contient les tables Better Auth. Les tables métier (etablissements, suites, reservations) sont à créer.
+
+L'instance `auth` de `src/lib/auth.ts` est le point d'entrée Better Auth. Les route handlers doivent être exposés via `app/api/auth/[...all]/route.ts`.
 
 ## Contexte produit
 
