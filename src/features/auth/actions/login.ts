@@ -2,8 +2,16 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { APIError } from "better-auth/api";
 import { auth } from "@/lib/auth";
+
+function isHttpError(error: unknown, statusCode: number): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "statusCode" in error &&
+    (error as Record<string, unknown>).statusCode === statusCode
+  );
+}
 import { loginSchema } from "@/features/auth/lib/auth-schemas";
 import type {
   AuthActionState,
@@ -40,7 +48,7 @@ export async function login(
       headers: await headers(),
     });
   } catch (error) {
-    if (error instanceof APIError) {
+    if (isHttpError(error, 401) || isHttpError(error, 403)) {
       return { status: "error", formError: "INVALID_CREDENTIALS" };
     }
     console.error("[login] Unexpected error during sign-in:", error);

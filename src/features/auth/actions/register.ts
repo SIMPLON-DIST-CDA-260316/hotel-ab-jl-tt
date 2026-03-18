@@ -2,8 +2,16 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { APIError } from "better-auth/api";
 import { auth } from "@/lib/auth";
+
+function isHttpError(error: unknown, statusCode: number): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "statusCode" in error &&
+    (error as Record<string, unknown>).statusCode === statusCode
+  );
+}
 import { registerSchema } from "@/features/auth/lib/auth-schemas";
 import type {
   AuthActionState,
@@ -43,7 +51,7 @@ export async function register(
       headers: await headers(),
     });
   } catch (error) {
-    if (error instanceof APIError && error.body?.code === "USER_ALREADY_EXISTS") {
+    if (isHttpError(error, 422)) {
       return { status: "error", formError: "EMAIL_ALREADY_USED" };
     }
     console.error("[register] Unexpected error during sign-up:", error);
