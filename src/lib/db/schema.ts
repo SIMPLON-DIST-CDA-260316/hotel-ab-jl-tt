@@ -34,6 +34,7 @@ export const pricingModelEnum = pgEnum("pricing_model", [
 ]);
 
 export const bookingStatusEnum = pgEnum("booking_status", [
+  "pending",
   "confirmed",
   "cancelled",
   "completed",
@@ -311,7 +312,7 @@ export const booking = pgTable(
       scale: 2,
     }).notNull(),
     totalPrice: numeric("total_price", { precision: 10, scale: 2 }).notNull(),
-    status: bookingStatusEnum("status").default("confirmed").notNull(),
+    status: bookingStatusEnum("status").default("pending").notNull(),
     cancelledAt: timestamp("cancelled_at"),
     clientId: text("client_id")
       .notNull()

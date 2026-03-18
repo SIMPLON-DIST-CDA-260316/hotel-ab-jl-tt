@@ -158,6 +158,7 @@ classDiagram
 
     class BookingStatus {
         <<enumeration>>
+        pending
         confirmed
         cancelled
         completed
@@ -217,7 +218,10 @@ classDiagram
 stateDiagram-v2
     direction LR
 
-    [*] --> confirmed : Client réserve une suite\n(dates valides, suite disponible,\noptions sélectionnées)
+    [*] --> pending : Client soumet la réservation\n(dates valides, suite disponible,\noptions sélectionnées)
+
+    pending --> confirmed : Paiement réussi (mocké)
+    pending --> cancelled : Abandon / timeout
 
     confirmed --> cancelled : Client annule\n[check_in > J+3]
     confirmed --> completed : check_out atteint\n(batch ou cron)
@@ -227,10 +231,15 @@ stateDiagram-v2
     completed --> completed : Review ajoutée\n[0 ou 1 review par booking]
     completed --> [*]
 
-    note right of confirmed
+    note right of pending
         Suite bloquée pour ces dates.
-        price_per_night snapshot figé.
+        Snapshot prix effectué.
         Options snapshot dans booking_option.
+    end note
+
+    note right of confirmed
+        Paiement validé.
+        Email de confirmation envoyé.
     end note
 
     note right of cancelled
@@ -292,7 +301,11 @@ flowchart TD
     K --> L[Snapshot price_per_night<br/>Calcul subtotal]
     L --> L2[Créer booking_options<br/>Snapshot unit_price<br/>Calcul options_total]
     L2 --> L3[total_price = subtotal + options_total]
-    L3 --> M[status = confirmed]
-    M --> M2[Envoi email de confirmation<br/>via Resend]
-    M2 --> N([Redirection : Mes réservations])
+    L3 --> M[status = pending]
+    M --> P[Écran de paiement<br/>mock]
+    P -->|Paiement réussi| Q[status = confirmed]
+    P -->|Abandon| R[status = cancelled]
+    Q --> Q2[Envoi email de confirmation<br/>via Resend]
+    Q2 --> N([Redirection : Mes réservations])
+    R --> N
 ```

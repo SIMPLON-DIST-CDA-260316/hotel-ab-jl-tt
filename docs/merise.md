@@ -161,7 +161,7 @@ A un prix et un modèle de tarification. Peut être inclus automatiquement ou s�
 | `guest_count` | entier | Oui | Nombre de personnes |
 | `price_per_night` | décimal | Oui | Snapshot du prix/nuit au moment de la réservation |
 | `total_price` | décimal | Oui | Prix total facturé, figé (hébergement + options) |
-| `status` | texte | Oui | `confirmed`, `cancelled`, `completed` |
+| `status` | texte | Oui | `pending`, `confirmed`, `cancelled`, `completed` |
 | `cancelled_at` | horodatage | Non | Date d'annulation (si applicable) |
 | `created_at` | horodatage | Oui | Date de création de la réservation |
 | `updated_at` | horodatage | Oui | Date de dernière modification |
@@ -254,15 +254,16 @@ erDiagram
 3. **Check-in / Check-out :** Chaque établissement définit ses horaires d'arrivée et de départ. Purement informatif, pas de logique de disponibilité horaire.
 4. **Prix fixe :** Le prix d'une suite est fixe quelle que soit la période. Au moment de la réservation, le prix est copié (`price_per_night`) pour garantir l'intégrité historique.
 5. **Disponibilité :** Une suite ne peut pas être réservée deux fois sur des dates qui se chevauchent (contrôle : `new_check_in < existing_check_out AND new_check_out > existing_check_in`).
-6. **Annulation :** Possible uniquement si la date d'arrivée est dans plus de 3 jours. Le statut passe à `cancelled`, la suite redevient disponible.
-7. **Suppression douce :** Les établissements, suites et utilisateurs ne sont jamais supprimés physiquement. Le champ `deleted_at` est renseigné.
-8. **Aménités — cascade :** Si une aménité est cochée au niveau établissement, elle s'applique à toutes ses suites automatiquement et ne peut pas être décochée suite par suite. Les suites peuvent avoir des aménités supplémentaires.
-9. **Options — inclusion :** Un établissement peut marquer une option comme `included = true` (ex: petit-déjeuner inclus). Une option incluse est **automatiquement ajoutée** à toute réservation de cet établissement — le client ne peut pas la retirer. Son prix reste traçable dans `establishment_option.price` (utile pour la gestion/comptabilité), mais côté client elle est affichée comme "incluse" dans le prix de la suite. Le `unit_price` snapshot dans `booking_option` est à `0` pour les options incluses (pas de surcoût facturé).
-10. **Options — snapshot prix :** Au moment de la réservation, les prix des options sont copiés dans `booking_option.unit_price` pour garantir l'intégrité historique. Pour les options incluses, `unit_price = 0` (le coût réel reste dans `establishment_option.price` à des fins de gestion).
-11. **Prix total :** `total_price = subtotal + options_total`, où `subtotal = nb_nuits × price_per_night` et `options_total = somme des (quantity × unit_price)`. Les options incluses ayant `unit_price = 0`, elles apparaissent dans la réservation (traçabilité) sans impacter le montant facturé.
-12. **Review :** Un avis ne peut être laissé que sur une réservation au statut `completed`, et un seul avis par réservation. Un gérant peut signaler un avis (`flagged = true`) mais ne peut pas le supprimer (article L121-1 Code de la consommation).
-13. **Review — RGPD :** En cas de demande de suppression de données, l'avis est anonymisé (lien vers l'utilisateur supprimé), pas supprimé.
-14. **Inquiry :** Message one-shot via formulaire. Les sujets sont prédéfinis (`complaint`, `extra_service`, `suite_info`, `app_issue`). Le lien vers l'établissement est optionnel (null pour les sujets techniques, routés vers l'admin). Le lien vers l'utilisateur est optionnel (null pour les visiteurs anonymes). La réponse est envoyée par email via Resend, pas de thread in-app.
+6. **Parcours de réservation :** La réservation est créée au statut `pending` (snapshot des prix effectué). Le client passe par un écran de paiement (mocké — validation automatique). Le paiement réussi fait passer le statut à `confirmed`. Un abandon ou timeout laisse la réservation en `pending` (nettoyable par cron).
+7. **Annulation :** Possible uniquement depuis le statut `confirmed` et si la date d'arrivée est dans plus de 3 jours. Le statut passe à `cancelled`, la suite redevient disponible.
+8. **Suppression douce :** Les établissements, suites et utilisateurs ne sont jamais supprimés physiquement. Le champ `deleted_at` est renseigné.
+9. **Aménités — cascade :** Si une aménité est cochée au niveau établissement, elle s'applique à toutes ses suites automatiquement et ne peut pas être décochée suite par suite. Les suites peuvent avoir des aménités supplémentaires.
+10. **Options — inclusion :** Un établissement peut marquer une option comme `included = true` (ex: petit-déjeuner inclus). Une option incluse est **automatiquement ajoutée** à toute réservation de cet établissement — le client ne peut pas la retirer. Son prix reste traçable dans `establishment_option.price` (utile pour la gestion/comptabilité), mais côté client elle est affichée comme "incluse" dans le prix de la suite. Le `unit_price` snapshot dans `booking_option` est à `0` pour les options incluses (pas de surcoût facturé).
+11. **Options — snapshot prix :** Au moment de la réservation, les prix des options sont copiés dans `booking_option.unit_price` pour garantir l'intégrité historique. Pour les options incluses, `unit_price = 0` (le coût réel reste dans `establishment_option.price` à des fins de gestion).
+12. **Prix total :** `total_price = subtotal + options_total`, où `subtotal = nb_nuits × price_per_night` et `options_total = somme des (quantity × unit_price)`. Les options incluses ayant `unit_price = 0`, elles apparaissent dans la réservation (traçabilité) sans impacter le montant facturé.
+13. **Review :** Un avis ne peut être laissé que sur une réservation au statut `completed`, et un seul avis par réservation. Un gérant peut signaler un avis (`flagged = true`) mais ne peut pas le supprimer (article L121-1 Code de la consommation).
+14. **Review — RGPD :** En cas de demande de suppression de données, l'avis est anonymisé (lien vers l'utilisateur supprimé), pas supprimé.
+15. **Inquiry :** Message one-shot via formulaire. Les sujets sont prédéfinis (`complaint`, `extra_service`, `suite_info`, `app_issue`). Le lien vers l'établissement est optionnel (null pour les sujets techniques, routés vers l'admin). Le lien vers l'utilisateur est optionnel (null pour les visiteurs anonymes). La réponse est envoyée par email via Resend, pas de thread in-app.
 
 ---
 
@@ -656,7 +657,8 @@ erDiagram
 | FK | `client_id → user(id) ON DELETE RESTRICT` |
 | FK | `suite_id → suite(id) ON DELETE RESTRICT` |
 | NOT NULL | `reference, check_in, check_out, guest_count, price_per_night, total_price, status, client_id, suite_id` |
-| CHECK | `status IN ('confirmed', 'cancelled', 'completed')` |
+| CHECK | `status IN ('pending', 'confirmed', 'cancelled', 'completed')` |
+| DEFAULT | `status = 'pending'` |
 | CHECK | `check_out > check_in` |
 | CHECK | `price_per_night > 0, total_price > 0, guest_count > 0` |
 | CONTRAINTE METIER | Pas de chevauchement de dates pour une même suite |
