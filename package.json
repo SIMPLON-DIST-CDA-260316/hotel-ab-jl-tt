@@ -4,7 +4,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "db:push": "drizzle-kit push"
+    "db:push": "drizzle-kit push",
+    "db:seed": "bun run src/lib/db/seed.ts"
   },
   "dependencies": {
     "@better-auth/drizzle-adapter": "^1.5.5",
