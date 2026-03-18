@@ -1,7 +1,7 @@
 # Plan: #16 — Créer un établissement
 
 **Created:** 2026-03-18
-**Status:** 📋 Plan opérationnel — prêt pour exécution
+**Status:** ✅ Terminé
 **Source:** Issue #16, Epic #1
 **Scope:** Formulaire + server action + route admin + composants shadcn/ui
 **Effort total:** ~3h
@@ -12,13 +12,13 @@
 
 ## Suivi d'avancement
 
-- [ ] **S1** — Installer les composants shadcn/ui nécessaires *(10min)*
-- [ ] **S2** — Schéma de validation Zod *(15min)*
-- [ ] **S3** — Server action `createEtablissement` *(20min)*
-- [ ] **S4** — Composant `EtablissementForm` (réutilisable pour #17) *(40min)*
-- [ ] **S5** — Route `app/admin/etablissements/nouveau/page.tsx` *(15min)*
-- [ ] **S6** — Route `app/admin/etablissements/page.tsx` (liste admin) *(20min)*
-- [ ] **S7** — Vérification *(15min)*
+- [x] **S1** — Installer les composants shadcn/ui nécessaires *(10min)*
+- [x] **S2** — Schéma de validation Zod *(15min)*
+- [x] **S3** — Server action `createEstablishment` *(20min)*
+- [x] **S4** — Composant `EstablishmentForm` (réutilisable pour #17) *(40min)*
+- [x] **S5** — Route `app/admin/establishments/new/page.tsx` *(15min)*
+- [x] **S6** — Route `app/admin/establishments/page.tsx` (liste admin) *(20min)*
+- [x] **S7** — Vérification *(15min)*
 
 **Approche :** Le formulaire est conçu pour être réutilisable en mode édition (#17). Le contrôle d'accès admin est un TODO — Thélio travaille sur l'auth (#10).
 
@@ -479,4 +479,6 @@ export default async function AdminEtablissementsPage() {
 > Traçabilité des divergences entre le plan et l'implémentation réelle.
 > Format : `[date] Étape — Description de la divergence. **Raison :** justification.`
 
-_(aucune entrée pour le moment)_
+[2026-03-18] Toutes étapes — Nommage adapté du français vers l'anglais : `etablissements` → `establishments`, `EtablissementForm` → `EstablishmentForm`, `createEtablissement` → `createEstablishment`, routes `/admin/etablissements/` → `/admin/establishments/`, `nouveau` → `new`. **Raison :** alignement avec la convention de nommage anglais adoptée dans le commit cf61360.
+
+[2026-03-18] S4 — Ajout de l'affichage des erreurs `_form` (erreur globale du formulaire, ex: "Aucun gérant disponible"). **Raison :** le plan ne prévoyait pas l'affichage de cette erreur côté client alors que la server action peut la retourner.
