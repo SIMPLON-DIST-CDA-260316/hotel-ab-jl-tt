@@ -11,13 +11,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import type { ActionResult } from "../types/action.types";
 
-type FieldErrors = Partial<Record<string, string[]>>;
-
-type FormState = {
-  success: false;
-  errors: FieldErrors;
-} | null;
+type FormState = ActionResult | null;
 
 type EstablishmentFormProps = {
   action: (formData: FormData) => Promise<FormState>;

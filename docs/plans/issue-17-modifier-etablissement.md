@@ -1,7 +1,7 @@
 # Plan: #17 — Modifier un établissement
 
 **Created:** 2026-03-18
-**Status:** 📋 Plan opérationnel — prêt pour exécution
+**Status:** ✅ Terminé
 **Source:** Issue #17, Epic #1
 **Scope:** Server action update + route admin avec formulaire pré-rempli
 **Effort total:** ~1h30
@@ -12,9 +12,9 @@
 
 ## Suivi d'avancement
 
-- [ ] **S1** — Server action `updateEtablissement` *(20min)*
-- [ ] **S2** — Route `app/admin/etablissements/[id]/modifier/page.tsx` *(25min)*
-- [ ] **S3** — Vérification *(15min)*
+- [x] **S1** — Server action `updateEstablishment` *(20min)*
+- [x] **S2** — Route `app/admin/establishments/[id]/edit/page.tsx` *(25min)*
+- [x] **S3** — Vérification *(15min)*
 
 **Approche :** Le formulaire `EtablissementForm` créé en #16 est réutilisé en mode édition via `defaultValues`. Seuls la server action et la route sont à créer.
 
@@ -160,4 +160,6 @@ export default async function ModifierEtablissementPage({ params }: Props) {
 > Traçabilité des divergences entre le plan et l'implémentation réelle.
 > Format : `[date] Étape — Description de la divergence. **Raison :** justification.`
 
-_(aucune entrée pour le moment)_
+[2026-03-18] Toutes étapes — Nommage adapté du français vers l'anglais : `updateEtablissement` → `updateEstablishment`, routes `/admin/etablissements/[id]/modifier` → `/admin/establishments/[id]/edit`. **Raison :** alignement avec la convention anglaise (commit cf61360).
+
+[2026-03-18] S1 — Ajout d'un try/catch autour de `db.update()` avec retour d'erreur structurée `_form`. **Raison :** cohérence avec le pattern adopté en #16 après code review (ne jamais exposer d'erreurs brutes au client).

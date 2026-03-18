@@ -5,13 +5,7 @@ import { establishment, user } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { establishmentSchema } from "../lib/establishment-schema";
-
-type ActionErrors = Partial<Record<string, string[]>> & { _form?: string[] };
-
-type ActionResult = {
-  success: false;
-  errors: ActionErrors;
-};
+import type { ActionResult } from "../types/action.types";
 
 export async function createEstablishment(
   formData: FormData,
