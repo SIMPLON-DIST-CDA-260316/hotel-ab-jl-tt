@@ -32,18 +32,18 @@ cd hotel-ab-jl-tt
 cp .env.example .env
 ```
 
-Remplir `BETTER_AUTH_SECRET` dans `.env`. Pour le dev local, adapter `DATABASE_URL` :
+Remplir `BETTER_AUTH_SECRET` dans `.env` :
 
 ```env
-# Dev local (Bun + Docker Postgres)
 DATABASE_URL=postgresql://hotel:hotel@localhost:5432/hotel_clair_de_lune
-# Docker Compose (tout conteneurisé)
-DATABASE_URL=postgresql://hotel:hotel@db:5432/hotel_clair_de_lune
+BETTER_AUTH_SECRET=your-secret-here
 ```
 
-### Option A — Dev local
+> **Note :** Garder `localhost` dans `DATABASE_URL`. L'Option B (tout en Docker) override automatiquement cette valeur via `docker-compose.yml`.
 
-Postgres dans Docker, Next.js en local pour le hot-reload.
+### Option A — Dev local (recommandée)
+
+Postgres dans Docker, Next.js en local. **Hot-reload actif** : les modifications de code sont reflétées instantanément.
 
 ```bash
 docker compose up -d db    # Lance PostgreSQL
@@ -54,6 +54,8 @@ bun run dev                # Démarre Next.js
 
 L'application est accessible sur [http://localhost:3000](http://localhost:3000).
 
+Après un `git pull` avec des changements de schéma, relancer `bun run db:push` pour synchroniser la DB.
+
 Pour arrêter :
 
 ```bash
@@ -63,10 +65,10 @@ docker compose down db      # Arrête PostgreSQL
 
 ### Option B — Tout en Docker
 
-Environnement complet conteneurisé (Postgres + Next.js).
+Environnement complet conteneurisé (Postgres + Next.js). Le schéma DB est appliqué automatiquement au démarrage. **Pas de hot-reload** : les modifications de code nécessitent un rebuild (`--build`).
 
 ```bash
-docker compose up -d       # Lance tous les services
+docker compose up -d --build   # Build et lance tous les services
 ```
 
 L'application est accessible sur [http://localhost:3000](http://localhost:3000).

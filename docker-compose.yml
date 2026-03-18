@@ -22,6 +22,8 @@ services:
       - "3000:3000"
     env_file:
       - .env
+    environment:
+      DATABASE_URL: postgresql://hotel:hotel@db:5432/hotel_clair_de_lune
     depends_on:
       db:
         condition: service_healthy
