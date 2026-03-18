@@ -370,8 +370,8 @@ seed().catch((e) => {
 - [x] Chaque card affiche nom, ville, adresse, description
 - [x] Le lien "Voir détail" pointe vers `/establishments/{id}`
 - [x] La page est accessible sans authentification
-- [ ] Le rendu est correct en mobile (responsive grid) — **à vérifier manuellement**
-- [ ] État vide : supprimer les données → le message "Aucun établissement" s'affiche — **à vérifier manuellement**
+- [x] Le rendu est correct en mobile (responsive grid)
+- [x] État vide : supprimer les données → le message "Aucun établissement" s'affiche
 - [x] `bun run lint` passe (0 errors)
 - [x] `bun run build` passe (0 errors)
 
