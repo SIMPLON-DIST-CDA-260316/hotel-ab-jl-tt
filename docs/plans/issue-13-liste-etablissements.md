@@ -1,7 +1,7 @@
 # Plan: #13 — Voir la liste des établissements
 
 **Created:** 2026-03-18
-**Status:** 📋 Plan opérationnel — prêt pour exécution
+**Status:** ✅ Implémenté — 2026-03-18
 **Source:** Issue #13, Epic #1
 **Scope:** Query Drizzle + route Next.js + composants feature
 **Effort total:** ~2h
@@ -11,14 +11,14 @@
 
 ## Suivi d'avancement
 
-- [ ] **S0** — Installer composants shadcn/ui (card, skeleton) *(5min)*
-- [ ] **S1** — Query Drizzle `getEtablissements` *(15min)*
-- [ ] **S2** — Composant `EtablissementCard` typé *(20min)*
-- [ ] **S3** — Composant `EtablissementList` typé *(10min)*
-- [ ] **S4** — Route `app/etablissements/page.tsx` (Suspense + Server Component) *(20min)*
-- [ ] **S4b** — Skeleton `EtablissementListSkeleton` *(10min)*
-- [ ] **S5** — Seed de données de test *(30min)*
-- [ ] **S6** — Vérification *(15min)*
+- [x] **S0** — Installer composants shadcn/ui (card, skeleton) *(5min)*
+- [x] **S1** — Query Drizzle `getEstablishments` *(15min)*
+- [x] **S2** — Composant `EstablishmentCard` typé *(20min)*
+- [x] **S3** — Composant `EstablishmentList` typé *(10min)*
+- [x] **S4** — Route `app/establishments/page.tsx` (Suspense + Server Component) *(20min)*
+- [x] **S4b** — Skeleton `EstablishmentListSkeleton` *(10min)*
+- [x] **S5** — Seed de données de test *(30min)*
+- [x] **S6** — Vérification *(15min)*
 
 **Approche :** Page fonctionnelle pour valider la logique (query, données, routing). Le design sera affiné par Agathe dans un second temps.
 
@@ -363,17 +363,17 @@ seed().catch((e) => {
 
 ### Checklist
 
-- [ ] `bun run db:push` passe sans erreur (schéma déjà en place normalement)
-- [ ] `bun run src/lib/db/seed.ts` insère les données sans erreur
-- [ ] `bun run dev` démarre sans erreur
-- [ ] `/etablissements` affiche les 3 établissements
-- [ ] Chaque card affiche nom, ville, adresse, description
-- [ ] Le lien "Voir détail" pointe vers `/etablissements/{id}`
-- [ ] La page est accessible sans authentification
-- [ ] Le rendu est correct en mobile (responsive grid)
-- [ ] État vide : supprimer les données → le message "Aucun établissement" s'affiche
-- [ ] `bun run lint` passe
-- [ ] `bun run build` passe (pas d'erreur de types)
+- [x] `bun run db:push` passe sans erreur
+- [x] `bun run db:seed` insère les données sans erreur
+- [x] `bun run dev` démarre sans erreur
+- [x] `/establishments` affiche les 3 établissements
+- [x] Chaque card affiche nom, ville, adresse, description
+- [x] Le lien "Voir détail" pointe vers `/establishments/{id}`
+- [x] La page est accessible sans authentification
+- [ ] Le rendu est correct en mobile (responsive grid) — **à vérifier manuellement**
+- [ ] État vide : supprimer les données → le message "Aucun établissement" s'affiche — **à vérifier manuellement**
+- [x] `bun run lint` passe (0 errors)
+- [x] `bun run build` passe (0 errors)
 
 **Effort:** 15min
 
@@ -412,4 +412,10 @@ seed().catch((e) => {
 > Traçabilité des divergences entre le plan et l'implémentation réelle.
 > Format : `[date] Étape — Description de la divergence. **Raison :** justification.`
 
-_(aucune entrée pour le moment)_
+[2026-03-18] S4 — Ajout de `export const dynamic = "force-dynamic"` sur la page. **Raison :** Next.js tentait un pre-render statique au build sans DB disponible, provoquant une erreur.
+
+[2026-03-18] S2, S4b — Les composants shadcn `CardDescription` et `CardFooter` ont été utilisés en plus de `Card`, `CardHeader`, `CardTitle`, `CardContent` prévus dans le plan. **Raison :** meilleure sémantique et séparation du contenu.
+
+[2026-03-18] Global — Renommage FR → EN : `etablissements` → `establishments` partout (feature folder, route, composants, queries, variables). **Raison :** convention de nommage international, le français sera géré par i18n.
+
+[2026-03-18] S5 — Ajout script `db:seed` dans `package.json` + seed conditionnel dans `docker-entrypoint.sh` (via `SEED_DB=true`). **Raison :** centraliser le seed pour qu'il soit disponible après merge sur main.
