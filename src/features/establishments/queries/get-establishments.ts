@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import { establishment } from "@/lib/db/schema";
 import { isNull } from "drizzle-orm";
 
-export async function getEtablissements() {
+export async function getEstablishments() {
   return db
     .select({
       id: establishment.id,

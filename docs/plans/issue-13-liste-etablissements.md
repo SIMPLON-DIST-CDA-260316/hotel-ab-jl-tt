@@ -1,7 +1,7 @@
 # Plan: #13 — Voir la liste des établissements
 
 **Created:** 2026-03-18
-**Status:** 📋 Plan opérationnel — prêt pour exécution
+**Status:** ✅ Implémenté — 2026-03-18
 **Source:** Issue #13, Epic #1
 **Scope:** Query Drizzle + route Next.js + composants feature
 **Effort total:** ~2h
@@ -13,13 +13,13 @@
 
 | Étape | Contenu | Effort | Status |
 |-------|---------|--------|--------|
-| **S1** | Query Drizzle `getEtablissements` | 15min | 📋 |
-| **S2** | Composant `EtablissementCard` typé | 20min | 📋 |
-| **S3** | Composant `EtablissementList` typé | 10min | 📋 |
-| **S4** | Route `app/etablissements/page.tsx` (Suspense + Server Component) | 20min | 📋 |
-| **S4b** | Skeleton `EtablissementListSkeleton` | 10min | 📋 |
-| **S5** | Seed de données de test | 30min | 📋 |
-| **S6** | Vérification | 15min | 📋 |
+| **S1** | Query Drizzle `getEtablissements` | 15min | ✅ |
+| **S2** | Composant `EtablissementCard` typé | 20min | ✅ ~divergence~ |
+| **S3** | Composant `EtablissementList` typé | 10min | ✅ |
+| **S4** | Route `app/etablissements/page.tsx` (Suspense + Server Component) | 20min | ✅ ~divergence~ |
+| **S4b** | Skeleton `EtablissementListSkeleton` | 10min | ✅ ~divergence~ |
+| **S5** | Seed de données de test | 30min | ✅ |
+| **S6** | Vérification | 15min | ✅ |
 
 **Approche :** Page fonctionnelle pour valider la logique (query, données, routing). Le design sera affiné par Agathe dans un second temps.
 
@@ -340,17 +340,17 @@ seed().catch((e) => {
 
 ### Checklist
 
-- [ ] `bun run db:push` passe sans erreur (schéma déjà en place normalement)
-- [ ] `bun run src/lib/db/seed.ts` insère les données sans erreur
-- [ ] `bun run dev` démarre sans erreur
-- [ ] `/etablissements` affiche les 3 établissements
-- [ ] Chaque card affiche nom, ville, adresse, description
-- [ ] Le lien "Voir détail" pointe vers `/etablissements/{id}`
-- [ ] La page est accessible sans authentification
-- [ ] Le rendu est correct en mobile (responsive grid)
-- [ ] État vide : supprimer les données → le message "Aucun établissement" s'affiche
-- [ ] `bun run lint` passe
-- [ ] `bun run build` passe (pas d'erreur de types)
+- [x] `bun run db:push` passe sans erreur (schéma déjà en place)
+- [x] `bun run src/lib/db/seed.ts` insère les données sans erreur
+- [x] `bun run dev` démarre sans erreur
+- [x] `/etablissements` affiche les 3 établissements
+- [x] Chaque card affiche nom, ville, adresse, description
+- [x] Le lien "Voir détail" pointe vers `/etablissements/{id}`
+- [x] La page est accessible sans authentification
+- [ ] Le rendu est correct en mobile (responsive grid) — **à vérifier manuellement**
+- [ ] État vide : supprimer les données → le message "Aucun établissement" s'affiche — **à vérifier manuellement**
+- [x] `bun run lint` passe (0 errors, 6 warnings pré-existants)
+- [x] `bun run build` passe (pas d'erreur de types)
 
 **Effort:** 15min
 
@@ -368,6 +368,29 @@ seed().catch((e) => {
 | 6 | S5 | Créer le seed + exécuter | 30min |
 | 7 | S6 | Vérification checklist | 15min |
 | — | — | **Commit** : `feat(etablissements): implement public listing page (#13)` | — |
+
+---
+
+## Log d'implémentation — 2026-03-18
+
+### Divergences par rapport au plan
+
+| Étape | Divergence | Raison |
+|-------|-----------|--------|
+| **S2** | `EtablissementCard` utilise `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, `CardFooter` (shadcn/ui) au lieu de `<div>` bruts | Convention projet : prioriser les composants shadcn/ui sur le HTML de base |
+| **S4** | Ajout de `export const dynamic = "force-dynamic"` sur la page | Next.js tentait un pre-render statique au build — la DB n'est pas disponible à ce moment, provoquant une erreur |
+| **S4b** | `EtablissementListSkeleton` utilise `Card` + `Skeleton` (shadcn/ui) au lieu de `<div className="animate-pulse">` | Même raison que S2 — cohérence avec la Card |
+
+### Composants ajoutés
+
+- `shadcn/ui card` — installé via `bunx shadcn@latest add card`
+- `shadcn/ui skeleton` — installé via `bunx shadcn@latest add skeleton`
+- Fix semicolons appliqué sur les fichiers générés (convention ESLint du projet)
+
+### Vérifications restantes (manuelles)
+
+- [ ] Responsive mobile (grid 1 col → 2 col → 3 col)
+- [ ] État vide (supprimer les données, vérifier le message)
 
 ---
 

@@ -8,8 +8,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-type EtablissementCardProps = {
-  etablissement: {
+type EstablishmentCardProps = {
+  establishment: {
     id: string;
     name: string;
     city: string;
@@ -19,23 +19,23 @@ type EtablissementCardProps = {
   };
 };
 
-export function EtablissementCard({ etablissement }: EtablissementCardProps) {
+export function EstablishmentCard({ establishment }: EstablishmentCardProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{etablissement.name}</CardTitle>
+        <CardTitle>{establishment.name}</CardTitle>
         <CardDescription>
-          {etablissement.city} — {etablissement.address}
+          {establishment.city} — {establishment.address}
         </CardDescription>
       </CardHeader>
-      {etablissement.description && (
+      {establishment.description && (
         <CardContent>
-          <p className="text-sm">{etablissement.description}</p>
+          <p className="text-sm">{establishment.description}</p>
         </CardContent>
       )}
       <CardFooter>
         <Link
-          href={`/etablissements/${etablissement.id}`}
+          href={`/etablissements/${establishment.id}`}
           className="text-sm underline"
         >
           Voir détail
