@@ -20,6 +20,13 @@ La table `user` de Better Auth est enrichie avec `role` et `deleted_at`.
 L'instance `auth` de `src/lib/auth.ts` est le point d'entrée Better Auth.
 Les route handlers sont exposés via `app/api/auth/[...all]/route.ts`.
 
+## Drizzle `numeric` → `string`
+
+Les colonnes `numeric()` (price, totalPrice, area, etc.) sont retournées comme `string` par le driver `pg`.
+- Toujours parser avec `Number()` avant toute arithmétique ou comparaison
+- Ne jamais comparer directement des valeurs `numeric` avec `>`, `<`, `===` sans conversion
+- Côté affichage, formater via `Intl.NumberFormat` après conversion
+
 ## Référence
 
 Le modèle de données complet (MCD, MLD, règles de gestion) est documenté dans `docs/merise.md`.
