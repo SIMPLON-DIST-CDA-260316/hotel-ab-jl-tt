@@ -2,125 +2,154 @@
 
 > **Auteur :** Julien Lemarchand
 > **Créé le :** 2026-03-16
-> **Dernière mise à jour :** 2026-03-16
+> **Dernière mise à jour :** 2026-03-18
 
 ## 1. Vue d'ensemble
 
 ```
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│   Client    │────▶│   Serveur   │────▶│    Base de   │
-│  (Navigateur)│◀────│     Web     │◀────│   données    │
-└─────────────┘     └─────────────┘     └─────────────┘
+┌─────────────┐     ┌──────────────────────────────┐     ┌─────────────┐
+│   Client    │────▶│     Next.js App Router        │────▶│ PostgreSQL  │
+│ (Navigateur)│◀────│  (Server Components + Actions)│◀────│  (Drizzle)  │
+└─────────────┘     └──────────────────────────────┘     └─────────────┘
 ```
 
-**Pattern architectural :** MVC (Model-View-Controller)
+**Pattern architectural :** Feature-based avec React Server Components (RSC)
+
+- **Organisation** : feature-based — chaque domaine métier est un module auto-contenu dans `src/features/{domain}/` (components, actions, queries, types)
+- **Flux d'import** : unidirectionnel — `shared` est importable par tous, `features/` importe depuis `shared` uniquement (jamais entre features), `app/` importe depuis `shared` et `features/` (enforced par eslint-plugin-boundaries)
+- **Routing** : fichier (`app/` directory) — compose les features en pages
+- **Rendu** : Server Components par défaut, Client Components pour l'interactivité
+- **Mutations** : Server Actions (`"use server"`) colocalisées dans `src/features/{domain}/actions/`
+- **Data fetching** : queries colocalisées dans `src/features/{domain}/queries/`, appelées depuis les Server Components
+- **Shared layer** : `src/components/`, `src/lib/`, `src/hooks/` — importable par tous
+
+Référence : [Bulletproof React](https://github.com/alan2207/bulletproof-react/blob/master/docs/project-structure.md)
 
 ## 2. Stack technique
 
 | Couche | Technologie | Justification |
 |--------|-------------|---------------|
-| Framework MVC | _À définir (Symfony / Django)_ | _À justifier_ |
-| Langage backend | _À définir (PHP / Python)_ | _À justifier_ |
-| Base de données | _À définir (MySQL / PostgreSQL)_ | _À justifier_ |
-| ORM | _À définir (Doctrine / Django ORM)_ | _À justifier_ |
-| Moteur de templates | _À définir (Twig / Django Templates)_ | _À justifier_ |
-| CSS / UI | _À définir (Bootstrap / Tailwind / custom)_ | _À justifier_ |
-| Gestion des assets | _À définir (Webpack Encore / Vite / collectstatic)_ | _À justifier_ |
-| Authentification | _À définir (Security / Django Auth)_ | _À justifier_ |
+| Framework | Next.js (App Router) | SSR/RSC natif, routing fichier, Server Actions intégrées |
+| Langage | TypeScript | Typage strict, DX, écosystème React |
+| Runtime | Bun | Performances, compatibilité Node.js, package manager intégré |
+| UI | React 19 + Tailwind CSS 4 | Composants serveur/client, utility-first CSS |
+| Composants UI | shadcn/ui (Radix) | Accessibilité ARIA native, personnalisable |
+| Base de données | PostgreSQL 16 | SGBD relationnel robuste, jsonb, contraintes avancées |
+| ORM | Drizzle ORM | Type-safe, SQL-like, zero runtime overhead |
+| Authentification | Better Auth | Sessions, rôles, route handler `/api/auth/[...all]` |
+| Conteneurisation | Docker + Docker Compose | Environnement reproductible (dev et prod) |
 
 ## 3. Modèle de données
 
-### Entités principales
+Le modèle de données complet (dictionnaire de données, MCD, MLD, MPD, règles de gestion) est documenté dans [`docs/merise.md`](merise.md).
 
-| Entité | Attributs clés | Relations |
-|--------|---------------|-----------|
-| **Etablissement** | nom, ville, adresse, description | 1 gérant, N suites |
-| **Gerant** | nom, prénom, email, mot de passe | 1 établissement |
-| **Suite** | titre, description, prix, image principale, galerie | 1 établissement, N réservations |
-| **Client** | nom, prénom, email, mot de passe | N réservations |
-| **Reservation** | date_debut, date_fin, statut, prix_total | 1 client, 1 suite |
-| **Contact** | nom, email, sujet, message | 1 établissement |
-
-### Diagrammes MERISE
-
-- **MCD** : _À réaliser_
-- **MLD** : _À réaliser_
-- **MPD** : _À réaliser_
-
-### Diagramme de cas d'utilisation (UML)
-
-_À réaliser — doit illustrer les interactions entre les 4 rôles (administrateur, gérant, client, visiteur) et le système._
+L'implémentation physique est dans `src/lib/db/schema.ts` (Drizzle ORM).
 
 ## 4. Architecture des routes
 
-### Pages publiques (visiteur)
+> **Next.js App Router** : chaque route correspond à un fichier `page.tsx` (routing fichier).
+> Les mutations passent par des **Server Actions** (`"use server"`) colocalisées dans `src/features/{domain}/actions/`,
+> pas par des routes HTTP. Les seules routes API sont celles de Better Auth.
+
+### 4.1 Accueil
+
+| Page | Fichier |
+|------|---------|
+| `/` | `app/page.tsx` |
+
+### 4.2 Establishments
+
+| Page | Fichier | Description |
+|------|---------|-------------|
+| `/establishments` | `app/establishments/page.tsx` | Liste publique des établissements |
+| `/establishments/[id]` | `app/establishments/[id]/page.tsx` | Détail d'un établissement et ses suites |
+| `/admin/establishments` | `app/admin/establishments/page.tsx` | Gestion admin — liste |
+| `/admin/establishments/new` | `app/admin/establishments/new/page.tsx` | Gestion admin — création |
+| `/admin/establishments/[id]/edit` | `app/admin/establishments/[id]/edit/page.tsx` | Gestion admin — modification |
+
+| Server Action | Description |
+|---------------|-------------|
+| `createEstablishment` | Créer un établissement |
+| `updateEstablishment` | Modifier un établissement |
+| `deleteEstablishment` | Supprimer un établissement (soft delete) |
+
+### 4.3 Suites
+
+| Page | Fichier | Description |
+|------|---------|-------------|
+| `/suites/[id]` | `app/suites/[id]/page.tsx` | Détail public d'une suite (galerie, prix) |
+| `/manager/suites` | `app/manager/suites/page.tsx` | Gestion gérant — liste |
+| `/manager/suites/new` | `app/manager/suites/new/page.tsx` | Gestion gérant — création |
+| `/manager/suites/[id]/edit` | `app/manager/suites/[id]/edit/page.tsx` | Gestion gérant — modification |
+
+| Server Action | Description |
+|---------------|-------------|
+| `createSuite` | Créer une suite |
+| `updateSuite` | Modifier une suite |
+| `deleteSuite` | Supprimer une suite (soft delete) |
+
+### 4.4 Managers
+
+| Page | Fichier | Description |
+|------|---------|-------------|
+| `/admin/managers` | `app/admin/managers/page.tsx` | Gestion admin — liste |
+| `/admin/managers/new` | `app/admin/managers/new/page.tsx` | Gestion admin — création |
+| `/admin/managers/[id]/edit` | `app/admin/managers/[id]/edit/page.tsx` | Gestion admin — modification |
+
+| Server Action | Description |
+|---------------|-------------|
+| `createManager` | Créer un gérant |
+| `updateManager` | Modifier un gérant |
+| `deleteManager` | Supprimer un gérant (soft delete) |
+
+### 4.5 Bookings
+
+| Page | Fichier | Description |
+|------|---------|-------------|
+| `/bookings` | `app/bookings/page.tsx` | Mes réservations (espace client) |
+
+| Server Action | Description |
+|---------------|-------------|
+| `createBooking` | Créer une réservation |
+| `cancelBooking` | Annuler une réservation |
+
+### 4.6 Inquiries
+
+| Page | Fichier | Description |
+|------|---------|-------------|
+| `/inquiries/[id]` | `app/inquiries/[id]/page.tsx` | Formulaire de contact (lié à un établissement) |
+
+| Server Action | Description |
+|---------------|-------------|
+| `sendInquiry` | Envoyer un message de contact |
+
+### 4.7 Authentification
+
+| Page | Fichier | Description |
+|------|---------|-------------|
+| `/sign-up` | `app/sign-up/page.tsx` | Formulaire d'inscription client |
+| `/sign-in` | `app/sign-in/page.tsx` | Formulaire de connexion |
+
+> L'authentification est gérée par Better Auth via la route API `/api/auth/[...all]`.
+> Les pages `sign-up` et `sign-in` utilisent le client Better Auth, pas des Server Actions custom.
+
+### 4.8 Routes API
 
 | Route | Description |
 |-------|-------------|
-| `GET /` | Page d'accueil |
-| `GET /etablissements` | Liste des établissements |
-| `GET /etablissements/{id}` | Détail d'un établissement et ses suites |
-| `GET /suites/{id}` | Détail d'une suite (galerie, prix) |
-| `GET /contact/{etablissement_id}` | Formulaire de contact |
-| `POST /contact/{etablissement_id}` | Envoi du formulaire |
-
-### Authentification
-
-| Route | Description |
-|-------|-------------|
-| `GET /inscription` | Formulaire d'inscription client |
-| `POST /inscription` | Création de compte |
-| `GET /connexion` | Formulaire de connexion |
-| `POST /connexion` | Authentification |
-| `POST /deconnexion` | Déconnexion |
-
-### Espace client
-
-| Route | Description |
-|-------|-------------|
-| `GET /reservations` | Mes réservations |
-| `POST /reservations` | Créer une réservation |
-| `POST /reservations/{id}/annuler` | Annuler une réservation |
-
-### Back-office administrateur
-
-| Route | Description |
-|-------|-------------|
-| `GET /admin/etablissements` | Gestion des établissements |
-| `GET /admin/etablissements/nouveau` | Formulaire de création |
-| `POST /admin/etablissements` | Créer un établissement |
-| `GET /admin/etablissements/{id}/modifier` | Formulaire de modification |
-| `PUT /admin/etablissements/{id}` | Modifier un établissement |
-| `DELETE /admin/etablissements/{id}` | Supprimer un établissement |
-| `GET /admin/gerants` | Gestion des gérants |
-| `GET /admin/gerants/nouveau` | Formulaire de création |
-| `POST /admin/gerants` | Créer un gérant |
-| `GET /admin/gerants/{id}/modifier` | Formulaire de modification |
-| `PUT /admin/gerants/{id}` | Modifier un gérant |
-| `DELETE /admin/gerants/{id}` | Supprimer un gérant |
-
-### Back-office gérant
-
-| Route | Description |
-|-------|-------------|
-| `GET /gerant/suites` | Gestion des suites |
-| `GET /gerant/suites/nouvelle` | Formulaire de création |
-| `POST /gerant/suites` | Créer une suite |
-| `GET /gerant/suites/{id}/modifier` | Formulaire de modification |
-| `PUT /gerant/suites/{id}` | Modifier une suite |
-| `DELETE /gerant/suites/{id}` | Supprimer une suite |
+| `/api/auth/[...all]` | Better Auth — sessions, inscription, connexion, déconnexion |
 
 ## 5. Sécurité
 
 | Aspect | Mesure |
 |--------|--------|
-| Mots de passe | Hashage (bcrypt / argon2) |
-| Contrôle d'accès | Rôles : ADMIN, GERANT, CLIENT |
-| Validation | Côté client + côté serveur |
-| Protection CSRF | Token CSRF sur tous les formulaires |
+| Mots de passe | Hashage géré par Better Auth (bcrypt) |
+| Contrôle d'accès | Rôles : `admin`, `manager`, `client` (colonne `role` sur `user`) |
+| Validation | Côté client (formulaires) + côté serveur (Server Actions, Zod) |
+| Protection CSRF | Natif via Server Actions (Next.js vérifie l'`Origin` header) |
 | Upload d'images | Validation type MIME, taille max, renommage |
-| SQL injection | ORM avec requêtes paramétrées |
-| XSS | Échappement automatique via le moteur de templates |
+| SQL injection | Drizzle ORM — requêtes paramétrées |
+| XSS | Échappement automatique par React (JSX) |
 
 ## 6. Gestion des images
 
@@ -128,22 +157,22 @@ _À réaliser — doit illustrer les interactions entre les 4 rôles (administra
 |-----------|--------|
 | Formats acceptés | _À définir (jpg, png, webp)_ |
 | Taille max | _À définir_ |
-| Stockage | _À définir (local / cloud)_ |
+| Stockage | Phase 1 : fichiers statiques dans `public/` (URLs relatives). Phase 2 : Supabase Storage (buckets) si le temps le permet |
 | Redimensionnement | _À définir_ |
 
 ## 7. Environnements
 
 | Environnement | Usage |
 |---------------|-------|
-| **dev** | Développement local |
-| **prod** | _À définir (déploiement)_ |
+| **dev** | Développement local (Docker + Bun) |
+| **prod** | Vercel (Next.js) + Supabase (PostgreSQL) |
 
 ## 8. Décisions à prendre
 
-- [ ] Choix du framework (Symfony vs Django)
-- [ ] Choix de la base de données (MySQL vs PostgreSQL)
-- [ ] Choix du framework CSS (Bootstrap vs Tailwind vs autre)
-- [ ] Stratégie de stockage des images (local vs cloud)
-- [ ] Stratégie de déploiement
-- [ ] Réalisation des diagrammes MERISE (MCD, MLD, MPD)
-- [ ] Réalisation du diagramme de cas d'utilisation UML
+- [x] ~~Choix du framework~~ → Next.js (App Router)
+- [x] ~~Choix de la base de données~~ → PostgreSQL 16
+- [x] ~~Choix du framework CSS~~ → Tailwind CSS 4 + shadcn/ui
+- [x] ~~Réalisation des diagrammes MERISE~~ → `docs/merise.md`
+- [x] ~~Stratégie de stockage des images~~ → `public/` puis Supabase Storage si temps
+- [x] ~~Stratégie de déploiement~~ → Vercel + Supabase
+- [ ] Diagramme de cas d'utilisation UML

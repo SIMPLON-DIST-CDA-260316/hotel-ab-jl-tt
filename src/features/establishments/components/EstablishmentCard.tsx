@@ -35,7 +35,7 @@ export function EstablishmentCard({ establishment }: EstablishmentCardProps) {
       )}
       <CardFooter>
         <Link
-          href={`/etablissements/${establishment.id}`}
+          href={`/establishments/${establishment.id}`}
           className="text-sm underline"
         >
           Voir détail
