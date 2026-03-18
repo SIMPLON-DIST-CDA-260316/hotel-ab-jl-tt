@@ -1,7 +1,7 @@
 # Plan: #13 — Voir la liste des établissements
 
 **Created:** 2026-03-18
-**Status:** ✅ Implémenté — 2026-03-18
+**Status:** 📋 Plan opérationnel — prêt pour exécution
 **Source:** Issue #13, Epic #1
 **Scope:** Query Drizzle + route Next.js + composants feature
 **Effort total:** ~2h
@@ -9,19 +9,30 @@
 
 ---
 
-## Vue d'ensemble
+## Suivi d'avancement
 
-| Étape | Contenu | Effort | Status |
-|-------|---------|--------|--------|
-| **S1** | Query Drizzle `getEtablissements` | 15min | ✅ |
-| **S2** | Composant `EtablissementCard` typé | 20min | ✅ ~divergence~ |
-| **S3** | Composant `EtablissementList` typé | 10min | ✅ |
-| **S4** | Route `app/etablissements/page.tsx` (Suspense + Server Component) | 20min | ✅ ~divergence~ |
-| **S4b** | Skeleton `EtablissementListSkeleton` | 10min | ✅ ~divergence~ |
-| **S5** | Seed de données de test | 30min | ✅ |
-| **S6** | Vérification | 15min | ✅ |
+- [ ] **S0** — Installer composants shadcn/ui (card, skeleton) *(5min)*
+- [ ] **S1** — Query Drizzle `getEtablissements` *(15min)*
+- [ ] **S2** — Composant `EtablissementCard` typé *(20min)*
+- [ ] **S3** — Composant `EtablissementList` typé *(10min)*
+- [ ] **S4** — Route `app/etablissements/page.tsx` (Suspense + Server Component) *(20min)*
+- [ ] **S4b** — Skeleton `EtablissementListSkeleton` *(10min)*
+- [ ] **S5** — Seed de données de test *(30min)*
+- [ ] **S6** — Vérification *(15min)*
 
 **Approche :** Page fonctionnelle pour valider la logique (query, données, routing). Le design sera affiné par Agathe dans un second temps.
+
+---
+
+## S0 — Installer composants shadcn/ui
+
+```bash
+bunx shadcn@latest add card skeleton
+```
+
+Nécessaires pour `EtablissementCard` et `EtablissementListSkeleton`. Seront réutilisés dans #14, #16, #17, #18.
+
+**Effort:** 5min
 
 ---
 
@@ -87,6 +98,7 @@ export function EtablissementCard({ etablissement }: { etablissement: Record<str
 
 // APRÈS
 import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 type EtablissementCardProps = {
   etablissement: {
@@ -101,21 +113,25 @@ type EtablissementCardProps = {
 
 export function EtablissementCard({ etablissement }: EtablissementCardProps) {
   return (
-    <div className="rounded-lg border p-4">
-      <h3 className="text-lg font-semibold">{etablissement.name}</h3>
-      <p className="text-sm text-muted-foreground">
-        {etablissement.city} — {etablissement.address}
-      </p>
-      {etablissement.description && (
-        <p className="mt-2 text-sm">{etablissement.description}</p>
-      )}
-      <Link
-        href={`/etablissements/${etablissement.id}`}
-        className="mt-3 inline-block text-sm underline"
-      >
-        Voir détail
-      </Link>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>{etablissement.name}</CardTitle>
+        <p className="text-sm text-muted-foreground">
+          {etablissement.city} — {etablissement.address}
+        </p>
+      </CardHeader>
+      <CardContent>
+        {etablissement.description && (
+          <p className="text-sm">{etablissement.description}</p>
+        )}
+        <Link
+          href={`/etablissements/${etablissement.id}`}
+          className="mt-3 inline-block text-sm underline"
+        >
+          Voir détail
+        </Link>
+      </CardContent>
+    </Card>
   );
 }
 ```
@@ -165,8 +181,8 @@ export function EtablissementList({ etablissements }: EtablissementListProps) {
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {etablissements.map((e) => (
-        <EtablissementCard key={e.id} etablissement={e} />
+      {etablissements.map((etablissement) => (
+        <EtablissementCard key={etablissement.id} etablissement={etablissement} />
       ))}
     </div>
   );
@@ -226,15 +242,22 @@ async function EtablissementListServer() {
 Fallback Suspense minimal — même structure grid que `EtablissementList` avec des placeholders animés.
 
 ```typescript
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+
 export function EtablissementListSkeleton() {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: 3 }).map((_, i) => (
-        <div key={i} className="rounded-lg border p-4 animate-pulse">
-          <div className="h-5 w-3/4 rounded bg-muted" />
-          <div className="mt-2 h-4 w-1/2 rounded bg-muted" />
-          <div className="mt-3 h-4 w-full rounded bg-muted" />
-        </div>
+        <Card key={i}>
+          <CardHeader>
+            <Skeleton className="h-5 w-3/4" />
+            <Skeleton className="h-4 w-1/2" />
+          </CardHeader>
+          <CardContent>
+            <Skeleton className="h-4 w-full" />
+          </CardContent>
+        </Card>
       ))}
     </div>
   );
@@ -243,7 +266,7 @@ export function EtablissementListSkeleton() {
 
 **Choix :**
 - 3 cards skeleton — correspond au nombre de seed, évite le layout shift
-- `animate-pulse` — feedback visuel natif Tailwind, zéro dépendance
+- Composants `Card` + `Skeleton` de shadcn/ui — cohérent avec `EtablissementCard`
 - Même grid que `EtablissementList` — le layout ne bouge pas au chargement
 
 **Effort:** 10min
@@ -340,17 +363,17 @@ seed().catch((e) => {
 
 ### Checklist
 
-- [x] `bun run db:push` passe sans erreur (schéma déjà en place)
-- [x] `bun run src/lib/db/seed.ts` insère les données sans erreur
-- [x] `bun run dev` démarre sans erreur
-- [x] `/etablissements` affiche les 3 établissements
-- [x] Chaque card affiche nom, ville, adresse, description
-- [x] Le lien "Voir détail" pointe vers `/etablissements/{id}`
-- [x] La page est accessible sans authentification
-- [ ] Le rendu est correct en mobile (responsive grid) — **à vérifier manuellement**
-- [ ] État vide : supprimer les données → le message "Aucun établissement" s'affiche — **à vérifier manuellement**
-- [x] `bun run lint` passe (0 errors, 6 warnings pré-existants)
-- [x] `bun run build` passe (pas d'erreur de types)
+- [ ] `bun run db:push` passe sans erreur (schéma déjà en place normalement)
+- [ ] `bun run src/lib/db/seed.ts` insère les données sans erreur
+- [ ] `bun run dev` démarre sans erreur
+- [ ] `/etablissements` affiche les 3 établissements
+- [ ] Chaque card affiche nom, ville, adresse, description
+- [ ] Le lien "Voir détail" pointe vers `/etablissements/{id}`
+- [ ] La page est accessible sans authentification
+- [ ] Le rendu est correct en mobile (responsive grid)
+- [ ] État vide : supprimer les données → le message "Aucun établissement" s'affiche
+- [ ] `bun run lint` passe
+- [ ] `bun run build` passe (pas d'erreur de types)
 
 **Effort:** 15min
 
@@ -360,7 +383,8 @@ seed().catch((e) => {
 
 | Ordre | Réf | Action | Effort |
 |-------|-----|--------|--------|
-| 1 | S1 | Implémenter `getEtablissements` | 15min |
+| 1 | S0 | Installer shadcn/ui (card, skeleton) | 5min |
+| 2 | S1 | Implémenter `getEtablissements` | 15min |
 | 2 | S2 | Typer et compléter `EtablissementCard` | 20min |
 | 3 | S3 | Typer et compléter `EtablissementList` | 10min |
 | 4 | S4 | Créer `app/etablissements/page.tsx` (Suspense + Server Component) | 20min |
@@ -368,29 +392,6 @@ seed().catch((e) => {
 | 6 | S5 | Créer le seed + exécuter | 30min |
 | 7 | S6 | Vérification checklist | 15min |
 | — | — | **Commit** : `feat(etablissements): implement public listing page (#13)` | — |
-
----
-
-## Log d'implémentation — 2026-03-18
-
-### Divergences par rapport au plan
-
-| Étape | Divergence | Raison |
-|-------|-----------|--------|
-| **S2** | `EtablissementCard` utilise `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, `CardFooter` (shadcn/ui) au lieu de `<div>` bruts | Convention projet : prioriser les composants shadcn/ui sur le HTML de base |
-| **S4** | Ajout de `export const dynamic = "force-dynamic"` sur la page | Next.js tentait un pre-render statique au build — la DB n'est pas disponible à ce moment, provoquant une erreur |
-| **S4b** | `EtablissementListSkeleton` utilise `Card` + `Skeleton` (shadcn/ui) au lieu de `<div className="animate-pulse">` | Même raison que S2 — cohérence avec la Card |
-
-### Composants ajoutés
-
-- `shadcn/ui card` — installé via `bunx shadcn@latest add card`
-- `shadcn/ui skeleton` — installé via `bunx shadcn@latest add skeleton`
-- Fix semicolons appliqué sur les fichiers générés (convention ESLint du projet)
-
-### Vérifications restantes (manuelles)
-
-- [ ] Responsive mobile (grid 1 col → 2 col → 3 col)
-- [ ] État vide (supprimer les données, vérifier le message)
 
 ---
 
@@ -403,3 +404,12 @@ seed().catch((e) => {
 | Contrôle d'accès par rôle | #30 (Thélio) |
 | Infrastructure images | #31 |
 | Charte graphique / design final | #32 (Agathe) |
+
+---
+
+## Journal d'implémentation
+
+> Traçabilité des divergences entre le plan et l'implémentation réelle.
+> Format : `[date] Étape — Description de la divergence. **Raison :** justification.`
+
+_(aucune entrée pour le moment)_
