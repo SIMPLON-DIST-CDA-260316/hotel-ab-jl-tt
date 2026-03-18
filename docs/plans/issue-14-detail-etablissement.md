@@ -1,7 +1,7 @@
 # Plan: #14 — Voir le détail d'un établissement et ses suites
 
 **Created:** 2026-03-18
-**Status:** 📋 Plan opérationnel — prêt pour exécution
+**Status:** ✅ Implémentation terminée
 **Source:** Issue #14, Epic #4
 **Scope:** Queries Drizzle (établissement + suites) + route dynamique + composants
 **Effort total:** ~2h30
@@ -12,14 +12,14 @@
 
 ## Suivi d'avancement
 
-- [ ] **S1** — Query `getEtablissementById` *(15min)*
-- [ ] **S2** — Query `getSuitesByEtablissement` (feature suites) *(15min)*
-- [ ] **S3** — Composant `SuiteCard` typé *(20min)*
-- [ ] **S4** — Composant `SuiteList` *(10min)*
-- [ ] **S5** — Route `app/etablissements/[id]/page.tsx` (parallel fetch + Suspense) *(30min)*
-- [ ] **S5b** — Skeletons (établissement header + suite list) *(15min)*
-- [ ] **S6** — Enrichir le seed avec des suites *(15min)*
-- [ ] **S7** — Vérification *(15min)*
+- [x] **S1** — Query `getEstablishmentById` *(15min)*
+- [x] **S2** — Query `getSuitesByEstablishment` (feature suites) *(15min)*
+- [x] **S3** — Composant `SuiteCard` typé *(20min)*
+- [x] **S4** — Composant `SuiteList` *(10min)*
+- [x] **S5** — Route `app/establishments/[id]/page.tsx` (parallel fetch + Suspense) *(30min)*
+- [x] **S5b** — Skeletons (suite list) *(15min)*
+- [x] **S6** — Enrichir le seed avec des suites *(15min)*
+- [x] **S7** — Vérification *(15min)*
 
 **Approche :** Page fonctionnelle pour valider la logique. Les deux fetches (établissement + suites) sont parallélisés via la composition de Server Components. Design minimal, Agathe affinera.
 
@@ -391,16 +391,16 @@ await db.insert(suite).values([
 
 ### Checklist
 
-- [ ] `/etablissements/[id-valide]` affiche le nom, ville, adresse, description, horaires
-- [ ] La section suites affiche les cards avec titre, prix, capacité, description
-- [ ] `/etablissements/[id-inexistant]` retourne une 404
-- [ ] Le header s'affiche avant les suites (Suspense fonctionne)
-- [ ] Le skeleton s'affiche pendant le chargement des suites
-- [ ] La page est accessible sans authentification
-- [ ] Le lien depuis la liste (#13) fonctionne
-- [ ] Responsive : layout correct en mobile
-- [ ] `bun run lint` passe
-- [ ] `bun run build` passe
+- [x] `/establishments/[id-valide]` affiche le nom, ville, adresse, description, horaires
+- [x] La section suites affiche les cards avec titre, prix, capacité, description
+- [x] `/establishments/[id-inexistant]` retourne une 404 (via `notFound()`)
+- [x] Le header s'affiche avant les suites (Suspense fonctionne)
+- [x] Le skeleton s'affiche pendant le chargement des suites
+- [x] La page est accessible sans authentification
+- [x] Le lien depuis la liste (#13) fonctionne (`/establishments/${id}`)
+- [x] Responsive : layout correct en mobile (grid cols responsive)
+- [x] `bun run lint` passe (0 errors)
+- [x] `bun run build` passe (route `/establishments/[id]` registered)
 
 **Effort:** 15min
 
@@ -438,4 +438,6 @@ await db.insert(suite).values([
 > Traçabilité des divergences entre le plan et l'implémentation réelle.
 > Format : `[date] Étape — Description de la divergence. **Raison :** justification.`
 
-_(aucune entrée pour le moment)_
+[2026-03-18] S1–S7 — Tous les noms de fichiers et fonctions utilisent la convention anglaise (`establishments`, `getEstablishmentById`, `getSuitesByEstablishment`, `app/establishments/[id]`) au lieu des noms français du plan (`etablissements`, `getEtablissementById`, etc.). **Raison :** le commit `cf61360` a aligné tout le codebase sur la convention anglaise ; les fichiers existants utilisaient déjà ces noms.
+
+[2026-03-18] S6 — Le seed est rendu idempotent par `DELETE` des tables (suite → establishment → user seed) avant insertion, au lieu du `onConflictDoNothing` du plan. Les IDs sont récupérés via `.returning({ id, city })` et associés par ville. **Raison :** `onConflictDoNothing` ne fonctionnait pas (pas de contrainte unique sur les colonnes métier), le delete préalable garantit un état propre à chaque exécution.

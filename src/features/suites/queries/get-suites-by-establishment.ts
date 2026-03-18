@@ -1,6 +1,22 @@
 import { db } from "@/lib/db";
+import { suite } from "@/lib/db/schema";
+import { eq, isNull, and } from "drizzle-orm";
 
-export async function getSuitesByEstablishment(_establishmentId: string) {
-  // TODO: add suites table to schema
-  return db.select().from({} as never);
+export async function getSuitesByEstablishment(establishmentId: string) {
+  return db
+    .select({
+      id: suite.id,
+      title: suite.title,
+      description: suite.description,
+      price: suite.price,
+      mainImage: suite.mainImage,
+      capacity: suite.capacity,
+    })
+    .from(suite)
+    .where(
+      and(
+        eq(suite.establishmentId, establishmentId),
+        isNull(suite.deletedAt),
+      ),
+    );
 }

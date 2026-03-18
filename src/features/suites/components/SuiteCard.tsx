@@ -1,8 +1,43 @@
-// TODO: type with suite domain type once schema is defined
-export function SuiteCard({ suite }: { suite: Record<string, unknown> }) {
+import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+type SuiteCardProps = {
+  suite: {
+    id: string;
+    title: string;
+    description: string | null;
+    price: string;
+    mainImage: string;
+    capacity: number;
+  };
+};
+
+const priceFormatter = new Intl.NumberFormat("fr-FR", {
+  style: "currency",
+  currency: "EUR",
+});
+
+export function SuiteCard({ suite }: SuiteCardProps) {
   return (
-    <div>
-      <p>{String(suite.nom ?? "")}</p>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>{suite.title}</CardTitle>
+        <p className="text-sm text-muted-foreground">
+          {priceFormatter.format(Number(suite.price))} / nuit —{" "}
+          {suite.capacity} personne{suite.capacity > 1 ? "s" : ""}
+        </p>
+      </CardHeader>
+      <CardContent>
+        {suite.description && (
+          <p className="text-sm">{suite.description}</p>
+        )}
+        <Link
+          href={`/suites/${suite.id}`}
+          className="mt-3 inline-block text-sm underline"
+        >
+          Voir la suite
+        </Link>
+      </CardContent>
+    </Card>
   );
 }
