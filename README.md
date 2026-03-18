@@ -54,6 +54,13 @@ bun run dev                # Démarre Next.js
 
 L'application est accessible sur [http://localhost:3000](http://localhost:3000).
 
+Pour arrêter :
+
+```bash
+# Ctrl+C pour stopper Next.js, puis :
+docker compose down db      # Arrête PostgreSQL
+```
+
 ### Option B — Tout en Docker
 
 Environnement complet conteneurisé (Postgres + Next.js).
@@ -63,6 +70,12 @@ docker compose up -d       # Lance tous les services
 ```
 
 L'application est accessible sur [http://localhost:3000](http://localhost:3000).
+
+Pour arrêter :
+
+```bash
+docker compose down         # Arrête tous les services
+```
 
 ## Scripts disponibles
 
