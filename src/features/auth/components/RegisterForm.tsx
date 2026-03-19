@@ -153,7 +153,7 @@ export function RegisterForm() {
 
       <p className="text-center text-sm text-muted-foreground">
         Déjà un compte ?{" "}
-        <Link href="/connexion" className="text-primary underline hover:text-primary/80">
+        <Link href="/sign-in" className="text-primary underline hover:text-primary/80">
           Se connecter
         </Link>
       </p>

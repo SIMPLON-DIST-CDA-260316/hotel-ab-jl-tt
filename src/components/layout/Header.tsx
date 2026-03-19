@@ -21,10 +21,10 @@ export async function Header() {
         ) : (
           <>
             <Button variant="ghost" asChild>
-              <Link href="/connexion">Se connecter</Link>
+              <Link href="/sign-in">Se connecter</Link>
             </Button>
             <Button asChild>
-              <Link href="/inscription">Créer un compte</Link>
+              <Link href="/sign-up">Créer un compte</Link>
             </Button>
           </>
         )}

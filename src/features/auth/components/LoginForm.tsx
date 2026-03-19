@@ -87,7 +87,7 @@ export function LoginForm({ callbackUrl }: LoginFormProps) {
 
       <p className="text-center text-sm text-muted-foreground">
         Pas encore de compte ?{" "}
-        <Link href="/inscription" className="text-primary underline hover:text-primary/80">
+        <Link href="/sign-up" className="text-primary underline hover:text-primary/80">
           Créer un compte
         </Link>
       </p>
