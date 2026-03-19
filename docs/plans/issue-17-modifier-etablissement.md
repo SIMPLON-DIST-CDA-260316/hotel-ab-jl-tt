@@ -130,15 +130,15 @@ export default async function ModifierEtablissementPage({ params }: Props) {
 
 ### Checklist
 
-- [ ] `/admin/etablissements/[id]/modifier` affiche le formulaire pré-rempli
-- [ ] Tous les champs sont bien remplis avec les données existantes
-- [ ] Vider un champ obligatoire → erreur de validation
-- [ ] Soumettre les modifications → données mises à jour en base
-- [ ] Redirection vers la liste admin après succès
-- [ ] Les modifications sont visibles sur la page publique (#13) et détail (#14)
-- [ ] `/admin/etablissements/[id-inexistant]/modifier` → 404
-- [ ] `bun run lint` passe
-- [ ] `bun run build` passe
+- [x] `/admin/etablissements/[id]/modifier` affiche le formulaire pré-rempli
+- [x] Tous les champs sont bien remplis avec les données existantes
+- [x] Vider un champ obligatoire → erreur de validation
+- [x] Soumettre les modifications → données mises à jour en base
+- [x] Redirection vers la liste admin après succès
+- [x] Les modifications sont visibles sur la page publique (#13) et détail (#14)
+- [x] `/admin/etablissements/[id-inexistant]/modifier` → 404
+- [x] `bun run lint` passe
+- [x] `bun run build` passe
 
 **Effort:** 15min
 

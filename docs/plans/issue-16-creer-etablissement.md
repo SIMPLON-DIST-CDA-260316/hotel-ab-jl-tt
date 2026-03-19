@@ -436,14 +436,14 @@ export default async function AdminEtablissementsPage() {
 
 ### Checklist
 
-- [ ] `/admin/etablissements` affiche la liste avec boutons Ajouter/Modifier/Supprimer
-- [ ] `/admin/etablissements/nouveau` affiche le formulaire
-- [ ] Soumettre avec les champs obligatoires vides → erreurs de validation affichées
-- [ ] Soumettre un formulaire valide → établissement créé, redirection vers la liste
-- [ ] Le nouvel établissement apparaît dans la liste admin ET la liste publique (#13)
-- [ ] Le bouton est disabled pendant la soumission (pending state)
-- [ ] `bun run lint` passe
-- [ ] `bun run build` passe
+- [x] `/admin/etablissements` affiche la liste avec boutons Ajouter/Modifier/Supprimer
+- [x] `/admin/etablissements/nouveau` affiche le formulaire
+- [x] Soumettre avec les champs obligatoires vides → erreurs de validation affichées
+- [x] Soumettre un formulaire valide → établissement créé, redirection vers la liste
+- [x] Le nouvel établissement apparaît dans la liste admin ET la liste publique (#13)
+- [x] Le bouton est disabled pendant la soumission (pending state)
+- [x] `bun run lint` passe
+- [x] `bun run build` passe
 
 **Effort:** 15min
 

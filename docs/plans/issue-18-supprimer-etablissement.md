@@ -238,15 +238,15 @@ import { DeleteEtablissementButton } from "@/features/etablissements/components/
 
 ### Checklist
 
-- [ ] Le bouton "Supprimer" apparaît dans chaque row du tableau admin
-- [ ] Cliquer "Supprimer" → AlertDialog s'ouvre avec le nom de l'établissement
-- [ ] Cliquer "Annuler" → AlertDialog se ferme, rien ne change
-- [ ] Cliquer "Supprimer" (sans réservations futures) → établissement soft-deleted, AlertDialog se ferme, la liste se met à jour
-- [ ] L'établissement supprimé n'apparaît plus dans la liste publique (#13) ni la liste admin
-- [ ] Cliquer "Supprimer" (avec réservations futures) → message d'erreur dans l'AlertDialog, pas de suppression
-- [ ] Le bouton est disabled pendant la suppression (pending state)
-- [ ] `bun run lint` passe
-- [ ] `bun run build` passe
+- [x] Le bouton "Supprimer" apparaît dans chaque row du tableau admin
+- [x] Cliquer "Supprimer" → AlertDialog s'ouvre avec le nom de l'établissement
+- [x] Cliquer "Annuler" → AlertDialog se ferme, rien ne change
+- [x] Cliquer "Supprimer" (sans réservations futures) → établissement soft-deleted, AlertDialog se ferme, la liste se met à jour
+- [x] L'établissement supprimé n'apparaît plus dans la liste publique (#13) ni la liste admin
+- [x] Cliquer "Supprimer" (avec réservations futures) → message d'erreur dans l'AlertDialog, pas de suppression
+- [x] Le bouton est disabled pendant la suppression (pending state)
+- [x] `bun run lint` passe
+- [x] `bun run build` passe
 
 **Effort:** 15min
 

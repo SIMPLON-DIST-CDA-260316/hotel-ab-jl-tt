@@ -1,12 +1,14 @@
 import { db } from "@/lib/db";
-import { user, establishment, suite } from "@/lib/db/schema";
+import { user, establishment, suite, booking } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 
 async function seed() {
   // Clean seed data for idempotence (order respects FK constraints)
+  await db.delete(booking);
   await db.delete(suite);
   await db.delete(establishment);
   await db.delete(user).where(eq(user.id, "seed-manager-1"));
+  await db.delete(user).where(eq(user.id, "seed-client-1"));
 
   await db.insert(user).values({
     id: "seed-manager-1",
@@ -14,6 +16,16 @@ async function seed() {
     email: "gerant@clairdelune.test",
     emailVerified: true,
     role: "manager",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  });
+
+  await db.insert(user).values({
+    id: "seed-client-1",
+    name: "Client Test",
+    email: "client@clairdelune.test",
+    emailVerified: true,
+    role: "client",
     createdAt: new Date(),
     updatedAt: new Date(),
   });
@@ -60,7 +72,7 @@ async function seed() {
   const lyonId = establishments.find((e) => e.city === "Lyon")!.id;
   const lilleId = establishments.find((e) => e.city === "Lille")!.id;
 
-  await db
+  const suites = await db
     .insert(suite)
     .values([
       {
@@ -99,9 +111,54 @@ async function seed() {
         area: "38.00",
         establishmentId: lilleId,
       },
-    ]);
+    ])
+    .returning({ id: suite.id, title: suite.title });
 
-  console.log("Seed terminé : 1 manager + 3 établissements + 4 suites");
+  const suiteEtoileId = suites.find((s) => s.title === "Suite Étoile")!.id;
+  const suiteConfluenceId = suites.find(
+    (s) => s.title === "Suite Confluence",
+  )!.id;
+
+  // Booking future (Paris) — bloque la suppression de l'établissement Paris
+  const nextMonth = new Date();
+  nextMonth.setMonth(nextMonth.getMonth() + 1);
+  const nextMonthEnd = new Date(nextMonth);
+  nextMonthEnd.setDate(nextMonthEnd.getDate() + 3);
+
+  // Booking passée (Lyon) — ne bloque PAS la suppression de l'établissement Lyon
+  const lastMonth = new Date();
+  lastMonth.setMonth(lastMonth.getMonth() - 1);
+  const lastMonthEnd = new Date(lastMonth);
+  lastMonthEnd.setDate(lastMonthEnd.getDate() + 2);
+
+  await db.insert(booking).values([
+    {
+      reference: "SEED-FUTURE-001",
+      checkIn: nextMonth,
+      checkOut: nextMonthEnd,
+      guestCount: 2,
+      pricePerNight: "250.00",
+      totalPrice: "750.00",
+      status: "confirmed",
+      clientId: "seed-client-1",
+      suiteId: suiteEtoileId,
+    },
+    {
+      reference: "SEED-PAST-001",
+      checkIn: lastMonth,
+      checkOut: lastMonthEnd,
+      guestCount: 2,
+      pricePerNight: "200.00",
+      totalPrice: "400.00",
+      status: "completed",
+      clientId: "seed-client-1",
+      suiteId: suiteConfluenceId,
+    },
+  ]);
+
+  console.log(
+    "Seed terminé : 1 manager + 1 client + 3 établissements + 4 suites + 2 bookings",
+  );
 
   process.exit(0);
 }
