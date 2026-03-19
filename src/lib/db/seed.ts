@@ -14,8 +14,8 @@ async function seed() {
 
   await db.insert(user).values({
     id: "seed-manager-1",
-    name: "Gérant Test",
-    email: "gerant@clairdelune.test",
+    name: "Manager Test",
+    email: "manager@clairdelune.test",
     emailVerified: true,
     role: ROLES.MANAGER,
     createdAt: new Date(),
@@ -121,13 +121,13 @@ async function seed() {
     (s) => s.title === "Suite Confluence",
   )!.id;
 
-  // Booking future (Paris) — bloque la suppression de l'établissement Paris
+  // Future booking (Paris) — blocks deletion of Paris establishment
   const nextMonth = new Date();
   nextMonth.setMonth(nextMonth.getMonth() + 1);
   const nextMonthEnd = new Date(nextMonth);
   nextMonthEnd.setDate(nextMonthEnd.getDate() + 3);
 
-  // Booking passée (Lyon) — ne bloque PAS la suppression de l'établissement Lyon
+  // Past booking (Lyon) — does NOT block deletion of Lyon establishment
   const lastMonth = new Date();
   lastMonth.setMonth(lastMonth.getMonth() - 1);
   const lastMonthEnd = new Date(lastMonth);
@@ -159,7 +159,7 @@ async function seed() {
   ]);
 
   console.log(
-    "Seed terminé : 1 manager + 1 client + 3 établissements + 4 suites + 2 bookings",
+    "Seed complete: 1 manager + 1 client + 3 establishments + 4 suites + 2 bookings",
   );
 
   process.exit(0);

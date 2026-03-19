@@ -25,7 +25,7 @@ export async function createEstablishment(
     };
   }
 
-  // TODO: managerId dynamique quand l'auth sera en place
+  // TODO: dynamic managerId once auth is in place
   const [manager] = await db
     .select({ id: user.id })
     .from(user)

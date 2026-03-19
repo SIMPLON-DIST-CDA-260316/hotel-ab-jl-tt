@@ -55,7 +55,7 @@ export const inquiryStatusEnum = pgEnum("inquiry_status", [
   "replied",
 ]);
 
-// ─── Better Auth: User (enrichi avec role + deleted_at) ───
+// ─── Better Auth: User (extended with role + deleted_at) ───
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -278,7 +278,7 @@ export const option = pgTable("option", {
   defaultPrice: numeric("default_price", { precision: 10, scale: 2 }).notNull(),
 });
 
-// ─── Establishment ↔ Option (N:N avec prix et inclusion) ───
+// ─── Establishment ↔ Option (N:N with price and inclusion) ───
 
 export const establishmentOption = pgTable(
   "establishment_option",
@@ -341,7 +341,7 @@ export const booking = pgTable(
   ],
 );
 
-// ─── Booking ↔ Option (N:N avec quantité et prix snapshot) ───
+// ─── Booking ↔ Option (N:N with quantity and price snapshot) ───
 
 export const bookingOption = pgTable(
   "booking_option",
@@ -424,7 +424,7 @@ export const inquiry = pgTable(
 );
 
 // ═══════════════════════════════════════════════════════════
-// Relations (pour le query builder Drizzle — .with())
+// Relations (for Drizzle query builder — .with())
 // ═══════════════════════════════════════════════════════════
 
 // ─── User relations ───
