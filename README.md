@@ -49,6 +49,7 @@ Postgres dans Docker, Next.js en local. **Hot-reload actif** : les modifications
 docker compose up -d db    # Lance PostgreSQL
 bun install                # Installe les dépendances
 bun run db:push            # Applique le schéma
+bun run db:seed            # (optionnel) Insère les données de test
 bun run dev                # Démarre Next.js
 ```
 
@@ -65,7 +66,7 @@ docker compose down db      # Arrête PostgreSQL
 
 ### Option B — Tout en Docker
 
-Environnement complet conteneurisé (Postgres + Next.js). Le schéma DB est appliqué automatiquement au démarrage. **Pas de hot-reload** : les modifications de code nécessitent un rebuild (`--build`).
+Environnement complet conteneurisé (Postgres + Next.js). Le schéma DB est appliqué automatiquement au démarrage. **Pas de hot-reload** : les modifications de code nécessitent un rebuild (`--build`). Pour insérer les données de test, ajouter `SEED_DB=true` dans `.env`.
 
 ```bash
 docker compose up -d --build   # Build et lance tous les services
@@ -88,7 +89,8 @@ docker compose down         # Arrête tous les services
 | `bun run start`   | Démarre le serveur de production                |
 | `bun run lint`    | Vérifie le code avec ESLint                     |
 | `bun run db:push`        | Applique le schéma Drizzle à la base de données |
-| `bun run db:seed-admin` | Crée le compte administrateur initial           |
+| `bun run db:seed`        | Insère les données de test (idempotent)          |
+| `bun run db:seed-admin`  | Crée le compte administrateur initial            |
 
 ## Compte administrateur initial
 

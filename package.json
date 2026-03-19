@@ -5,6 +5,7 @@
     "start": "next start",
     "lint": "eslint .",
     "db:push": "drizzle-kit push",
+    "db:seed": "bun run src/lib/db/seed.ts",
     "db:seed-admin": "bun run --env-file=.env scripts/seed-admin.ts"
   },
   "dependencies": {

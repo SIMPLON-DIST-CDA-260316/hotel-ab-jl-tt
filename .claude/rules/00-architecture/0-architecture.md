@@ -4,7 +4,7 @@ globs: src/**
 
 # Architecture feature-based
 
-Flux d'import unidirectionnel : `shared → features → app`
+Flux d'import unidirectionnel : `shared` est importable par tous, `features/` importe depuis `shared` uniquement (jamais entre features), `app/` importe depuis `shared` et `features/`
 
 ## Layers (flat, pas de wrapper `shared/`)
 
