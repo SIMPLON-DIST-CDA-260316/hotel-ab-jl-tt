@@ -87,7 +87,21 @@ docker compose down         # Arrête tous les services
 | `bun run build`   | Compile l'application pour la production        |
 | `bun run start`   | Démarre le serveur de production                |
 | `bun run lint`    | Vérifie le code avec ESLint                     |
-| `bun run db:push` | Applique le schéma Drizzle à la base de données |
+| `bun run db:push`        | Applique le schéma Drizzle à la base de données |
+| `bun run db:seed-admin` | Crée le compte administrateur initial           |
+
+## Compte administrateur initial
+
+Le rôle `admin` ne peut pas être obtenu via l'inscription publique. Pour créer le premier compte admin :
+
+```bash
+SEED_ADMIN_EMAIL=admin@example.com \
+SEED_ADMIN_PASSWORD=MotDePasse1! \
+SEED_ADMIN_NAME="Prénom Nom" \
+bun run db:seed-admin
+```
+
+Le script est **idempotent** : si un compte avec cet email existe déjà, il est ignoré.
 
 ## Documentation
 
