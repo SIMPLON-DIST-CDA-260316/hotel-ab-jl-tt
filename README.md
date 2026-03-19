@@ -91,6 +91,8 @@ docker compose down         # Arrête tous les services
 | `bun run db:push`        | Applique le schéma Drizzle à la base de données |
 | `bun run db:seed`        | Insère les données de test (idempotent)          |
 | `bun run db:seed-admin`  | Crée le compte administrateur initial            |
+| `bun run test`           | Lance les tests unitaires (Vitest)               |
+| `bun run test:e2e`       | Lance les tests E2E (Playwright, serveur requis) |
 
 ## Compte administrateur initial
 
