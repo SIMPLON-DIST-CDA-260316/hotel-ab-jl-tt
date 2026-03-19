@@ -56,5 +56,6 @@ export async function login(
     return { status: "error", formError: AUTH_ERROR_CODES.UNKNOWN_ERROR };
   }
 
-  redirect(callbackUrl ?? "/");
+  // callbackUrl is dynamic user input — bypass typed routes check
+  redirect((callbackUrl ?? "/") as Parameters<typeof redirect>[0]);
 }
