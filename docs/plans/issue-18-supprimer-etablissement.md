@@ -1,7 +1,7 @@
 # Plan: #18 — Supprimer un établissement
 
 **Created:** 2026-03-18
-**Status:** 📋 Plan opérationnel — prêt pour exécution
+**Status:** ✅ Terminé
 **Source:** Issue #18, Epic #1
 **Scope:** Server action soft delete + AlertDialog + vérification réservations
 **Effort total:** ~2h
@@ -12,12 +12,12 @@
 
 ## Suivi d'avancement
 
-- [ ] **S0** — Installer shadcn/ui `alert-dialog` *(5min)*
-- [ ] **S1** — Query `hasActiveBookings` *(15min)*
-- [ ] **S2** — Server action `deleteEtablissement` *(25min)*
-- [ ] **S3** — Composant `DeleteEtablissementButton` (AlertDialog) *(30min)*
-- [ ] **S4** — Intégrer le bouton dans la page admin liste *(15min)*
-- [ ] **S5** — Vérification *(15min)*
+- [x] **S0** — Installer shadcn/ui `alert-dialog` *(5min)*
+- [x] **S1** — Query `hasActiveBookings` *(15min)*
+- [x] **S2** — Server action `deleteEstablishment` *(25min)*
+- [x] **S3** — Composant `DeleteEstablishmentButton` (AlertDialog) *(30min)*
+- [x] **S4** — Intégrer le bouton dans la page admin liste *(15min)*
+- [x] **S5** — Vérification *(15min)*
 
 **Approche :** AlertDialog (modale) directement sur la page admin liste — conforme à la directive `8-ui-feedback.md` pour les actions destructives. Pas de page `/supprimer` dédiée.
 
@@ -280,4 +280,4 @@ La suppression est un soft delete (`deletedAt = now()`). Toutes les queries de l
 > Traçabilité des divergences entre le plan et l'implémentation réelle.
 > Format : `[date] Étape — Description de la divergence. **Raison :** justification.`
 
-_(aucune entrée pour le moment)_
+[2026-03-19] S1-S4 — Nommage anglais (`deleteEstablishment`, `DeleteEstablishmentButton`, `has-active-bookings.ts`) au lieu du français prévu dans le plan (`deleteEtablissement`, `DeleteEtablissementButton`). **Raison :** le codebase utilise la convention anglaise (`src/features/establishments/`) depuis le fix cf61360.

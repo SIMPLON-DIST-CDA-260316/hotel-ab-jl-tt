@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getEstablishments } from "@/features/establishments/queries/get-establishments";
+import { DeleteEstablishmentButton } from "@/features/establishments/components/DeleteEstablishmentButton";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -51,6 +52,10 @@ export default async function AdminEstablishmentsPage() {
                         Modifier
                       </Link>
                     </Button>
+                    <DeleteEstablishmentButton
+                      id={establishment.id}
+                      name={establishment.name}
+                    />
                   </div>
                 </TableCell>
               </TableRow>
