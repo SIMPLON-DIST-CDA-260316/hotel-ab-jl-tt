@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { establishment } from "@/lib/db/schema";
 import { eq, and, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { requireAdmin } from "@/features/auth/lib/auth-guards";
+import { requireAdmin } from "@/lib/auth-guards";
 import { hasActiveBookings } from "../queries/has-active-bookings";
 
 type DeleteEstablishmentResult =

@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { establishment } from "@/lib/db/schema";
 import { and, eq, isNull } from "drizzle-orm";
 import { redirect } from "next/navigation";
+import { requireAdmin } from "@/lib/auth-guards";
 import { establishmentSchema } from "../lib/establishment-schema";
 import { requireAdmin } from "@/features/auth/lib/auth-guards";
 import type { ActionResult } from "../types/action.types";
