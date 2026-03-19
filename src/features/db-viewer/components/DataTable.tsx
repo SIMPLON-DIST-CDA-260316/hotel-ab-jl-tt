@@ -1,4 +1,8 @@
-export function DataTable({ rows }: { rows: Record<string, unknown>[] }) {
+type DataTableProps = {
+  rows: Record<string, unknown>[];
+};
+
+export function DataTable({ rows }: DataTableProps) {
   if (rows.length === 0) {
     return <p className="text-gray-500 italic text-sm">Aucune donnée</p>;
   }
@@ -9,27 +13,27 @@ export function DataTable({ rows }: { rows: Record<string, unknown>[] }) {
     <table className="min-w-full border border-gray-200 text-sm">
       <thead>
         <tr className="bg-gray-100">
-          {columns.map((col) => (
+          {columns.map((column) => (
             <th
-              key={col}
+              key={column}
               className="px-3 py-1.5 text-left border-b border-gray-200 font-mono text-gray-700"
             >
-              {col}
+              {column}
             </th>
           ))}
         </tr>
       </thead>
       <tbody>
-        {rows.map((row, i) => (
-          <tr key={i} className="even:bg-gray-50">
-            {columns.map((col) => (
+        {rows.map((row, index) => (
+          <tr key={index} className="even:bg-gray-50">
+            {columns.map((column) => (
               <td
-                key={col}
+                key={column}
                 className="px-3 py-1.5 border-b border-gray-200 max-w-xs truncate text-gray-900"
               >
-                {row[col] instanceof Date
-                  ? row[col].toISOString()
-                  : String(row[col] ?? "")}
+                {row[column] instanceof Date
+                  ? row[column].toISOString()
+                  : String(row[column] ?? "")}
               </td>
             ))}
           </tr>

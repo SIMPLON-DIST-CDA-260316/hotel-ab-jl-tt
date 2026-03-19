@@ -26,12 +26,13 @@ export async function deleteEstablishment(
     };
   }
 
-  const result = await db
+  const softDeleteResult = await db
     .update(establishment)
     .set({ deletedAt: new Date() })
     .where(and(eq(establishment.id, id), isNull(establishment.deletedAt)));
 
-  if (result.rowCount === 0) {
+  const isEstablishmentNotFound = softDeleteResult.rowCount === 0;
+  if (isEstablishmentNotFound) {
     return {
       success: false as const,
       error: "Établissement introuvable ou déjà supprimé.",

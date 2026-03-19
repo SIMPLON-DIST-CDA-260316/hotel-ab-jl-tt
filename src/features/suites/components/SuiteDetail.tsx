@@ -1,5 +1,9 @@
 // TODO: type with suite domain type once schema is defined
-export function SuiteDetail({ suite }: { suite: Record<string, unknown> }) {
+type SuiteDetailProps = {
+  suite: Record<string, unknown>;
+};
+
+export function SuiteDetail({ suite }: SuiteDetailProps) {
   return (
     <div>
       <h1>{String(suite.nom ?? "")}</h1>

@@ -1,9 +1,13 @@
 // TODO: type with reservation domain type once schema is defined
-export function ReservationList({ reservations }: { reservations: Record<string, unknown>[] }) {
+type ReservationListProps = {
+  reservations: Record<string, unknown>[];
+};
+
+export function ReservationList({ reservations }: ReservationListProps) {
   return (
     <ul>
-      {reservations.map((r, i) => (
-        <li key={i}>{String(r.id ?? i)}</li>
+      {reservations.map((reservation, index) => (
+        <li key={index}>{String(reservation.id ?? index)}</li>
       ))}
     </ul>
   );

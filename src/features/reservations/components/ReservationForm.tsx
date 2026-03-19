@@ -2,7 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 
-export function ReservationForm({ suiteId }: { suiteId: string }) {
+type ReservationFormProps = {
+  suiteId: string;
+};
+
+export function ReservationForm({ suiteId }: ReservationFormProps) {
   return (
     <form>
       <input type="hidden" name="suiteId" value={suiteId} />
