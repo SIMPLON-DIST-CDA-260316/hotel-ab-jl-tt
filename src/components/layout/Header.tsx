@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
-import { LogoutButton } from "@/features/auth/components/LogoutButton";
+import { LogoutButton } from "@/components/layout/LogoutButton";
 import { Button } from "@/components/ui/button";
 
 export async function Header() {

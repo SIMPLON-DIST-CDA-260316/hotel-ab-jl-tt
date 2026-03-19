@@ -3,7 +3,8 @@
 import { headers } from "next/headers";
 import { forbidden, unauthorized } from "next/navigation";
 import { auth } from "@/lib/auth";
-import type { Role } from "@/features/auth/types/auth.types";
+import { ROLES } from "@/config/roles";
+import type { Role } from "@/types/role.types";
 
 interface Session {
   user: {
@@ -42,15 +43,15 @@ export async function requireRole(role: Role): Promise<Session> {
 }
 
 export async function requireAdmin(): Promise<Session> {
-  return requireRole("admin");
+  return requireRole(ROLES.ADMIN);
 }
 
 export async function requireManager(): Promise<Session> {
-  return requireRole("manager");
+  return requireRole(ROLES.MANAGER);
 }
 
 export async function requireClient(): Promise<Session> {
-  return requireRole("client");
+  return requireRole(ROLES.CLIENT);
 }
 
 /**
@@ -61,7 +62,7 @@ export async function requireOwnership(
   session: Session,
   ownerId: string,
 ): Promise<void> {
-  if (session.user.id !== ownerId && session.user.role !== "admin") {
+  if (session.user.id !== ownerId && session.user.role !== ROLES.ADMIN) {
     forbidden();
   }
 }
