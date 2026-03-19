@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -19,7 +20,15 @@ const priceFormatter = new Intl.NumberFormat("fr-FR", {
 
 export function SuiteCard({ suite }: SuiteCardProps) {
   return (
-    <Card>
+    <Card className="overflow-hidden">
+      <div className="relative aspect-video">
+        <Image
+          src={suite.mainImage}
+          alt={suite.title}
+          fill
+          className="object-cover"
+        />
+      </div>
       <CardHeader>
         <CardTitle>{suite.title}</CardTitle>
         <p className="text-sm text-muted-foreground">

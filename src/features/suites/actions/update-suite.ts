@@ -1,6 +1,6 @@
 "use server";
 
-import { writeFile, mkdir } from "fs/promises";
+import { writeFile, mkdir, unlink } from "fs/promises";
 import { join } from "path";
 import { db } from "@/lib/db";
 import { suite, establishment, image } from "@/lib/db/schema";
@@ -12,6 +12,7 @@ import type { ActionResult } from "../types/action.types";
 
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
+const UPLOAD_URL_PREFIX = "/uploads/suites/";
 
 async function saveUploadedFile(file: File): Promise<string> {
   const extension = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
@@ -113,6 +114,12 @@ export async function updateSuite(
     const mainImageUrl = hasNewMainImage
       ? await saveUploadedFile(newMainImageFile)
       : existingSuite.mainImage;
+
+    if (hasNewMainImage && existingSuite.mainImage.startsWith(UPLOAD_URL_PREFIX)) {
+      unlink(join(process.cwd(), "public", existingSuite.mainImage)).catch(
+        (error) => console.error(`Failed to delete old main image:`, error),
+      );
+    }
 
     await db
       .update(suite)
