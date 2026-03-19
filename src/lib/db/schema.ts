@@ -1,4 +1,6 @@
 import { relations, sql } from "drizzle-orm";
+import { ROLES } from "@/config/roles";
+import { BOOKING_STATUSES } from "@/config/booking-statuses";
 import {
   pgTable,
   pgEnum,
@@ -61,7 +63,7 @@ export const user = pgTable("user", {
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").default(false).notNull(),
   image: text("image"),
-  role: roleEnum("role").default("client").notNull(),
+  role: roleEnum("role").default(ROLES.CLIENT).notNull(),
   createdAt: timestamp("created_at").notNull(),
   updatedAt: timestamp("updated_at")
     .$onUpdate(() => new Date())
@@ -312,7 +314,7 @@ export const booking = pgTable(
       scale: 2,
     }).notNull(),
     totalPrice: numeric("total_price", { precision: 10, scale: 2 }).notNull(),
-    status: bookingStatusEnum("status").default("pending").notNull(),
+    status: bookingStatusEnum("status").default(BOOKING_STATUSES.PENDING).notNull(),
     cancelledAt: timestamp("cancelled_at"),
     clientId: text("client_id")
       .notNull()

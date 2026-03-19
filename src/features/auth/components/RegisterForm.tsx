@@ -6,14 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { register } from "@/features/auth/actions/register";
+import { AUTH_ERROR_CODES } from "@/features/auth/lib/auth-error-codes";
 import type {
   AuthActionState,
   RegisterFormValues,
 } from "@/features/auth/types/auth.types";
 
 const FORM_ERROR_MESSAGES: Record<string, string> = {
-  EMAIL_ALREADY_USED: "Cette adresse email est déjà utilisée.",
-  UNKNOWN_ERROR: "Une erreur inattendue s'est produite. Veuillez réessayer.",
+  [AUTH_ERROR_CODES.EMAIL_ALREADY_USED]: "Cette adresse email est déjà utilisée.",
+  [AUTH_ERROR_CODES.UNKNOWN_ERROR]: "Une erreur inattendue s'est produite. Veuillez réessayer.",
 };
 
 const INITIAL_STATE: AuthActionState<RegisterFormValues> = { status: "idle" };
@@ -53,7 +54,7 @@ export function RegisterForm() {
     <form action={formAction} className="flex flex-col gap-4">
       {formError ? (
         <p role="alert" className="text-sm text-destructive">
-          {FORM_ERROR_MESSAGES[formError] ?? FORM_ERROR_MESSAGES["UNKNOWN_ERROR"]}
+          {FORM_ERROR_MESSAGES[formError] ?? FORM_ERROR_MESSAGES[AUTH_ERROR_CODES.UNKNOWN_ERROR]}
         </p>
       ) : null}
 

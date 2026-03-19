@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { booking, suite } from "@/lib/db/schema";
 import { eq, and, gte, ne } from "drizzle-orm";
 import { sql } from "drizzle-orm";
+import { BOOKING_STATUSES } from "@/config/booking-statuses";
 
 export async function hasActiveBookings(
   establishmentId: string,
@@ -14,7 +15,7 @@ export async function hasActiveBookings(
       and(
         eq(suite.establishmentId, establishmentId),
         gte(booking.checkOut, sql`CURRENT_DATE`),
-        ne(booking.status, "cancelled"),
+        ne(booking.status, BOOKING_STATUSES.CANCELLED),
       ),
     );
 

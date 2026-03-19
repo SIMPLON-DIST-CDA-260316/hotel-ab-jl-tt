@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
+import { ROLES } from "@/config/roles";
 
 export async function proxy(request: NextRequest): Promise<NextResponse> {
   const { pathname, searchParams } = request.nextUrl;
@@ -23,13 +24,13 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
   }
 
   if (pathname.startsWith("/admin")) {
-    if (!isAuthenticated || role !== "admin") {
+    if (!isAuthenticated || role !== ROLES.ADMIN) {
       return NextResponse.redirect(new URL("/connexion", request.url));
     }
   }
 
   if (pathname.startsWith("/gerant")) {
-    if (!isAuthenticated || role !== "manager") {
+    if (!isAuthenticated || role !== ROLES.MANAGER) {
       return NextResponse.redirect(new URL("/connexion", request.url));
     }
   }

@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { establishment, user } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
+import { ROLES } from "@/config/roles";
 import { establishmentSchema } from "../lib/establishment-schema";
 import { requireAdmin } from "@/features/auth/lib/auth-guards";
 import type { ActionResult } from "../types/action.types";
@@ -27,7 +28,7 @@ export async function createEstablishment(
   const [manager] = await db
     .select({ id: user.id })
     .from(user)
-    .where(eq(user.role, "manager"))
+    .where(eq(user.role, ROLES.MANAGER))
     .limit(1);
 
   if (!manager) {

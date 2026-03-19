@@ -1,6 +1,8 @@
 import { db } from "@/lib/db";
 import { user, establishment, suite, booking } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { ROLES } from "@/config/roles";
+import { BOOKING_STATUSES } from "@/config/booking-statuses";
 
 async function seed() {
   // Clean seed data for idempotence (order respects FK constraints)
@@ -15,7 +17,7 @@ async function seed() {
     name: "Gérant Test",
     email: "gerant@clairdelune.test",
     emailVerified: true,
-    role: "manager",
+    role: ROLES.MANAGER,
     createdAt: new Date(),
     updatedAt: new Date(),
   });
@@ -25,7 +27,7 @@ async function seed() {
     name: "Client Test",
     email: "client@clairdelune.test",
     emailVerified: true,
-    role: "client",
+    role: ROLES.CLIENT,
     createdAt: new Date(),
     updatedAt: new Date(),
   });
@@ -139,7 +141,7 @@ async function seed() {
       guestCount: 2,
       pricePerNight: "250.00",
       totalPrice: "750.00",
-      status: "confirmed",
+      status: BOOKING_STATUSES.CONFIRMED,
       clientId: "seed-client-1",
       suiteId: suiteEtoileId,
     },
@@ -150,7 +152,7 @@ async function seed() {
       guestCount: 2,
       pricePerNight: "200.00",
       totalPrice: "400.00",
-      status: "completed",
+      status: BOOKING_STATUSES.COMPLETED,
       clientId: "seed-client-1",
       suiteId: suiteConfluenceId,
     },

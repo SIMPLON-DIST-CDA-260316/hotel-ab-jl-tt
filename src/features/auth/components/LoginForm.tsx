@@ -6,14 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { login } from "@/features/auth/actions/login";
+import { AUTH_ERROR_CODES } from "@/features/auth/lib/auth-error-codes";
 import type {
   AuthActionState,
   LoginFormValues,
 } from "@/features/auth/types/auth.types";
 
 const FORM_ERROR_MESSAGES: Record<string, string> = {
-  INVALID_CREDENTIALS: "Email ou mot de passe incorrect.",
-  UNKNOWN_ERROR: "Une erreur inattendue s'est produite. Veuillez réessayer.",
+  [AUTH_ERROR_CODES.INVALID_CREDENTIALS]: "Email ou mot de passe incorrect.",
+  [AUTH_ERROR_CODES.UNKNOWN_ERROR]: "Une erreur inattendue s'est produite. Veuillez réessayer.",
 };
 
 const INITIAL_STATE: AuthActionState<LoginFormValues> = { status: "idle" };
@@ -38,7 +39,7 @@ export function LoginForm({ callbackUrl }: LoginFormProps) {
 
       {formError ? (
         <p role="alert" className="text-sm text-destructive">
-          {FORM_ERROR_MESSAGES[formError] ?? FORM_ERROR_MESSAGES["UNKNOWN_ERROR"]}
+          {FORM_ERROR_MESSAGES[formError] ?? FORM_ERROR_MESSAGES[AUTH_ERROR_CODES.UNKNOWN_ERROR]}
         </p>
       ) : null}
 
