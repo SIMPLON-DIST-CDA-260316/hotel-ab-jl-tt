@@ -5,12 +5,13 @@ import { establishment, user } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { establishmentSchema } from "../lib/establishment-schema";
+import { requireAdmin } from "@/features/auth/lib/auth-guards";
 import type { ActionResult } from "../types/action.types";
 
 export async function createEstablishment(
   formData: FormData,
 ): Promise<ActionResult> {
-  // TODO: vérifier rôle admin (auth #10)
+  await requireAdmin();
 
   const raw = Object.fromEntries(formData);
   const parsed = establishmentSchema.safeParse(raw);

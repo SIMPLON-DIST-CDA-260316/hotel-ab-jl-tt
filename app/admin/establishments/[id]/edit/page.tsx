@@ -10,7 +10,7 @@ type EditEstablishmentPageProps = {
 export default async function EditEstablishmentPage({
   params,
 }: EditEstablishmentPageProps) {
-  // TODO: vérifier rôle admin
+
   const { id } = await params;
   const establishment = await getEstablishmentById(id);
 

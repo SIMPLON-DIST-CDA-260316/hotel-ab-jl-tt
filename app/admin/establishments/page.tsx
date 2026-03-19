@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/table";
 
 export default async function AdminEstablishmentsPage() {
-  // TODO: vérifier rôle admin
 
   const establishments = await getEstablishments();
 
