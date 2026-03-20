@@ -29,4 +29,4 @@ Les colonnes `numeric()` (price, totalPrice, area, etc.) sont retournées comme 
 
 ## Référence
 
-Le modèle de données complet (MCD, MLD, règles de gestion) est documenté dans `docs/merise.md`.
+Le modèle de données complet (MCD, MLD, règles de gestion) est documenté dans `docs/design/merise.md`.

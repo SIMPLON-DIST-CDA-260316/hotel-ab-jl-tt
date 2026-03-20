@@ -41,7 +41,7 @@ Référence : [Bulletproof React](https://github.com/alan2207/bulletproof-react/
 
 ## 3. Modèle de données
 
-Le modèle de données complet (dictionnaire de données, MCD, MLD, MPD, règles de gestion) est documenté dans [`docs/merise.md`](merise.md).
+Le modèle de données complet (dictionnaire de données, MCD, MLD, MPD, règles de gestion) est documenté dans [`docs/design/merise.md`](design/merise.md).
 
 L'implémentation physique est dans `src/lib/db/schema.ts` (Drizzle ORM).
 
@@ -150,6 +150,7 @@ L'implémentation physique est dans `src/lib/db/schema.ts` (Drizzle ORM).
 | Upload d'images | Validation type MIME, taille max, renommage |
 | SQL injection | Drizzle ORM — requêtes paramétrées |
 | XSS | Échappement automatique par React (JSX) |
+| Pages d'erreur | `forbidden.tsx` (403) et `unauthorized.tsx` (401) — fallback pour les accès non autorisés |
 
 ## 6. Gestion des images
 
@@ -172,7 +173,7 @@ L'implémentation physique est dans `src/lib/db/schema.ts` (Drizzle ORM).
 - [x] ~~Choix du framework~~ → Next.js (App Router)
 - [x] ~~Choix de la base de données~~ → PostgreSQL 16
 - [x] ~~Choix du framework CSS~~ → Tailwind CSS 4 + shadcn/ui
-- [x] ~~Réalisation des diagrammes MERISE~~ → `docs/merise.md`
+- [x] ~~Réalisation des diagrammes MERISE~~ → `docs/design/merise.md`
 - [x] ~~Stratégie de stockage des images~~ → `public/` puis Supabase Storage si temps
 - [x] ~~Stratégie de déploiement~~ → Vercel + Supabase
 - [ ] Diagramme de cas d'utilisation UML

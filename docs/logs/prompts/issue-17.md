@@ -1,4 +1,4 @@
-Exécute le plan docs/plans/issue-17-modifier-etablissement.md dans ce worktree.
+Exécute le plan docs/logs/plans/issue-17-modifier-etablissement.md dans ce worktree.
 
 Prérequis : #16 est terminée (EtablissementForm, schéma Zod, page admin liste).
 
