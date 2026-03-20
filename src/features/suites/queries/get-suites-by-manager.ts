@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { suite } from "@/lib/db/schema";
+import { suite, establishment } from "@/lib/db/schema";
 import { eq, isNull, and } from "drizzle-orm";
 
 export type SuiteListItem = {
@@ -11,8 +11,8 @@ export type SuiteListItem = {
   capacity: number;
 };
 
-export async function getSuitesByEstablishment(
-  establishmentId: string,
+export async function getSuitesByManager(
+  managerId: string,
 ): Promise<SuiteListItem[]> {
   return db
     .select({
@@ -24,10 +24,12 @@ export async function getSuitesByEstablishment(
       capacity: suite.capacity,
     })
     .from(suite)
+    .innerJoin(establishment, eq(suite.establishmentId, establishment.id))
     .where(
       and(
-        eq(suite.establishmentId, establishmentId),
+        eq(establishment.managerId, managerId),
         isNull(suite.deletedAt),
+        isNull(establishment.deletedAt),
       ),
     );
 }
