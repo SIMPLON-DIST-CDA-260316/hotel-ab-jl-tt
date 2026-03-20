@@ -109,11 +109,12 @@ Le script est **idempotent** : si un compte avec cet email existe déjà, il est
 
 ## Documentation
 
-- [Présentation produit](docs/product.md)
-- [User Stories](docs/user-stories.md)
-- [Cahier des charges](docs/cahier-des-charges.md)
+- [Présentation produit](docs/spec/product.md)
 - [Architecture technique](docs/ARCHITECTURE.md)
-- [GitHub Project Board](https://github.com/orgs/SIMPLON-DIST-CDA-260316/projects/4)
+- [Cahier des charges](docs/spec/cahier-des-charges.md)
+- [GitHub Project Board](https://github.com/orgs/SIMPLON-DIST-CDA-260316/projects/5)
+
+Voir l'[index complet de la documentation](docs/README.md) pour l'ensemble des specs, modèles, décisions et recherches.
 
 ## Équipe
 

@@ -13,5 +13,5 @@ Routes prévues (voir `docs/ARCHITECTURE.md`) :
 - Admin : `/admin/establishments`, `/admin/managers`
 - Gérant : `/manager/suites`
 
-Les user stories détaillées avec critères d'acceptation sont dans `docs/user-stories.md`.
-Le modèle de données (MCD, MLD, règles de gestion) est dans `docs/merise.md`.
+Les user stories détaillées avec critères d'acceptation sont dans `docs/spec/user-stories.md`.
+Le modèle de données (MCD, MLD, règles de gestion) est dans `docs/design/merise.md`.
