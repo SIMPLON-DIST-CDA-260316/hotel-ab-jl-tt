@@ -12,11 +12,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { ActionResult } from "../types/action.types";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import type { ActionError } from "../types/action.types";
 
 type Establishment = { id: string; name: string };
 
-type FormState = ActionResult | null;
+type FormState = ActionError | null;
 
 interface SuiteFormDefaultValues {
   title?: string;
@@ -68,24 +75,29 @@ export function SuiteForm({
           {!isEditMode && establishments.length > 1 && (
             <div>
               <Label htmlFor="establishmentId">Établissement *</Label>
-              <select
-                id="establishmentId"
+              <Select
                 name="establishmentId"
                 required
-                aria-describedby={
-                  state?.errors?.establishmentId
-                    ? "establishmentId-error"
-                    : undefined
-                }
-                className="border-input bg-background text-foreground focus-visible:ring-ring flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                defaultValue={defaultEstablishmentId}
               >
-                <option value="">Choisir un établissement</option>
-                {establishments.map((est) => (
-                  <option key={est.id} value={est.id}>
-                    {est.name}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger
+                  id="establishmentId"
+                  aria-describedby={
+                    state?.errors?.establishmentId
+                      ? "establishmentId-error"
+                      : undefined
+                  }
+                >
+                  <SelectValue placeholder="Choisir un établissement" />
+                </SelectTrigger>
+                <SelectContent>
+                  {establishments.map((est) => (
+                    <SelectItem key={est.id} value={est.id}>
+                      {est.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               {state?.errors?.establishmentId && (
                 <p
                   id="establishmentId-error"

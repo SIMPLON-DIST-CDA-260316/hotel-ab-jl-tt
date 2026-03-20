@@ -1,17 +1,12 @@
 import Link from "next/link";
 import { requireManager } from "@/features/auth/lib/auth-guards";
-import { getEstablishmentsByManager } from "@/features/suites/queries/get-establishments-by-manager";
-import { getSuitesByEstablishment } from "@/features/suites/queries/get-suites-by-establishment";
+import { getSuitesByManager } from "@/features/suites/queries/get-suites-by-manager";
 import { Button } from "@/components/ui/button";
 import { DeleteSuiteButton } from "@/features/suites/components/DeleteSuiteButton";
 
 export default async function ManagerSuitesPage() {
   const session = await requireManager();
-  const establishments = await getEstablishmentsByManager(session.user.id);
-
-  const suites = establishments.length
-    ? await getSuitesByEstablishment(establishments[0].id)
-    : [];
+  const suites = await getSuitesByManager(session.user.id);
 
   return (
     <main className="container mx-auto px-4 py-8">

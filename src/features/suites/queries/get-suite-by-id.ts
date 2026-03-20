@@ -2,7 +2,9 @@ import { db } from "@/lib/db";
 import { suite } from "@/lib/db/schema";
 import { and, eq, isNull } from "drizzle-orm";
 
-export async function getSuiteById(id: string) {
+export async function getSuiteById(
+  id: string,
+): Promise<typeof suite.$inferSelect | null> {
   const [result] = await db
     .select()
     .from(suite)

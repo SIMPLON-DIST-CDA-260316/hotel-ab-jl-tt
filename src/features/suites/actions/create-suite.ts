@@ -1,53 +1,57 @@
 "use server";
 
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
 import { db } from "@/lib/db";
 import { suite, image, establishment } from "@/lib/db/schema";
 import { eq, and, isNull } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { requireManager } from "@/features/auth/lib/auth-guards";
 import { suiteSchema } from "../lib/suite-schema";
-import type { ActionResult } from "../types/action.types";
+import type { ActionError } from "../types/action.types";
+import {
+  saveUploadedFile,
+  validateImageFile,
+} from "../lib/image-upload";
 
-const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
+async function insertSuiteWithGallery(
+  data: {
+    title: string;
+    description?: string;
+    price: string;
+    capacity: string;
+    area?: string;
+  },
+  establishmentId: string,
+  mainImageUrl: string,
+  galleryFiles: File[],
+): Promise<void> {
+  const suiteId = crypto.randomUUID();
 
-async function saveUploadedFile(file: File): Promise<string> {
-  const extension = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
-  const filename = `${crypto.randomUUID()}.${extension}`;
-  const uploadDir = join(process.cwd(), "public", "uploads", "suites");
+  await db.insert(suite).values({
+    id: suiteId,
+    title: data.title,
+    description: data.description || null,
+    price: data.price.replace(",", "."),
+    mainImage: mainImageUrl,
+    capacity: Number(data.capacity),
+    area: data.area ? data.area.replace(",", ".") : null,
+    establishmentId,
+  });
 
-  await mkdir(uploadDir, { recursive: true });
+  if (galleryFiles.length > 0) {
+    const galleryInserts = await Promise.all(
+      galleryFiles.map(async (file, index) => {
+        const url = await saveUploadedFile(file);
+        return { url, alt: null, position: index + 1, suiteId };
+      }),
+    );
 
-  const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(join(uploadDir, filename), buffer);
-
-  return `/uploads/suites/${filename}`;
-}
-
-function validateImageFile(
-  file: File,
-  fieldName: string,
-): ActionResult | null {
-  if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
-    return {
-      success: false,
-      errors: { [fieldName]: ["Format accepté : jpg, png, webp"] },
-    };
+    await db.insert(image).values(galleryInserts);
   }
-  if (file.size > MAX_FILE_SIZE_BYTES) {
-    return {
-      success: false,
-      errors: { [fieldName]: ["Taille maximale : 5 Mo"] },
-    };
-  }
-  return null;
 }
 
 export async function createSuite(
   formData: FormData,
-): Promise<ActionResult> {
+): Promise<ActionError> {
   const session = await requireManager();
 
   const raw = {
@@ -62,10 +66,7 @@ export async function createSuite(
   const parsed = suiteSchema.safeParse(raw);
 
   if (!parsed.success) {
-    return {
-      success: false,
-      errors: parsed.error.flatten().fieldErrors,
-    };
+    return { success: false, errors: parsed.error.flatten().fieldErrors };
   }
 
   const [managerEstablishment] = await db
@@ -110,30 +111,13 @@ export async function createSuite(
 
   try {
     const mainImageUrl = await saveUploadedFile(mainImageFile);
-    const suiteId = crypto.randomUUID();
-
-    await db.insert(suite).values({
-      id: suiteId,
-      title: parsed.data.title,
-      description: parsed.data.description || null,
-      price: parsed.data.price.replace(",", "."),
-      mainImage: mainImageUrl,
-      capacity: parseInt(parsed.data.capacity),
-      area: parsed.data.area ? parsed.data.area.replace(",", ".") : null,
-      establishmentId: managerEstablishment.id,
-    });
-
-    if (galleryFiles.length > 0) {
-      const galleryInserts = await Promise.all(
-        galleryFiles.map(async (file, index) => {
-          const url = await saveUploadedFile(file);
-          return { url, alt: null, position: index + 1, suiteId };
-        }),
-      );
-
-      await db.insert(image).values(galleryInserts);
-    }
-  } catch (error) {
+    await insertSuiteWithGallery(
+      parsed.data,
+      managerEstablishment.id,
+      mainImageUrl,
+      galleryFiles,
+    );
+  } catch (error: unknown) {
     console.error("Failed to create suite:", error);
     return {
       success: false,
