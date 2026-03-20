@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getManagers } from "@/features/managers/queries/get-managers";
 import { Button } from "@/components/ui/button";
+import { DeleteManagerButton } from "@/features/managers/components/DeleteManagerButton";
 import {
   Table,
   TableBody,
@@ -51,7 +52,10 @@ export default async function AdminManagersPage() {
                         Modifier
                       </Link>
                     </Button>
-                    {/* DeleteManagerButton ajouté dans #20 */}
+                    <DeleteManagerButton
+                      id={manager.id}
+                      name={manager.name}
+                    />
                   </div>
                 </TableCell>
               </TableRow>
