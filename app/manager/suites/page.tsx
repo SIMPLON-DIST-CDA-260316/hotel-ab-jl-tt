@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { requireManager } from "@/features/auth/lib/auth-guards";
+import { requireManager } from "@/lib/auth-guards";
 import { getSuitesByManager } from "@/features/suites/queries/get-suites-by-manager";
 import { Button } from "@/components/ui/button";
 import { DeleteSuiteButton } from "@/features/suites/components/DeleteSuiteButton";

@@ -1,4 +1,4 @@
-import { requireManager } from "@/features/auth/lib/auth-guards";
+import { requireManager } from "@/lib/auth-guards";
 import { getEstablishmentsByManager } from "@/features/suites/queries/get-establishments-by-manager";
 import { SuiteForm } from "@/features/suites/components/SuiteForm";
 import { createSuite } from "@/features/suites/actions/create-suite";

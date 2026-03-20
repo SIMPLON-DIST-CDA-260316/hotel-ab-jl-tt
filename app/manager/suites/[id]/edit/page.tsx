@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { requireManager } from "@/features/auth/lib/auth-guards";
+import { requireManager } from "@/lib/auth-guards";
 import { getSuiteForManager } from "@/features/suites/queries/get-suite-for-manager";
 import { SuiteForm } from "@/features/suites/components/SuiteForm";
 import { updateSuite } from "@/features/suites/actions/update-suite";

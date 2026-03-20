@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { suite, establishment, image } from "@/lib/db/schema";
 import { and, eq, isNull } from "drizzle-orm";
 import { redirect } from "next/navigation";
-import { requireManager } from "@/features/auth/lib/auth-guards";
+import { requireManager } from "@/lib/auth-guards";
 import { suiteSchema } from "../lib/suite-schema";
 import type { ActionError } from "../types/action.types";
 import {

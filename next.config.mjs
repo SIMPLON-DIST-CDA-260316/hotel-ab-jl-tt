@@ -5,6 +5,9 @@ const nextConfig = {
   experimental: {
     authInterrupts: true,
     typedRoutes: true,
+    serverActions: {
+      bodySizeLimit: '4mb',
+    },
   },
 };
 

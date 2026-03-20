@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useActionState } from "react";
+import { useActionState, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +20,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { ActionError } from "../types/action.types";
+
+const MAX_TOTAL_IMAGES_SIZE_BYTES = 4 * 1024 * 1024;
 
 type Establishment = { id: string; name: string };
 
@@ -52,6 +54,23 @@ export function SuiteForm({
     (_prev: FormState, formData: FormData) => action(formData),
     null,
   );
+
+  const mainImageRef = useRef<HTMLInputElement>(null);
+  const galleryRef = useRef<HTMLInputElement>(null);
+  const [totalSizeError, setTotalSizeError] = useState<string | null>(null);
+
+  function checkTotalSize() {
+    const mainSize = mainImageRef.current?.files?.[0]?.size ?? 0;
+    const gallerySize = Array.from(galleryRef.current?.files ?? []).reduce(
+      (sum, file) => sum + file.size,
+      0,
+    );
+    if (mainSize + gallerySize > MAX_TOTAL_IMAGES_SIZE_BYTES) {
+      setTotalSizeError("Le total des images ne doit pas dépasser 4 Mo");
+    } else {
+      setTotalSizeError(null);
+    }
+  }
 
   const isEditMode = defaultValues !== undefined;
   const defaultEstablishmentId =
@@ -225,11 +244,13 @@ export function SuiteForm({
               </div>
             )}
             <Input
+              ref={mainImageRef}
               id="mainImage"
               name="mainImage"
               type="file"
               accept="image/jpeg,image/png,image/webp"
               required={!isEditMode}
+              onChange={checkTotalSize}
               aria-describedby={
                 state?.errors?.mainImage ? "mainImage-error" : undefined
               }
@@ -246,21 +267,33 @@ export function SuiteForm({
               {isEditMode ? "Ajouter des images à la galerie" : "Galerie d'images"}
             </Label>
             <Input
+              ref={galleryRef}
               id="galleryImages"
               name="galleryImages"
               type="file"
               accept="image/jpeg,image/png,image/webp"
               multiple
+              onChange={checkTotalSize}
               aria-describedby={
-                state?.errors?.galleryImages ? "galleryImages-error" : undefined
+                [
+                  state?.errors?.galleryImages ? "galleryImages-error" : null,
+                  totalSizeError ? "total-size-error" : null,
+                ]
+                  .filter(Boolean)
+                  .join(" ") || undefined
               }
             />
             <p className="text-muted-foreground mt-1 text-xs">
-              Formats acceptés : jpg, png, webp — 5 Mo max par fichier
+              Formats acceptés : jpg, png, webp — 5 Mo max par fichier — 4 Mo max au total
             </p>
             {state?.errors?.galleryImages && (
               <p id="galleryImages-error" className="text-sm text-destructive">
                 {state.errors.galleryImages[0]}
+              </p>
+            )}
+            {totalSizeError && (
+              <p id="total-size-error" role="alert" className="text-sm text-destructive">
+                {totalSizeError}
               </p>
             )}
           </div>
@@ -271,7 +304,7 @@ export function SuiteForm({
             </p>
           )}
 
-          <Button type="submit" disabled={isPending}>
+          <Button type="submit" disabled={isPending || totalSizeError !== null}>
             {isPending ? "En cours..." : resolvedSubmitLabel}
           </Button>
         </form>
