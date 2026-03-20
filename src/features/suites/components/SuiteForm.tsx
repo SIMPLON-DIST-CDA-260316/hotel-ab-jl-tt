@@ -284,7 +284,7 @@ export function SuiteForm({
               }
             />
             <p className="text-muted-foreground mt-1 text-xs">
-              Formats acceptés : jpg, png, webp — 5 Mo max par fichier — 4 Mo max au total
+              Formats acceptés : jpg, png, webp — 4 Mo max au total
             </p>
             {state?.errors?.galleryImages && (
               <p id="galleryImages-error" className="text-sm text-destructive">
