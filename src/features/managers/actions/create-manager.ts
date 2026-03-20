@@ -6,6 +6,7 @@ import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth-guards";
 import { hashPassword } from "@/lib/hash-password";
+import { ROLES } from "@/config/roles";
 import { createManagerSchema } from "../lib/manager-schema";
 import type { ActionResult } from "@/types/action.types";
 
@@ -57,7 +58,7 @@ export async function createManager(
         name: managerName,
         email,
         emailVerified: true,
-        role: "manager",
+        role: ROLES.MANAGER,
         createdAt: now,
         updatedAt: now,
       });
@@ -77,7 +78,7 @@ export async function createManager(
         .set({ managerId: userId })
         .where(eq(establishment.id, establishmentId));
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Failed to create manager:", error);
     return {
       success: false,

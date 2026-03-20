@@ -2,7 +2,13 @@ import { db } from "@/lib/db";
 import { establishment } from "@/lib/db/schema";
 import { isNull } from "drizzle-orm";
 
-export async function getEstablishmentsForSelect() {
+interface EstablishmentSelectOption {
+  id: string;
+  name: string;
+  city: string;
+}
+
+export async function getEstablishmentsForSelect(): Promise<EstablishmentSelectOption[]> {
   return db
     .select({
       id: establishment.id,

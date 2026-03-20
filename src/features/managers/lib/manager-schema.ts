@@ -21,7 +21,7 @@ export const updateManagerSchema = z.object({
   firstName: z.string().min(1, "Le prénom est obligatoire").max(100),
   lastName: z.string().min(1, "Le nom est obligatoire").max(100),
   email: z.email("Email invalide"),
-  establishmentId: z.string().optional().or(z.literal("")),
+  establishmentId: z.string().optional().or(z.literal("")).or(z.literal("none")),
 });
 
 export type UpdateManagerFormData = z.infer<typeof updateManagerSchema>;

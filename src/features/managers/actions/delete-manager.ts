@@ -55,7 +55,7 @@ export async function deleteManager(
         error: "Gérant introuvable ou déjà supprimé.",
       };
     }
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Failed to delete manager:", error);
     return {
       success: false,

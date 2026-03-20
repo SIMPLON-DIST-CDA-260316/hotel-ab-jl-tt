@@ -154,7 +154,7 @@ export function ManagerForm({
             <Label htmlFor="establishmentId">Établissement</Label>
             <Select
               name="establishmentId"
-              defaultValue={defaultValues?.establishmentId ?? ""}
+              defaultValue={defaultValues?.establishmentId ?? (isEditMode ? "none" : "")}
             >
               <SelectTrigger
                 id="establishmentId"
@@ -168,7 +168,7 @@ export function ManagerForm({
               </SelectTrigger>
               <SelectContent>
                 {isEditMode && (
-                  <SelectItem value="">Aucun</SelectItem>
+                  <SelectItem value="none">Aucun</SelectItem>
                 )}
                 {establishments.map((establishment) => (
                   <SelectItem key={establishment.id} value={establishment.id}>

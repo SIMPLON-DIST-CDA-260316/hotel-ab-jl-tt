@@ -3,7 +3,14 @@ import { user, establishment } from "@/lib/db/schema";
 import { eq, and, isNull } from "drizzle-orm";
 import { ROLES } from "@/config/roles";
 
-export async function getManagerById(id: string) {
+interface ManagerDetail {
+  id: string;
+  name: string;
+  email: string;
+  establishmentId: string | null;
+}
+
+export async function getManagerById(id: string): Promise<ManagerDetail | null> {
   const [manager] = await db
     .select({
       id: user.id,

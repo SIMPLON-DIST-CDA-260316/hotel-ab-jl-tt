@@ -55,16 +55,16 @@ export async function updateManager(
         .set({ name: managerName, email })
         .where(eq(user.id, id));
 
-      // Assign to new establishment if provided
+      // Assign to new establishment if provided ("none" = no selection)
       // Does NOT unassign from old — managerId is NOT NULL
-      if (establishmentId) {
+      if (establishmentId && establishmentId !== "none") {
         await tx
           .update(establishment)
           .set({ managerId: id })
           .where(eq(establishment.id, establishmentId));
       }
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Failed to update manager:", error);
     return {
       success: false,
