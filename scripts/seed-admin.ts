@@ -1,7 +1,7 @@
-import { scryptSync, randomBytes } from "crypto";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { user, account } from "@/lib/db/schema";
+import { hashPassword } from "@/lib/hash-password";
 
 const ADMIN_EMAIL = process.env.SEED_ADMIN_EMAIL ?? "admin@clairdulune.fr";
 const ADMIN_PASSWORD = process.env.SEED_ADMIN_PASSWORD;
@@ -10,14 +10,6 @@ const ADMIN_NAME = process.env.SEED_ADMIN_NAME ?? "Administrateur";
 if (!ADMIN_PASSWORD) {
   console.error("[seed] SEED_ADMIN_PASSWORD is required");
   process.exit(1);
-}
-
-// Must match Better Auth's internal hash format: hex(salt):hex(key)
-// Parameters: N=16384, r=16, p=1, keylen=64  (see better-auth/src/utils/hash.ts)
-function hashPassword(password: string): string {
-  const salt = randomBytes(16);
-  const key = scryptSync(password, salt, 64, { N: 16384, r: 16, p: 1, maxmem: 64 * 1024 * 1024 });
-  return `${salt.toString("hex")}:${key.toString("hex")}`;
 }
 
 async function seedAdmin(): Promise<void> {
