@@ -9,7 +9,10 @@ export default function Page() {
           Nos établissements
         </Link>
         <Link href="/admin/establishments" className="underline">
-          Administration
+          Administration — Établissements
+        </Link>
+        <Link href="/admin/managers" className="underline">
+          Administration — Gérants
         </Link>
       </nav>
     </div>

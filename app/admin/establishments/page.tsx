@@ -17,6 +17,13 @@ export default async function AdminEstablishmentsPage() {
 
   return (
     <main className="container mx-auto px-4 py-8">
+      <nav className="mb-4 text-sm text-muted-foreground">
+        <span className="text-foreground font-medium">Établissements</span>
+        {" / "}
+        <Link href="/admin/managers" className="hover:underline">
+          Gérants
+        </Link>
+      </nav>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Gestion des établissements</h1>
         <Button asChild>

@@ -16,6 +16,13 @@ export default async function AdminManagersPage() {
 
   return (
     <main className="container mx-auto px-4 py-8">
+      <nav className="mb-4 text-sm text-muted-foreground">
+        <Link href="/admin/establishments" className="hover:underline">
+          Établissements
+        </Link>
+        {" / "}
+        <span className="text-foreground font-medium">Gérants</span>
+      </nav>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Gestion des gérants</h1>
         <Button asChild>
@@ -41,7 +48,11 @@ export default async function AdminManagersPage() {
                 <TableCell className="font-medium">{manager.name}</TableCell>
                 <TableCell>{manager.email}</TableCell>
                 <TableCell>
-                  {manager.establishmentName ?? (
+                  {manager.establishments.length > 0 ? (
+                    manager.establishments
+                      .map((establishment) => establishment.name)
+                      .join(", ")
+                  ) : (
                     <span className="text-muted-foreground">Non assigné</span>
                   )}
                 </TableCell>

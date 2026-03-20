@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getManagerById } from "@/features/managers/queries/get-manager-by-id";
 import { getEstablishmentsForSelect } from "@/features/managers/queries/get-establishments-for-select";
@@ -28,6 +29,12 @@ export default async function EditManagerPage({ params }: EditManagerPageProps) 
 
   return (
     <main className="container mx-auto max-w-2xl px-4 py-8">
+      <Link
+        href="/admin/managers"
+        className="mb-4 inline-block text-sm text-muted-foreground hover:underline"
+      >
+        &larr; Retour à la liste
+      </Link>
       <ManagerForm
         action={updateAction}
         establishments={establishments}
