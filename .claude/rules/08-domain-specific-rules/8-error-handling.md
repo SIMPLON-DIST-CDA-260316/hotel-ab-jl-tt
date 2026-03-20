@@ -16,6 +16,10 @@ Error boundaries (`error.tsx`):
 - Show a generic fallback (never expose raw error details to users)
 - Use `reset()` function for retry
 
+Access error pages:
+- `forbidden.tsx` (403) — user authenticated but lacks required role
+- `unauthorized.tsx` (401) — user not authenticated
+
 Typing:
 - Catch errors as `unknown`, narrow with `instanceof` or type guards
 - Define custom domain error types per feature when multiple error reasons exist

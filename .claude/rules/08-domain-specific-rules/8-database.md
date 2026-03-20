@@ -10,8 +10,7 @@ globs: src/lib/db/**
 
 ## Schéma
 
-`src/lib/db/schema.ts` contient les tables Better Auth (`user`, `session`, `account`, `verification`).
-Les tables métier (establishment, suite, booking, etc.) sont à créer dans ce même fichier.
+`src/lib/db/schema.ts` contient les tables Better Auth (`user`, `session`, `account`, `verification`) et les tables métier (`establishment`, `suite`, `booking`, `review`, `inquiry`, `amenity`, `option` + jonctions).
 
 La table `user` de Better Auth est enrichie avec `role` et `deleted_at`.
 
