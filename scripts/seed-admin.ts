@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { user, account } from "@/lib/db/schema";
 import { hashPassword } from "@/lib/hash-password";
+import { ROLES } from "@/config/roles";
 
 const ADMIN_EMAIL = process.env.SEED_ADMIN_EMAIL ?? "admin@clairdulune.fr";
 const ADMIN_PASSWORD = process.env.SEED_ADMIN_PASSWORD;
@@ -33,7 +34,7 @@ async function seedAdmin(): Promise<void> {
       name: ADMIN_NAME,
       email: ADMIN_EMAIL,
       emailVerified: true,
-      role: "admin",
+      role: ROLES.ADMIN,
       createdAt: now,
       updatedAt: now,
     });
