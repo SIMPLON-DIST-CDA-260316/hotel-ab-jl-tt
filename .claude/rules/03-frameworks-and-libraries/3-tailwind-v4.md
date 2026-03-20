@@ -1,5 +1,5 @@
 ---
-globs: src/**/*.{tsx,css}
+globs: "{src,app}/**/*.{tsx,css}"
 ---
 
 # Tailwind CSS v4 + shadcn/ui

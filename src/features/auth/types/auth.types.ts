@@ -1,4 +1,4 @@
-export type Role = "admin" | "manager" | "client";
+export type { Role } from "@/types/role.types";
 
 export type AuthActionState<T = void> =
   | { status: "idle" }

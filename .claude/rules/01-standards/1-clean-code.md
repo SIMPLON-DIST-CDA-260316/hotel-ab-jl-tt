@@ -1,5 +1,5 @@
 ---
-globs: src/**/*.{ts,tsx}
+globs: "{src,app}/**/*.{ts,tsx}, proxy.ts"
 ---
 
 Code Quality:
@@ -7,10 +7,11 @@ Code Quality:
 - Self-documenting code first, comments for intent/rationale
 - No commented-out code
 - Use strict types only
-- Use explicit constants, never magic numbers
+- Use explicit constants, never magic numbers or magic strings encoding business logic (roles, statuses, error codes → named constants in `src/config/` or feature `lib/`)
 - Name constants by purpose, not by value (e.g. `DEFAULT_STALE_TIME` not `STALE_TIME_5MIN`)
 - Avoid double negatives
-- Use long, readable variable names
+- Use long, readable variable names — avoid generic `result`, `data`, `response` when a semantic name exists (`activeBookingCount`, `foundEstablishment`)
+- Extract non-trivial conditions into named booleans (`const isEstablishmentNotFound = ...` not `if (result.rowCount === 0)`)
 - Write the simplest code possible
 - Prefer duplication over the wrong abstraction — DRY only when the pattern is proven (3+ occurrences)
 

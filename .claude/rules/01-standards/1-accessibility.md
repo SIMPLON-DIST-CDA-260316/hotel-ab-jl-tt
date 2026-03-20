@@ -1,5 +1,5 @@
 ---
-globs: src/**/*.tsx
+globs: "{src,app}/**/*.tsx"
 ---
 
 Semantic HTML:

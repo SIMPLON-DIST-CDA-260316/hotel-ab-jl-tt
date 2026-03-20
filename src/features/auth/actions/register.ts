@@ -12,6 +12,7 @@ function isHttpError(error: unknown, statusCode: number): boolean {
     (error as Record<string, unknown>).statusCode === statusCode
   );
 }
+import { AUTH_ERROR_CODES } from "@/features/auth/lib/auth-error-codes";
 import { registerSchema } from "@/features/auth/lib/auth-schemas";
 import type {
   AuthActionState,
@@ -52,10 +53,10 @@ export async function register(
     });
   } catch (error) {
     if (isHttpError(error, 422)) {
-      return { status: "error", formError: "EMAIL_ALREADY_USED" };
+      return { status: "error", formError: AUTH_ERROR_CODES.EMAIL_ALREADY_USED };
     }
     console.error("[register] Unexpected error during sign-up:", error);
-    return { status: "error", formError: "UNKNOWN_ERROR" };
+    return { status: "error", formError: AUTH_ERROR_CODES.UNKNOWN_ERROR };
   }
 
   redirect("/");

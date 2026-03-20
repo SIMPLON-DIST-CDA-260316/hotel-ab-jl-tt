@@ -1,5 +1,5 @@
 ---
-globs: src/**
+globs: "{src,app}/**"
 ---
 
 # Architecture feature-based
@@ -22,6 +22,7 @@ Flux d'import unidirectionnel : `shared` est importable par tous, `features/` im
 - Shared (components, hooks, lib, stores, types, config) : importable par tous
 - `features/` importe depuis shared, jamais depuis d'autres features
 - `app/` importe depuis shared ET features
+- If a module in `features/X` is consumed by another feature or the shared layer → promote it to shared (`src/lib/`, `src/types/`, `src/config/`, or `src/components/`)
 - Layout components must be dumb (reçoivent les données via props depuis les pages)
 - Cross-feature data flows through `app/` (les pages orchestrent)
 

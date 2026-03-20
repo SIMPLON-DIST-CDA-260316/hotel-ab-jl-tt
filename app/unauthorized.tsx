@@ -9,7 +9,7 @@ export default function UnauthorizedPage() {
         Vous devez être connecté pour accéder à cette page.
       </p>
       <Button asChild>
-        <Link href="/connexion">Se connecter</Link>
+        <Link href="/sign-in">Se connecter</Link>
       </Button>
     </main>
   );

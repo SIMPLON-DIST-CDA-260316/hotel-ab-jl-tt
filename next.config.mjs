@@ -4,6 +4,7 @@ const nextConfig = {
   reactStrictMode: true,
   experimental: {
     authInterrupts: true,
+    typedRoutes: true,
   },
 };
 

@@ -12,6 +12,7 @@ function isHttpError(error: unknown, statusCode: number): boolean {
     (error as Record<string, unknown>).statusCode === statusCode
   );
 }
+import { AUTH_ERROR_CODES } from "@/features/auth/lib/auth-error-codes";
 import { loginSchema } from "@/features/auth/lib/auth-schemas";
 import type {
   AuthActionState,
@@ -49,11 +50,12 @@ export async function login(
     });
   } catch (error) {
     if (isHttpError(error, 401) || isHttpError(error, 403)) {
-      return { status: "error", formError: "INVALID_CREDENTIALS" };
+      return { status: "error", formError: AUTH_ERROR_CODES.INVALID_CREDENTIALS };
     }
     console.error("[login] Unexpected error during sign-in:", error);
-    return { status: "error", formError: "UNKNOWN_ERROR" };
+    return { status: "error", formError: AUTH_ERROR_CODES.UNKNOWN_ERROR };
   }
 
-  redirect(callbackUrl ?? "/");
+  // callbackUrl is dynamic user input — bypass typed routes check
+  redirect((callbackUrl ?? "/") as Parameters<typeof redirect>[0]);
 }

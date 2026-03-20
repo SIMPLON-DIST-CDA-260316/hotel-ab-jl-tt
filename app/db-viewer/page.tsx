@@ -14,23 +14,23 @@ const tables = [
 ];
 
 export default async function DbViewerPage() {
-  const results = await Promise.all(
-    tables.map(async (t) => ({
-      title: t.title,
-      columns: extractColumns(t.table),
-      rows: (await db.select().from(t.table)) as Record<string, unknown>[],
+  const tableViews = await Promise.all(
+    tables.map(async (tableEntry) => ({
+      title: tableEntry.title,
+      columns: extractColumns(tableEntry.table),
+      rows: (await db.select().from(tableEntry.table)) as Record<string, unknown>[],
     })),
   );
 
   return (
     <main className="p-8 max-w-7xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">DB Viewer</h1>
-      {results.map((t) => (
-        <section key={t.title} className="mb-10 overflow-x-auto">
+      {tableViews.map((tableView) => (
+        <section key={tableView.title} className="mb-10 overflow-x-auto">
           <h2 className="text-xl font-semibold mb-3">
-            {t.title}
+            {tableView.title}
             <span className="text-sm font-normal text-gray-500 ml-2">
-              {t.columns.length} colonnes &middot; {t.rows.length} lignes
+              {tableView.columns.length} colonnes &middot; {tableView.rows.length} lignes
             </span>
           </h2>
           <details className="mb-3">
@@ -38,10 +38,10 @@ export default async function DbViewerPage() {
               Structure de la table
             </summary>
             <div className="mt-2">
-              <SchemaTable columns={t.columns} />
+              <SchemaTable columns={tableView.columns} />
             </div>
           </details>
-          <DataTable rows={t.rows} />
+          <DataTable rows={tableView.rows} />
         </section>
       ))}
     </main>
