@@ -12,6 +12,7 @@ import type {
   LoginFormValues,
 } from "@/features/auth/types/auth.types";
 
+// Codes from server actions → user-facing messages (i18n-ready separation)
 const FORM_ERROR_MESSAGES: Record<string, string> = {
   [AUTH_ERROR_CODES.INVALID_CREDENTIALS]: "Email ou mot de passe incorrect.",
   [AUTH_ERROR_CODES.UNKNOWN_ERROR]: "Une erreur inattendue s'est produite. Veuillez réessayer.",
