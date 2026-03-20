@@ -1,5 +1,5 @@
 ---
-globs: src/**/*.{ts,tsx}
+globs: "{src,app}/**/*.{ts,tsx}, proxy.ts"
 ---
 
 Strict Types:

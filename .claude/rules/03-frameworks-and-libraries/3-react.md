@@ -1,5 +1,5 @@
 ---
-globs: src/**/*.tsx
+globs: "{src,app}/**/*.tsx"
 ---
 
 Component Structure:
@@ -35,6 +35,7 @@ Performance:
 
 Error Boundaries:
 - Wrap routes in `error.tsx` (Next.js App Router convention)
+- Add `global-error.tsx` at app root as last-resort fallback for root layout crashes
 - Use for unexpected JS crashes only
 - Do not use error boundaries for expected validation errors
 

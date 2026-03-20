@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
-import { LogoutButton } from "@/features/auth/components/LogoutButton";
+import { LogoutButton } from "@/components/layout/LogoutButton";
 import { Button } from "@/components/ui/button";
 
 export async function Header() {
@@ -21,10 +21,10 @@ export async function Header() {
         ) : (
           <>
             <Button variant="ghost" asChild>
-              <Link href="/connexion">Se connecter</Link>
+              <Link href="/sign-in">Se connecter</Link>
             </Button>
             <Button asChild>
-              <Link href="/inscription">Créer un compte</Link>
+              <Link href="/sign-up">Créer un compte</Link>
             </Button>
           </>
         )}

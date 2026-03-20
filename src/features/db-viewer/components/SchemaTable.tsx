@@ -1,7 +1,11 @@
 import type { ColumnInfo } from "../types/db-viewer.types";
 import { TypeBadge } from "./TypeBadge";
 
-export function SchemaTable({ columns }: { columns: ColumnInfo[] }) {
+type SchemaTableProps = {
+  columns: ColumnInfo[];
+};
+
+export function SchemaTable({ columns }: SchemaTableProps) {
   return (
     <table className="min-w-full border border-gray-200 text-sm mb-2">
       <thead>
@@ -21,29 +25,29 @@ export function SchemaTable({ columns }: { columns: ColumnInfo[] }) {
         </tr>
       </thead>
       <tbody>
-        {columns.map((col) => (
-          <tr key={col.name} className="even:bg-gray-50">
+        {columns.map((column) => (
+          <tr key={column.name} className="even:bg-gray-50">
             <td className="px-3 py-1.5 border-b border-gray-200 font-mono text-gray-900">
-              {col.name}
+              {column.name}
             </td>
             <td className="px-3 py-1.5 border-b border-gray-200 font-mono text-gray-500">
-              {col.dbName}
+              {column.dbName}
             </td>
             <td className="px-3 py-1.5 border-b border-gray-200">
-              <TypeBadge type={col.dataType} />
+              <TypeBadge type={column.dataType} />
             </td>
             <td className="px-3 py-1.5 border-b border-gray-200 space-x-1">
-              {col.primaryKey && (
+              {column.primaryKey && (
                 <span className="text-xs px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-800">
                   PK
                 </span>
               )}
-              {col.notNull && (
+              {column.notNull && (
                 <span className="text-xs px-1.5 py-0.5 rounded bg-red-100 text-red-800">
                   NOT NULL
                 </span>
               )}
-              {col.hasDefault && (
+              {column.hasDefault && (
                 <span className="text-xs px-1.5 py-0.5 rounded bg-gray-200 text-gray-700">
                   DEFAULT
                 </span>

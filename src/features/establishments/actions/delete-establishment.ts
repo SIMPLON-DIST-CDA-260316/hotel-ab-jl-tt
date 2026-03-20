@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { establishment } from "@/lib/db/schema";
 import { eq, and, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { requireAdmin } from "@/features/auth/lib/auth-guards";
+import { requireAdmin } from "@/lib/auth-guards";
 import { hasActiveBookings } from "../queries/has-active-bookings";
 
 type DeleteEstablishmentResult =
@@ -26,12 +26,13 @@ export async function deleteEstablishment(
     };
   }
 
-  const result = await db
+  const softDeleteResult = await db
     .update(establishment)
     .set({ deletedAt: new Date() })
     .where(and(eq(establishment.id, id), isNull(establishment.deletedAt)));
 
-  if (result.rowCount === 0) {
+  const isEstablishmentNotFound = softDeleteResult.rowCount === 0;
+  if (isEstablishmentNotFound) {
     return {
       success: false as const,
       error: "Établissement introuvable ou déjà supprimé.",

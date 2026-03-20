@@ -8,6 +8,7 @@ import {
   account,
   verification,
 } from "@/lib/db/schema";
+import { ROLES } from "@/config/roles";
 
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL ?? "http://localhost:3000",
@@ -21,7 +22,7 @@ export const auth = betterAuth({
       role: {
         type: "string",
         required: false,
-        defaultValue: "client",
+        defaultValue: ROLES.CLIENT,
         input: false,
       },
     },

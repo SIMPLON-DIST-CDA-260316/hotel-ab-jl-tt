@@ -1,4 +1,6 @@
 import { relations, sql } from "drizzle-orm";
+import { ROLES } from "@/config/roles";
+import { BOOKING_STATUSES } from "@/config/booking-statuses";
 import {
   pgTable,
   pgEnum,
@@ -53,7 +55,7 @@ export const inquiryStatusEnum = pgEnum("inquiry_status", [
   "replied",
 ]);
 
-// ─── Better Auth: User (enrichi avec role + deleted_at) ───
+// ─── Better Auth: User (extended with role + deleted_at) ───
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -61,7 +63,7 @@ export const user = pgTable("user", {
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").default(false).notNull(),
   image: text("image"),
-  role: roleEnum("role").default("client").notNull(),
+  role: roleEnum("role").default(ROLES.CLIENT).notNull(),
   createdAt: timestamp("created_at").notNull(),
   updatedAt: timestamp("updated_at")
     .$onUpdate(() => new Date())
@@ -276,7 +278,7 @@ export const option = pgTable("option", {
   defaultPrice: numeric("default_price", { precision: 10, scale: 2 }).notNull(),
 });
 
-// ─── Establishment ↔ Option (N:N avec prix et inclusion) ───
+// ─── Establishment ↔ Option (N:N with price and inclusion) ───
 
 export const establishmentOption = pgTable(
   "establishment_option",
@@ -312,7 +314,7 @@ export const booking = pgTable(
       scale: 2,
     }).notNull(),
     totalPrice: numeric("total_price", { precision: 10, scale: 2 }).notNull(),
-    status: bookingStatusEnum("status").default("pending").notNull(),
+    status: bookingStatusEnum("status").default(BOOKING_STATUSES.PENDING).notNull(),
     cancelledAt: timestamp("cancelled_at"),
     clientId: text("client_id")
       .notNull()
@@ -339,7 +341,7 @@ export const booking = pgTable(
   ],
 );
 
-// ─── Booking ↔ Option (N:N avec quantité et prix snapshot) ───
+// ─── Booking ↔ Option (N:N with quantity and price snapshot) ───
 
 export const bookingOption = pgTable(
   "booking_option",
@@ -422,7 +424,7 @@ export const inquiry = pgTable(
 );
 
 // ═══════════════════════════════════════════════════════════
-// Relations (pour le query builder Drizzle — .with())
+// Relations (for Drizzle query builder — .with())
 // ═══════════════════════════════════════════════════════════
 
 // ─── User relations ───

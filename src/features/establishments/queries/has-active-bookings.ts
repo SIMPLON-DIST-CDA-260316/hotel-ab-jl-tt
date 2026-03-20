@@ -2,11 +2,12 @@ import { db } from "@/lib/db";
 import { booking, suite } from "@/lib/db/schema";
 import { eq, and, gte, ne } from "drizzle-orm";
 import { sql } from "drizzle-orm";
+import { BOOKING_STATUSES } from "@/config/booking-statuses";
 
 export async function hasActiveBookings(
   establishmentId: string,
 ): Promise<boolean> {
-  const result = await db
+  const activeBookingCount = await db
     .select({ count: sql<number>`count(*)::int` })
     .from(booking)
     .innerJoin(suite, eq(booking.suiteId, suite.id))
@@ -14,9 +15,10 @@ export async function hasActiveBookings(
       and(
         eq(suite.establishmentId, establishmentId),
         gte(booking.checkOut, sql`CURRENT_DATE`),
-        ne(booking.status, "cancelled"),
+        ne(booking.status, BOOKING_STATUSES.CANCELLED),
       ),
     );
 
-  return (result[0]?.count ?? 0) > 0;
+  const hasAtLeastOne = (activeBookingCount[0]?.count ?? 0) > 0;
+  return hasAtLeastOne;
 }

@@ -3,7 +3,7 @@ import { establishment } from "@/lib/db/schema";
 import { eq, isNull, and } from "drizzle-orm";
 
 export async function getEstablishmentById(id: string) {
-  const [result] = await db
+  const [foundEstablishment] = await db
     .select({
       id: establishment.id,
       name: establishment.name,
@@ -20,5 +20,5 @@ export async function getEstablishmentById(id: string) {
     .from(establishment)
     .where(and(eq(establishment.id, id), isNull(establishment.deletedAt)));
 
-  return result ?? null;
+  return foundEstablishment ?? null;
 }

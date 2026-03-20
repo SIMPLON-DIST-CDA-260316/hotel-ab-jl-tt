@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
+import { ROLES } from "@/config/roles";
 
 export async function proxy(request: NextRequest): Promise<NextResponse> {
   const { pathname, searchParams } = request.nextUrl;
@@ -11,26 +12,26 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
   const role = session?.user.role as string | undefined;
 
   // Redirect authenticated users away from auth pages
-  if (isAuthenticated && (pathname === "/inscription" || pathname === "/connexion")) {
+  if (isAuthenticated && (pathname === "/sign-up" || pathname === "/sign-in")) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  if (pathname.startsWith("/reservations")) {
+  if (pathname.startsWith("/bookings")) {
     if (!isAuthenticated) {
       const callbackUrl = encodeURIComponent(pathname + (searchParams.toString() ? `?${searchParams.toString()}` : ""));
-      return NextResponse.redirect(new URL(`/connexion?callbackUrl=${callbackUrl}`, request.url));
+      return NextResponse.redirect(new URL(`/sign-in?callbackUrl=${callbackUrl}`, request.url));
     }
   }
 
   if (pathname.startsWith("/admin")) {
-    if (!isAuthenticated || role !== "admin") {
-      return NextResponse.redirect(new URL("/connexion", request.url));
+    if (!isAuthenticated || role !== ROLES.ADMIN) {
+      return NextResponse.redirect(new URL("/sign-in", request.url));
     }
   }
 
-  if (pathname.startsWith("/gerant")) {
-    if (!isAuthenticated || role !== "manager") {
-      return NextResponse.redirect(new URL("/connexion", request.url));
+  if (pathname.startsWith("/manager")) {
+    if (!isAuthenticated || role !== ROLES.MANAGER) {
+      return NextResponse.redirect(new URL("/sign-in", request.url));
     }
   }
 

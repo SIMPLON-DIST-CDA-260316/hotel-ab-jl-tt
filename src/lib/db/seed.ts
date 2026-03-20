@@ -1,6 +1,8 @@
 import { db } from "@/lib/db";
 import { user, establishment, suite, booking } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { ROLES } from "@/config/roles";
+import { BOOKING_STATUSES } from "@/config/booking-statuses";
 
 async function seed() {
   // Clean seed data for idempotence (order respects FK constraints)
@@ -12,10 +14,10 @@ async function seed() {
 
   await db.insert(user).values({
     id: "seed-manager-1",
-    name: "Gérant Test",
-    email: "gerant@clairdelune.test",
+    name: "Manager Test",
+    email: "manager@clairdelune.test",
     emailVerified: true,
-    role: "manager",
+    role: ROLES.MANAGER,
     createdAt: new Date(),
     updatedAt: new Date(),
   });
@@ -25,7 +27,7 @@ async function seed() {
     name: "Client Test",
     email: "client@clairdelune.test",
     emailVerified: true,
-    role: "client",
+    role: ROLES.CLIENT,
     createdAt: new Date(),
     updatedAt: new Date(),
   });
@@ -119,13 +121,13 @@ async function seed() {
     (s) => s.title === "Suite Confluence",
   )!.id;
 
-  // Booking future (Paris) — bloque la suppression de l'établissement Paris
+  // Future booking (Paris) — blocks deletion of Paris establishment
   const nextMonth = new Date();
   nextMonth.setMonth(nextMonth.getMonth() + 1);
   const nextMonthEnd = new Date(nextMonth);
   nextMonthEnd.setDate(nextMonthEnd.getDate() + 3);
 
-  // Booking passée (Lyon) — ne bloque PAS la suppression de l'établissement Lyon
+  // Past booking (Lyon) — does NOT block deletion of Lyon establishment
   const lastMonth = new Date();
   lastMonth.setMonth(lastMonth.getMonth() - 1);
   const lastMonthEnd = new Date(lastMonth);
@@ -139,7 +141,7 @@ async function seed() {
       guestCount: 2,
       pricePerNight: "250.00",
       totalPrice: "750.00",
-      status: "confirmed",
+      status: BOOKING_STATUSES.CONFIRMED,
       clientId: "seed-client-1",
       suiteId: suiteEtoileId,
     },
@@ -150,14 +152,14 @@ async function seed() {
       guestCount: 2,
       pricePerNight: "200.00",
       totalPrice: "400.00",
-      status: "completed",
+      status: BOOKING_STATUSES.COMPLETED,
       clientId: "seed-client-1",
       suiteId: suiteConfluenceId,
     },
   ]);
 
   console.log(
-    "Seed terminé : 1 manager + 1 client + 3 établissements + 4 suites + 2 bookings",
+    "Seed complete: 1 manager + 1 client + 3 establishments + 4 suites + 2 bookings",
   );
 
   process.exit(0);
