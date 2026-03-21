@@ -1,17 +1,9 @@
-import { scryptSync, randomBytes } from "crypto";
 import { eq } from "drizzle-orm";
+import { hashPassword } from "better-auth/crypto";
 import { db } from "@/lib/db";
 import { user, account } from "@/lib/db/schema/auth";
 
-// Must match Better Auth's internal hash format: hex(salt):hex(key)
-// Parameters: N=16384, r=16, p=1, keylen=64  (see better-auth/src/utils/hash.ts)
-function hashPassword(password: string): string {
-  const salt = randomBytes(16);
-  const key = scryptSync(password, salt, 64, { N: 16384, r: 16, p: 1, maxmem: 64 * 1024 * 1024 });
-  return `${salt.toString("hex")}:${key.toString("hex")}`;
-}
-
-async function seedAdmin(): Promise<void> {
+export async function seedAdmin(): Promise<void> {
   const adminEmail = process.env.SEED_ADMIN_EMAIL;
   const adminPassword = process.env.SEED_ADMIN_PASSWORD;
   const adminName = process.env.SEED_ADMIN_NAME ?? "Administrateur";
@@ -51,7 +43,7 @@ async function seedAdmin(): Promise<void> {
       accountId: adminEmail,
       providerId: "credential",
       userId,
-      password: hashPassword(adminPassword),
+      password: await hashPassword(adminPassword),
       createdAt: now,
       updatedAt: now,
     });
@@ -60,9 +52,11 @@ async function seedAdmin(): Promise<void> {
   console.log(`[seed-admin] Admin account created: ${adminEmail}`);
 }
 
-seedAdmin()
-  .catch((error: unknown) => {
-    console.error("[seed-admin] Failed:", error);
-    process.exit(1);
-  })
-  .finally(() => process.exit(0));
+if (import.meta.main) {
+  seedAdmin()
+    .catch((error: unknown) => {
+      console.error("[seed-admin] Failed:", error);
+      process.exit(1);
+    })
+    .finally(() => process.exit(0));
+}

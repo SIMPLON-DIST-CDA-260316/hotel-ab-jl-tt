@@ -164,9 +164,11 @@ async function seed() {
   );
 }
 
-seed()
-  .catch((error: unknown) => {
-    console.error("Seed failed:", error);
-    process.exit(1);
-  })
-  .finally(() => process.exit(0));
+if (import.meta.main) {
+  seed()
+    .catch((error: unknown) => {
+      console.error("Seed failed:", error);
+      process.exit(1);
+    })
+    .finally(() => process.exit(0));
+}
