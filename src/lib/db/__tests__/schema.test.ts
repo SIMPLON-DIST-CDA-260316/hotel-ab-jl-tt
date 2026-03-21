@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { eq } from "drizzle-orm";
 import { createTestDb } from "@/test/db";
+import { user } from "@/lib/db/schema/auth";
 import {
-  user,
   establishment,
   suite,
   booking,
-} from "@/lib/db/schema";
+} from "@/lib/db/schema/domain";
 
 describe("database schema", () => {
   let db: Awaited<ReturnType<typeof createTestDb>>["db"];

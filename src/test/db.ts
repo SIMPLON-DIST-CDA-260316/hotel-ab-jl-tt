@@ -2,7 +2,11 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { PGlite } from "@electric-sql/pglite";
 import { drizzle } from "drizzle-orm/pglite";
-import * as schema from "@/lib/db/schema";
+import * as authSchema from "@/lib/db/schema/auth";
+import * as domainSchema from "@/lib/db/schema/domain";
+import * as relationsSchema from "@/lib/db/schema/relations";
+
+const schema = { ...authSchema, ...domainSchema, ...relationsSchema };
 
 /**
  * Creates an in-memory PGlite database with the full Drizzle schema applied
