@@ -1,3 +1,12 @@
+/**
+ * Better Auth server instance — server-side only.
+ *
+ * This is the single configuration point for authentication: providers,
+ * database adapter, additional user fields (role), and trusted origins.
+ * Exposes `auth.api.*` for use in Server Actions and route handlers.
+ *
+ * For client-side auth hooks (useSession, signIn, signOut), use auth-client.ts instead.
+ */
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import { nextCookies } from "better-auth/next-js";
