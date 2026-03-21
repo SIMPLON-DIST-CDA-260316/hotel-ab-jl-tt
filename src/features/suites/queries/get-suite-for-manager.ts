@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { suite, establishment } from "@/lib/db/schema";
+import { suite, establishment } from "@/lib/db/schema/domain";
 import { and, eq, isNull } from "drizzle-orm";
 
 export type ManagerSuiteDetail = {

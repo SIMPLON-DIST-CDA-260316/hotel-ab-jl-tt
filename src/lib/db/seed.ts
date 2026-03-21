@@ -1,63 +1,9 @@
-import { scryptSync, randomBytes } from "crypto";
 import { db } from "@/lib/db";
-import { user, account, establishment, suite, booking } from "@/lib/db/schema";
+import { user } from "@/lib/db/schema/auth";
+import { establishment, suite, booking } from "@/lib/db/schema/domain";
 import { eq } from "drizzle-orm";
 import { ROLES } from "@/config/roles";
 import { BOOKING_STATUSES } from "@/config/booking-statuses";
-
-// Must match Better Auth's internal hash format: hex(salt):hex(key)
-// Parameters: N=16384, r=16, p=1, keylen=64  (see better-auth/src/utils/hash.ts)
-function hashPassword(password: string): string {
-  const salt = randomBytes(16);
-  const key = scryptSync(password, salt, 64, { N: 16384, r: 16, p: 1, maxmem: 64 * 1024 * 1024 });
-  return `${salt.toString("hex")}:${key.toString("hex")}`;
-}
-
-async function seedAdmin(): Promise<void> {
-  const adminEmail = process.env.SEED_ADMIN_EMAIL;
-  const adminPassword = process.env.SEED_ADMIN_PASSWORD;
-  const adminName = process.env.SEED_ADMIN_NAME ?? "Administrateur";
-
-  if (!adminEmail || !adminPassword) return;
-
-  const existing = await db
-    .select({ id: user.id })
-    .from(user)
-    .where(eq(user.email, adminEmail))
-    .limit(1);
-
-  if (existing.length > 0) {
-    console.log(`[seed] Admin already exists (${adminEmail}), skipping.`);
-    return;
-  }
-
-  const userId = crypto.randomUUID();
-  const now = new Date();
-
-  await db.transaction(async (tx) => {
-    await tx.insert(user).values({
-      id: userId,
-      name: adminName,
-      email: adminEmail,
-      emailVerified: true,
-      role: "admin",
-      createdAt: now,
-      updatedAt: now,
-    });
-
-    await tx.insert(account).values({
-      id: crypto.randomUUID(),
-      accountId: adminEmail,
-      providerId: "credential",
-      userId,
-      password: hashPassword(adminPassword),
-      createdAt: now,
-      updatedAt: now,
-    });
-  });
-
-  console.log(`[seed] Admin account created: ${adminEmail}`);
-}
 
 async function seed() {
   // Clean seed data for idempotence (order respects FK constraints)
@@ -212,8 +158,6 @@ async function seed() {
       suiteId: suiteConfluenceId,
     },
   ]);
-
-  await seedAdmin();
 
   console.log(
     "Seed complete: 1 manager + 1 client + 3 establishments + 4 suites + 2 bookings",

@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { suite, establishment } from "@/lib/db/schema";
+import { suite, establishment } from "@/lib/db/schema/domain";
 import { eq, and, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { requireManager } from "@/lib/auth-guards";

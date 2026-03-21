@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { suite } from "@/lib/db/schema";
+import { suite } from "@/lib/db/schema/domain";
 import { eq, isNull, and } from "drizzle-orm";
 
 export type SuiteListItem = {

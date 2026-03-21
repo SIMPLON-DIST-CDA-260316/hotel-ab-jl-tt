@@ -7,7 +7,7 @@ import {
   session,
   account,
   verification,
-} from "@/lib/db/schema";
+} from "@/lib/db/schema/auth";
 import { ROLES } from "@/config/roles";
 
 export const auth = betterAuth({
