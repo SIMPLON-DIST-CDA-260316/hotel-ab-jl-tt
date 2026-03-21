@@ -1,3 +1,13 @@
+/**
+ * Admin bootstrap — creates the initial admin account from environment variables.
+ *
+ * Idempotent: skips silently if an account with the same email already exists.
+ * Safe to run in any environment, including production (no test data inserted).
+ *
+ * Required env vars: SEED_ADMIN_EMAIL, SEED_ADMIN_PASSWORD, SEED_ADMIN_NAME
+ * Password is hashed via Better Auth's own implementation (better-auth/crypto)
+ * to ensure compatibility with the auth layer.
+ */
 import { eq } from "drizzle-orm";
 import { hashPassword } from "better-auth/crypto";
 import { db } from "@/lib/db";

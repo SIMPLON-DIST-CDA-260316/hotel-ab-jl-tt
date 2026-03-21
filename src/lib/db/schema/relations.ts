@@ -1,3 +1,14 @@
+/**
+ * Drizzle relations — query builder metadata only.
+ *
+ * Nothing in this file creates or modifies database objects.
+ * Relations defined here enable Drizzle's `db.query.*` relational API
+ * (joins, nested selects) but have no SQL equivalent — they are invisible
+ * to `drizzle-kit push` and do not appear in migrations.
+ *
+ * All FK constraints that actually exist in the database are declared
+ * via `.references()` in schema/domain.ts.
+ */
 import { relations } from "drizzle-orm";
 import { user, session, account } from "./auth";
 import {

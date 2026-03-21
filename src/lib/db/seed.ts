@@ -1,3 +1,12 @@
+/**
+ * Development seed — inserts representative test data.
+ *
+ * Idempotent: uses `onConflictDoNothing` so it can be run multiple times
+ * without duplicating rows. Intended for local dev and CI only — never run
+ * against a production database.
+ *
+ * For the initial admin account, use seed-admin.ts instead.
+ */
 import { db } from "@/lib/db";
 import { user } from "@/lib/db/schema/auth";
 import { establishment, suite, booking } from "@/lib/db/schema/domain";
