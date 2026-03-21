@@ -9,7 +9,7 @@ import {
 import { eq, inArray } from "drizzle-orm";
 import { ROLES } from "@/config/roles";
 import { BOOKING_STATUSES } from "@/config/booking-statuses";
-import { hashPassword } from "@/lib/hash-password";
+import { hashPassword } from "better-auth/crypto";
 
 const SEED_PASSWORD = "Test1234!";
 const SEED_USER_IDS = [
@@ -29,7 +29,7 @@ async function seed() {
   await db.delete(user).where(inArray(user.id, SEED_USER_IDS));
 
   const now = new Date();
-  const hashedPassword = hashPassword(SEED_PASSWORD);
+  const hashedPassword = await hashPassword(SEED_PASSWORD);
 
   // --- Users ---
 

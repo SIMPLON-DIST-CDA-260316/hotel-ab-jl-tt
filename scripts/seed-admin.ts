@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { user, account } from "@/lib/db/schema";
-import { hashPassword } from "@/lib/hash-password";
+import { hashPassword } from "better-auth/crypto";
 import { ROLES } from "@/config/roles";
 
 const ADMIN_EMAIL = process.env.SEED_ADMIN_EMAIL ?? "admin@clairdulune.fr";
@@ -44,7 +44,7 @@ async function seedAdmin(): Promise<void> {
       accountId: ADMIN_EMAIL,
       providerId: "credential",
       userId,
-      password: hashPassword(ADMIN_PASSWORD!),
+      password: await hashPassword(ADMIN_PASSWORD!),
       createdAt: now,
       updatedAt: now,
     });

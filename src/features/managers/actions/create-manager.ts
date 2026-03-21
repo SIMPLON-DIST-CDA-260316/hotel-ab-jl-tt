@@ -5,7 +5,7 @@ import { user, account, establishment } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth-guards";
-import { hashPassword } from "@/lib/hash-password";
+import { hashPassword } from "better-auth/crypto";
 import { ROLES } from "@/config/roles";
 import { createManagerSchema } from "../lib/manager-schema";
 import type { ActionResult } from "@/types/action.types";
@@ -68,7 +68,7 @@ export async function createManager(
         accountId: email,
         providerId: "credential",
         userId,
-        password: hashPassword(password),
+        password: await hashPassword(password),
         createdAt: now,
         updatedAt: now,
       });
