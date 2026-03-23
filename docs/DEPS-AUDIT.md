@@ -75,6 +75,28 @@ Audit des dépendances du projet Hotel Clair de Lune : versions, configuration, 
 
 ---
 
+### P7 — `@types/react-dom` absent
+
+- **Problème :** `@types/react` est dans les devDeps mais `@types/react-dom` n'y est pas. Avec `strict: true` activé, les types DOM spécifiques à `react-dom` (`createPortal`, `flushSync`, etc.) peuvent manquer.
+- **Impact :** Typage incomplet pour les APIs `react-dom`. Masqué par `skipLibCheck: true` mais risque de `any` silencieux.
+- **Action proposée :** Ajouter `@types/react-dom` en version exacte (cohérence avec `@types/react`).
+- **Résolution :** `@types/react-dom@19.2.3` ajouté en pin exact.
+- **Statut :** Corrigé
+
+---
+
+### P8–P12 — Constats de review (non actionnables)
+
+| # | Constat | Verdict |
+|---|---------|---------|
+| P8 | `sonner` / `next-themes` absents | Non requis — pas importés dans le code |
+| P9 | `@types/node` absent | Non requis — couvert par `@types/bun` |
+| P10 | `sharp` pour `next/image` | OK — dep transitive de Next.js |
+| P11 | ESLint rules de formatting manuelles | Hors scope — décision d'équipe sur l'outillage |
+| P12 | `@types/react` pinné sans `^` | Intentionnel — contrôle des versions (convention projet) |
+
+---
+
 ## Points vérifiés — OK
 
 | Élément | Statut |
@@ -103,6 +125,7 @@ Audit des dépendances du projet Hotel Clair de Lune : versions, configuration, 
 - [x] **P4** — Supprimer doublon Radix *(faible)*
 - [x] **P5** — Vérifier env Vitest *(faible)* — N/A, choix intentionnel
 - [x] **P6** — Installer `tw-animate-css` *(faible)*
+- [x] **P7** — Ajouter `@types/react-dom` *(faible)*
 
 ## Journal de résolution
 
@@ -112,3 +135,4 @@ Audit des dépendances du projet Hotel Clair de Lune : versions, configuration, 
 - **P6** (2026-03-23) : `bun add tw-animate-css` + `@import "tw-animate-css"` dans `globals.css`. Requis par `alert-dialog` et `select`. Build OK.
 - **P2** (2026-03-23) : Déjà résolu sur `main` (`61bd358`). Le worktree était en retard — corrigé par rebase.
 - **P1** (2026-03-23) : `strict: true` activé dans `tsconfig.json`. 0 erreur supplémentaire. Import cassé `db-viewer/page.tsx` corrigé au passage (`schema` → `schema/auth`).
+- **P7** (2026-03-23) : `bun add -d @types/react-dom@19.2.3 --exact`. Cohérence de typage avec `strict: true`.
