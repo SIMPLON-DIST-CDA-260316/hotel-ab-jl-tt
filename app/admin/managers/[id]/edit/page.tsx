@@ -44,6 +44,7 @@ export default async function EditManagerPage({ params }: EditManagerPageProps) 
           email: manager.email,
           establishmentId: manager.establishmentId ?? undefined,
         }}
+        editingManagerId={id}
         showPassword={false}
         submitLabel="Enregistrer les modifications"
       />

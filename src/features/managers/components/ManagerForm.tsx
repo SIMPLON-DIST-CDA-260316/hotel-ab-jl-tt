@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
+import { useState, useActionState } from "react";
+import { TriangleAlertIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,25 +18,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import type { ActionResult } from "@/types/action.types";
+import type { EstablishmentSelectOption } from "../queries/get-establishments-for-select";
 
 type FormState = ActionResult | null;
 
-type Establishment = {
-  id: string;
-  name: string;
-  city: string;
-};
-
 interface ManagerFormProps {
   action: (formData: FormData) => Promise<FormState>;
-  establishments: Establishment[];
+  establishments: EstablishmentSelectOption[];
   defaultValues?: {
     firstName?: string | null;
     lastName?: string | null;
     email?: string | null;
     establishmentId?: string | null;
   };
+  editingManagerId?: string;
   showPassword?: boolean;
   submitLabel?: string;
 }
@@ -44,6 +42,7 @@ export function ManagerForm({
   action,
   establishments,
   defaultValues,
+  editingManagerId,
   showPassword = true,
   submitLabel = "Créer",
 }: ManagerFormProps) {
@@ -53,6 +52,21 @@ export function ManagerForm({
   );
 
   const isEditMode = defaultValues !== undefined;
+
+  const [firstName, setFirstName] = useState(defaultValues?.firstName ?? "");
+  const [lastName, setLastName] = useState(defaultValues?.lastName ?? "");
+  const [email, setEmail] = useState(defaultValues?.email ?? "");
+  const [password, setPassword] = useState("");
+  const [establishmentId, setEstablishmentId] = useState(
+    defaultValues?.establishmentId ?? (isEditMode ? "none" : ""),
+  );
+
+  const selectedEstablishment = establishments.find(
+    (establishment) => establishment.id === establishmentId,
+  );
+  const isReassignment =
+    selectedEstablishment?.currentManagerId &&
+    selectedEstablishment.currentManagerId !== editingManagerId;
 
   return (
     <Card>
@@ -70,7 +84,8 @@ export function ManagerForm({
                 id="firstName"
                 name="firstName"
                 autoComplete="given-name"
-                defaultValue={defaultValues?.firstName ?? ""}
+                value={firstName}
+                onChange={(event) => setFirstName(event.target.value)}
                 aria-describedby={
                   state?.errors?.firstName ? "firstName-error" : undefined
                 }
@@ -89,7 +104,8 @@ export function ManagerForm({
                 id="lastName"
                 name="lastName"
                 autoComplete="family-name"
-                defaultValue={defaultValues?.lastName ?? ""}
+                value={lastName}
+                onChange={(event) => setLastName(event.target.value)}
                 aria-describedby={
                   state?.errors?.lastName ? "lastName-error" : undefined
                 }
@@ -110,7 +126,8 @@ export function ManagerForm({
               name="email"
               type="email"
               autoComplete="email"
-              defaultValue={defaultValues?.email ?? ""}
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
               aria-describedby={
                 state?.errors?.email ? "email-error" : undefined
               }
@@ -131,6 +148,8 @@ export function ManagerForm({
                 name="password"
                 type="password"
                 autoComplete="new-password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
                 aria-describedby={
                   state?.errors?.password
                     ? "password-error"
@@ -154,7 +173,8 @@ export function ManagerForm({
             <Label htmlFor="establishmentId">Établissement</Label>
             <Select
               name="establishmentId"
-              defaultValue={defaultValues?.establishmentId ?? (isEditMode ? "none" : "")}
+              value={establishmentId}
+              onValueChange={setEstablishmentId}
             >
               <SelectTrigger
                 id="establishmentId"
@@ -184,6 +204,15 @@ export function ManagerForm({
               >
                 {state.errors.establishmentId[0]}
               </p>
+            )}
+            {isReassignment && (
+              <Alert variant="destructive" className="mt-2">
+                <TriangleAlertIcon className="size-4" />
+                <AlertDescription>
+                  Cet établissement est actuellement géré par{" "}
+                  {selectedEstablishment.currentManagerName}. Il lui sera retiré.
+                </AlertDescription>
+              </Alert>
             )}
           </div>
 
