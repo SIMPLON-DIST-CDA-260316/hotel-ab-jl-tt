@@ -27,7 +27,8 @@ Audit des dépendances du projet Hotel Clair de Lune : versions, configuration, 
 - **Problème :** Le README documente `bun run db:seed-admin` mais ni le script ni le fichier source n'existent.
 - **Impact :** Documentation trompeuse pour les contributeurs.
 - **Action proposée :** Option A — créer le script. Option B — retirer la section du README.
-- **Statut :** En attente
+- **Résolution :** Déjà corrigé sur `main` dans le commit `61bd358` (refactor/schema-split). Le fichier `src/lib/db/seed-admin.ts` et le script `db:seed-admin` existent après rebase.
+- **Statut :** Non applicable — déjà résolu sur main
 
 ---
 
@@ -96,7 +97,7 @@ Audit des dépendances du projet Hotel Clair de Lune : versions, configuration, 
 ## Suivi
 
 - [ ] **P1** — Activer `strict: true` *(haute — à évaluer)*
-- [ ] **P2** — Script `db:seed-admin` *(faible)*
+- [x] **P2** — Script `db:seed-admin` *(faible)* — déjà résolu sur main
 - [x] **P3** — Corriger chemin CSS `components.json` *(triviale)*
 - [x] **P4** — Supprimer doublon Radix *(faible)*
 - [x] **P5** — Vérifier env Vitest *(faible)* — N/A, choix intentionnel
@@ -108,3 +109,4 @@ Audit des dépendances du projet Hotel Clair de Lune : versions, configuration, 
 - **P4** (2026-03-23) : `bun remove @radix-ui/react-slot` — doublon avec `radix-ui`. Build + tests OK.
 - **P5** (2026-03-23) : Vérifié dans l'historique git — changement intentionnel (`ff2d655`, 18 mars). Pas d'action requise.
 - **P6** (2026-03-23) : `bun add tw-animate-css` + `@import "tw-animate-css"` dans `globals.css`. Requis par `alert-dialog` et `select`. Build OK.
+- **P2** (2026-03-23) : Déjà résolu sur `main` (`61bd358`). Le worktree était en retard — corrigé par rebase.
