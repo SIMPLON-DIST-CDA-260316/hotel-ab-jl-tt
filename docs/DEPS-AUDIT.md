@@ -17,7 +17,8 @@ Audit des dépendances du projet Hotel Clair de Lune : versions, configuration, 
 - **Impact :** Pas de vérification `null`/`undefined`, pas de `strictFunctionTypes`, pas de `noImplicitAny`. Les bugs passent au travers du compilateur.
 - **Action proposée :** Passer à `"strict": true` et corriger les erreurs de compilation.
 - **Risque :** Potentiellement beaucoup d'erreurs à corriger. À évaluer d'abord avec `tsc --noEmit`.
-- **Statut :** En attente
+- **Résolution :** `tsc --noEmit --strict` ne produisait qu'une seule erreur — un import cassé dans `app/db-viewer/page.tsx` (`@/lib/db/schema` → `@/lib/db/schema/auth`) causé par le schema split, pas par le strict mode. Corrigé. 0 erreur, build OK, tests OK.
+- **Statut :** Corrigé
 
 ---
 
@@ -96,7 +97,7 @@ Audit des dépendances du projet Hotel Clair de Lune : versions, configuration, 
 
 ## Suivi
 
-- [ ] **P1** — Activer `strict: true` *(haute — à évaluer)*
+- [x] **P1** — Activer `strict: true` *(haute — à évaluer)*
 - [x] **P2** — Script `db:seed-admin` *(faible)* — déjà résolu sur main
 - [x] **P3** — Corriger chemin CSS `components.json` *(triviale)*
 - [x] **P4** — Supprimer doublon Radix *(faible)*
@@ -110,3 +111,4 @@ Audit des dépendances du projet Hotel Clair de Lune : versions, configuration, 
 - **P5** (2026-03-23) : Vérifié dans l'historique git — changement intentionnel (`ff2d655`, 18 mars). Pas d'action requise.
 - **P6** (2026-03-23) : `bun add tw-animate-css` + `@import "tw-animate-css"` dans `globals.css`. Requis par `alert-dialog` et `select`. Build OK.
 - **P2** (2026-03-23) : Déjà résolu sur `main` (`61bd358`). Le worktree était en retard — corrigé par rebase.
+- **P1** (2026-03-23) : `strict: true` activé dans `tsconfig.json`. 0 erreur supplémentaire. Import cassé `db-viewer/page.tsx` corrigé au passage (`schema` → `schema/auth`).
