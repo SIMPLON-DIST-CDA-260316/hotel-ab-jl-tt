@@ -5,34 +5,26 @@ import { forbidden, unauthorized } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { ROLES } from "@/config/roles";
 import type { Role } from "@/types/role.types";
-
-interface Session {
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    role: Role;
-  };
-}
+import type { AuthSession } from "@/types/auth.types";
 
 /**
  * Returns the current session or throws a Next.js 401 (unauthorized).
  * Use at the top of any protected query or Server Action.
  */
-export async function requireSession(): Promise<Session> {
+export async function requireSession(): Promise<AuthSession> {
   const session = await auth.api.getSession({ headers: await headers() });
 
   if (!session) {
     unauthorized();
   }
 
-  return session as Session;
+  return session as AuthSession;
 }
 
 /**
  * Returns the session if the user has the required role, or throws 403 (forbidden).
  */
-export async function requireRole(role: Role): Promise<Session> {
+export async function requireRole(role: Role): Promise<AuthSession> {
   const session = await requireSession();
 
   if (session.user.role !== role) {
@@ -42,15 +34,15 @@ export async function requireRole(role: Role): Promise<Session> {
   return session;
 }
 
-export async function requireAdmin(): Promise<Session> {
+export async function requireAdmin(): Promise<AuthSession> {
   return requireRole(ROLES.ADMIN);
 }
 
-export async function requireManager(): Promise<Session> {
+export async function requireManager(): Promise<AuthSession> {
   return requireRole(ROLES.MANAGER);
 }
 
-export async function requireClient(): Promise<Session> {
+export async function requireClient(): Promise<AuthSession> {
   return requireRole(ROLES.CLIENT);
 }
 
@@ -59,7 +51,7 @@ export async function requireClient(): Promise<Session> {
  * Use in manager actions to ensure they only act on their own establishment.
  */
 export async function requireOwnership(
-  session: Session,
+  session: AuthSession,
   ownerId: string,
 ): Promise<void> {
   if (session.user.id !== ownerId && session.user.role !== ROLES.ADMIN) {

@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
-import { user, establishment } from "@/lib/db/schema";
+import { user } from "@/lib/db/schema/auth";
+import { establishment } from "@/lib/db/schema/domain";
 import { eq, isNull, and } from "drizzle-orm";
 import { ROLES } from "@/config/roles";
 

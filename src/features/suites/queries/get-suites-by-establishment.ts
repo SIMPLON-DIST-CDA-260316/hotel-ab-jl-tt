@@ -1,8 +1,19 @@
 import { db } from "@/lib/db";
-import { suite } from "@/lib/db/schema";
+import { suite } from "@/lib/db/schema/domain";
 import { eq, isNull, and } from "drizzle-orm";
 
-export async function getSuitesByEstablishment(establishmentId: string) {
+export type SuiteListItem = {
+  id: string;
+  title: string;
+  description: string | null;
+  price: string;
+  mainImage: string;
+  capacity: number;
+};
+
+export async function getSuitesByEstablishment(
+  establishmentId: string,
+): Promise<SuiteListItem[]> {
   return db
     .select({
       id: suite.id,

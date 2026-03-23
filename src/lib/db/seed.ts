@@ -1,12 +1,16 @@
+/**
+ * Development seed — inserts representative test data.
+ *
+ * Idempotent: uses `onConflictDoNothing` so it can be run multiple times
+ * without duplicating rows. Intended for local dev and CI only — never run
+ * against a production database.
+ *
+ * For the initial admin account, use seed-admin.ts instead.
+ */
 import { db } from "@/lib/db";
-import {
-  user,
-  account,
-  establishment,
-  suite,
-  booking,
-} from "@/lib/db/schema";
-import { eq, inArray } from "drizzle-orm";
+import { user, account } from "@/lib/db/schema/auth";
+import { establishment, suite, booking } from "@/lib/db/schema/domain";
+import { inArray } from "drizzle-orm";
 import { ROLES } from "@/config/roles";
 import { BOOKING_STATUSES } from "@/config/booking-statuses";
 import { hashPassword } from "better-auth/crypto";
@@ -237,11 +241,13 @@ async function seed() {
     "Seed complete: 1 admin + 3 managers + 1 client + 3 establishments + 4 suites + 2 bookings",
   );
   console.log(`All seed users share password: ${SEED_PASSWORD}`);
-
-  process.exit(0);
 }
 
-seed().catch((error: unknown) => {
-  console.error("Seed failed:", error);
-  process.exit(1);
-});
+if (import.meta.main) {
+  seed()
+    .catch((error: unknown) => {
+      console.error("Seed failed:", error);
+      process.exit(1);
+    })
+    .finally(() => process.exit(0));
+}

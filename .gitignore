@@ -13,3 +13,6 @@ tsconfig.tsbuildinfo
 test-results/
 playwright-report/
 blob-report/
+
+public/uploads/*
+!public/uploads/.gitkeep

@@ -1,4 +1,4 @@
-Exécute le plan docs/plans/issue-14-detail-etablissement.md dans ce worktree.
+Exécute le plan docs/logs/plans/issue-14-detail-etablissement.md dans ce worktree.
 
 Prérequis : #13 est terminée (query getEtablissements, seed, composants card/skeleton installés).
 
