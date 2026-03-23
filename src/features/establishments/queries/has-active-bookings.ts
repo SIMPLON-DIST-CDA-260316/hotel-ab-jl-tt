@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { booking, suite } from "@/lib/db/schema";
+import { booking, suite } from "@/lib/db/schema/domain";
 import { eq, and, gte, ne } from "drizzle-orm";
 import { sql } from "drizzle-orm";
 import { BOOKING_STATUSES } from "@/config/booking-statuses";

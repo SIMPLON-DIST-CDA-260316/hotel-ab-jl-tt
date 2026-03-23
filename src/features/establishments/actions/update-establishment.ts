@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { establishment } from "@/lib/db/schema";
+import { establishment } from "@/lib/db/schema/domain";
 import { and, eq, isNull } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth-guards";

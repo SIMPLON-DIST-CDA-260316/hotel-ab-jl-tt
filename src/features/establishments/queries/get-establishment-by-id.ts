@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { establishment } from "@/lib/db/schema";
+import { establishment } from "@/lib/db/schema/domain";
 import { eq, isNull, and } from "drizzle-orm";
 
 export async function getEstablishmentById(id: string) {
