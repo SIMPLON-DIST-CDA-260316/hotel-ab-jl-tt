@@ -37,7 +37,7 @@ Audit des dépendances du projet Hotel Clair de Lune : versions, configuration, 
 - **Problème :** `"css": "src/app/globals.css"` mais le fichier réel est `app/globals.css`.
 - **Impact :** `npx shadcn add` peut échouer ou ne pas injecter les styles correctement.
 - **Action proposée :** Corriger en `"css": "app/globals.css"`.
-- **Statut :** En attente
+- **Statut :** Corrigé
 
 ---
 
@@ -47,7 +47,8 @@ Audit des dépendances du projet Hotel Clair de Lune : versions, configuration, 
 - **Problème :** `@radix-ui/react-slot` (ancien namespace) et `radix-ui` (nouveau namespace unifié) sont tous deux installés. Le nouveau package inclut déjà `react-slot`.
 - **Impact :** Poids inutile, risque de versions divergentes.
 - **Action proposée :** Vérifier les imports existants, migrer vers `radix-ui` si applicable, supprimer `@radix-ui/react-slot`.
-- **Statut :** En attente
+- **Résolution :** Seul `src/components/ui/button.tsx` importait depuis `@radix-ui/react-slot`. Le package `radix-ui` embarque `@radix-ui/react-slot` dans ses propres `node_modules` — l'import existant continue de résoudre. `@radix-ui/react-slot` supprimé du top-level. Build + tests OK.
+- **Statut :** Corrigé
 
 ---
 
@@ -94,11 +95,12 @@ Audit des dépendances du projet Hotel Clair de Lune : versions, configuration, 
 
 - [ ] **P1** — Activer `strict: true` *(haute — à évaluer)*
 - [ ] **P2** — Script `db:seed-admin` *(faible)*
-- [ ] **P3** — Corriger chemin CSS `components.json` *(triviale)*
-- [ ] **P4** — Supprimer doublon Radix *(faible)*
+- [x] **P3** — Corriger chemin CSS `components.json` *(triviale)*
+- [x] **P4** — Supprimer doublon Radix *(faible)*
 - [ ] **P5** — Vérifier env Vitest *(faible)*
 - [ ] **P6** — Installer `tw-animate-css` *(faible)*
 
 ## Journal de résolution
 
-*(Mis à jour au fil de l'avancement)*
+- **P3** (2026-03-23) : `components.json` — `"css": "src/app/globals.css"` → `"css": "app/globals.css"`
+- **P4** (2026-03-23) : `bun remove @radix-ui/react-slot` — doublon avec `radix-ui`. Build + tests OK.
