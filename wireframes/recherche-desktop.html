@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1440px, initial-scale=1.0" />
+  <title>Wireframe — Recherche suites (desktop)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] } } }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+  <style>
+    details summary { list-style: none; cursor: pointer; }
+    details summary::-webkit-details-marker { display: none; }
+    details[open] .chevron { transform: rotate(180deg); }
+    .chevron { transition: transform 0.2s; }
+  </style>
+</head>
+<body class="bg-white text-zinc-900 font-sans antialiased min-h-screen">
+
+  <!-- Header -->
+  <header class="flex items-center gap-4 h-[90px] px-8 border-b border-zinc-200 bg-white sticky top-0 z-20">
+    <span class="text-xl font-semibold tracking-tight shrink-0">Hôtels Clair de Lune</span>
+    <div class="flex-1 flex items-stretch border border-zinc-200 rounded-xl overflow-hidden shadow-sm bg-white">
+      <div class="flex items-center gap-2 px-4 py-2 flex-1 border-r border-zinc-100 cursor-pointer hover:bg-zinc-50">
+        <svg class="w-4 h-4 text-zinc-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+        <div>
+          <p class="text-[10px] font-semibold text-zinc-400 uppercase tracking-wide">Destination</p>
+          <p class="text-sm text-zinc-800 font-medium">Aveyron</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 px-4 py-2 flex-1 border-r border-zinc-100 cursor-pointer hover:bg-zinc-50">
+        <svg class="w-4 h-4 text-zinc-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <div>
+          <p class="text-[10px] font-semibold text-zinc-400 uppercase tracking-wide">Dates</p>
+          <p class="text-sm text-zinc-800 font-medium">15 mars — 18 mars</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 px-4 py-2 flex-1 cursor-pointer hover:bg-zinc-50">
+        <svg class="w-4 h-4 text-zinc-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <div>
+          <p class="text-[10px] font-semibold text-zinc-400 uppercase tracking-wide">Voyageurs</p>
+          <p class="text-sm text-zinc-800 font-medium">2 voyageurs</p>
+        </div>
+      </div>
+      <button class="px-6 bg-zinc-900 text-white text-sm font-medium shrink-0">Rechercher</button>
+    </div>
+    <div class="relative shrink-0">
+      <button class="w-9 h-9 flex items-center justify-center rounded-md border border-zinc-200" onclick="this.nextElementSibling.classList.toggle('hidden')">
+        <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </button>
+      <div class="hidden absolute right-0 mt-1 w-48 bg-white border border-zinc-200 rounded-xl shadow-lg z-30 py-1 text-sm">
+        <a href="#" class="flex items-center gap-2 px-4 py-2.5 hover:bg-zinc-50 text-zinc-700">Profil</a>
+        <a href="#" class="flex items-center gap-2 px-4 py-2.5 hover:bg-zinc-50 text-zinc-700">Réservations</a>
+        <div class="h-px bg-zinc-100 my-1"></div>
+        <a href="#" class="flex items-center gap-2 px-4 py-2.5 hover:bg-zinc-50 text-zinc-700">Connexion / Déconnexion</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero résumé -->
+  <section class="px-16 py-5 border-b border-zinc-100 bg-zinc-50">
+    <h1 class="text-2xl font-bold leading-snug">Résultats de votre recherche</h1>
+  </section>
+
+  <!-- Contenu : sidebar + grille -->
+  <div class="flex gap-8 px-16 py-8">
+
+    <!-- Sidebar filtres -->
+    <aside class="w-56 shrink-0">
+      <p class="text-xs font-semibold text-zinc-400 uppercase tracking-wide mb-4">Filtres</p>
+
+      <details open class="mb-3">
+        <summary class="flex items-center justify-between py-1.5 text-sm font-semibold text-zinc-700">
+          Localisation
+          <svg class="chevron w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </summary>
+        <div class="pl-1 pt-2 pb-3 flex flex-col gap-2 border-b border-zinc-100">
+          <label class="flex items-center gap-2 text-sm text-zinc-600 cursor-pointer"><input type="checkbox" checked class="rounded border-zinc-300" /> Aveyron</label>
+          <label class="flex items-center gap-2 text-sm text-zinc-600 cursor-pointer"><input type="checkbox" class="rounded border-zinc-300" /> Puy-de-Dôme</label>
+          <label class="flex items-center gap-2 text-sm text-zinc-600 cursor-pointer"><input type="checkbox" class="rounded border-zinc-300" /> Cantal</label>
+          <label class="flex items-center gap-2 text-sm text-zinc-600 cursor-pointer"><input type="checkbox" class="rounded border-zinc-300" /> Lozère</label>
+          <p class="text-xs text-zinc-300 italic pl-5">+ autres à venir</p>
+        </div>
+      </details>
+
+      <details open class="mb-3">
+        <summary class="flex items-center justify-between py-1.5 text-sm font-semibold text-zinc-700">
+          Prix / nuit
+          <svg class="chevron w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </summary>
+        <div class="pl-1 pt-2 pb-3 border-b border-zinc-100">
+          <div class="flex items-center justify-between text-xs text-zinc-400 mb-2"><span>80 €</span><span>300 €</span></div>
+          <div class="relative h-1.5 bg-zinc-200 rounded-full mx-1">
+            <div class="absolute left-[10%] right-[30%] h-1.5 bg-zinc-700 rounded-full"></div>
+            <div class="absolute left-[10%] -translate-x-1/2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 bg-white border-2 border-zinc-700 rounded-full shadow cursor-pointer"></div>
+            <div class="absolute right-[30%] translate-x-1/2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 bg-white border-2 border-zinc-700 rounded-full shadow cursor-pointer"></div>
+          </div>
+          <p class="text-xs text-zinc-500 mt-3 text-center">90 € — 210 € / nuit</p>
+        </div>
+      </details>
+
+      <details class="mb-3">
+        <summary class="flex items-center justify-between py-1.5 text-sm font-semibold text-zinc-700">
+          Accessibilité
+          <svg class="chevron w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </summary>
+        <div class="pl-1 pt-2 pb-3 flex flex-col gap-2 border-b border-zinc-100">
+          <label class="flex items-center gap-2 text-sm text-zinc-600 cursor-pointer"><input type="checkbox" class="rounded border-zinc-300" /> Accès PMR</label>
+          <label class="flex items-center gap-2 text-sm text-zinc-600 cursor-pointer"><input type="checkbox" class="rounded border-zinc-300" /> Plain-pied</label>
+        </div>
+      </details>
+
+      <details class="opacity-40">
+        <summary class="flex items-center justify-between py-1.5 text-sm font-medium text-zinc-400">
+          Autres filtres…
+          <svg class="chevron w-4 h-4 text-zinc-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </summary>
+      </details>
+    </aside>
+
+    <!-- Grille suites -->
+    <main class="flex-1">
+      <p class="text-xs text-zinc-400 mb-4">12 suites disponibles</p>
+      <div class="grid grid-cols-2 xl:grid-cols-3 gap-5">
+
+        <div class="rounded-xl border border-zinc-200 overflow-hidden shadow-sm bg-white">
+          <div class="bg-zinc-100 h-44 flex items-center justify-center text-zinc-400 text-sm">Photo de la suite</div>
+          <div class="p-4 flex flex-col gap-2">
+            <div>
+              <div class="flex items-center justify-between gap-2">
+                <h2 class="text-base font-semibold leading-tight">Suite La Dourdou</h2>
+                <div class="flex items-center gap-1 text-xs text-zinc-400 shrink-0">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  <span>2</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-1 mt-1 flex-wrap">
+                <span class="text-[10px] text-zinc-500 border border-zinc-200 rounded-full px-2 py-0.5 bg-zinc-50">Le Moulin du Vallon</span>
+                <span class="text-[10px] text-zinc-400">· Saint-Geniez-d'Olt</span>
+              </div>
+            </div>
+            <p class="text-xs text-zinc-500 leading-relaxed">Suite au rez-de-chaussée avec accès direct au jardin et terrasse privative face à la rivière.</p>
+            <div class="flex items-center justify-between pt-2 border-t border-zinc-100">
+              <span class="text-sm font-semibold">140 € <span class="text-xs font-normal text-zinc-400">/ nuit</span></span>
+              <button class="px-3 py-1.5 text-xs font-medium bg-zinc-900 text-white rounded-md">Voir la suite</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-xl border border-zinc-200 overflow-hidden shadow-sm bg-white">
+          <div class="bg-zinc-100 h-44 flex items-center justify-center text-zinc-400 text-sm">Photo de la suite</div>
+          <div class="p-4 flex flex-col gap-2">
+            <div>
+              <div class="flex items-center justify-between gap-2">
+                <h2 class="text-base font-semibold leading-tight">Suite des Causses</h2>
+                <div class="flex items-center gap-1 text-xs text-zinc-400 shrink-0">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  <span>2</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-1 mt-1 flex-wrap">
+                <span class="text-[10px] text-zinc-500 border border-zinc-200 rounded-full px-2 py-0.5 bg-zinc-50">Le Moulin du Vallon</span>
+                <span class="text-[10px] text-zinc-400">· Saint-Geniez-d'Olt</span>
+              </div>
+            </div>
+            <p class="text-xs text-zinc-500 leading-relaxed">Vue panoramique sur les causses, baignoire îlot, poêle à bois. Idéale pour deux.</p>
+            <div class="flex items-center justify-between pt-2 border-t border-zinc-100">
+              <span class="text-sm font-semibold">160 € <span class="text-xs font-normal text-zinc-400">/ nuit</span></span>
+              <button class="px-3 py-1.5 text-xs font-medium bg-zinc-900 text-white rounded-md">Voir la suite</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-xl border border-zinc-200 overflow-hidden shadow-sm bg-white">
+          <div class="bg-zinc-100 h-44 flex items-center justify-center text-zinc-400 text-sm">Photo de la suite</div>
+          <div class="p-4 flex flex-col gap-2">
+            <div>
+              <div class="flex items-center justify-between gap-2">
+                <h2 class="text-base font-semibold leading-tight">Suite Aubrac</h2>
+                <div class="flex items-center gap-1 text-xs text-zinc-400 shrink-0">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  <span>2</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-1 mt-1 flex-wrap">
+                <span class="text-[10px] text-zinc-500 border border-zinc-200 rounded-full px-2 py-0.5 bg-zinc-50">La Bergerie de Laguiole</span>
+                <span class="text-[10px] text-zinc-400">· Laguiole</span>
+              </div>
+            </div>
+            <p class="text-xs text-zinc-500 leading-relaxed">Pierres apparentes, laine de pays et silence total. Petit-déjeuner fermier inclus.</p>
+            <div class="flex items-center justify-between pt-2 border-t border-zinc-100">
+              <span class="text-sm font-semibold">125 € <span class="text-xs font-normal text-zinc-400">/ nuit</span></span>
+              <button class="px-3 py-1.5 text-xs font-medium bg-zinc-900 text-white rounded-md">Voir la suite</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-xl border border-zinc-200 overflow-hidden shadow-sm bg-white">
+          <div class="bg-zinc-100 h-44 flex items-center justify-center text-zinc-400 text-sm">Photo de la suite</div>
+          <div class="p-4 flex flex-col gap-2">
+            <div>
+              <div class="flex items-center justify-between gap-2">
+                <h2 class="text-base font-semibold leading-tight">Suite du Belvédère</h2>
+                <div class="flex items-center gap-1 text-xs text-zinc-400 shrink-0">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  <span>3</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-1 mt-1 flex-wrap">
+                <span class="text-[10px] text-zinc-500 border border-zinc-200 rounded-full px-2 py-0.5 bg-zinc-50">La Bergerie de Laguiole</span>
+                <span class="text-[10px] text-zinc-400">· Laguiole</span>
+              </div>
+            </div>
+            <p class="text-xs text-zinc-500 leading-relaxed">En hauteur, vue dégagée sur les vallées de l'Aubrac. Grand lit, douche à l'italienne.</p>
+            <div class="flex items-center justify-between pt-2 border-t border-zinc-100">
+              <span class="text-sm font-semibold">145 € <span class="text-xs font-normal text-zinc-400">/ nuit</span></span>
+              <button class="px-3 py-1.5 text-xs font-medium bg-zinc-900 text-white rounded-md">Voir la suite</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+</body>
+</html>
