@@ -11,6 +11,11 @@ Organization:
 - Organize test files by feature
 - Group related tests using `describe`
 
+Vitest Environment:
+- Default environment is `node` (configured in `vitest.config.ts`) — suited for pure logic and DB integration tests (PGlite)
+- For component tests requiring DOM, add `// @vitest-environment jsdom` as the first line of the test file
+- Do not change the global environment — per-file override keeps DB tests fast
+
 Core Principles:
 - Write tests in English
 - Follow Arrange-Act-Assert (AAA) pattern

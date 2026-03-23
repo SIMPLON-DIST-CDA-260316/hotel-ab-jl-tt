@@ -58,7 +58,8 @@ Audit des dépendances du projet Hotel Clair de Lune : versions, configuration, 
 - **Problème :** `environment: "node"` alors que `@testing-library/react` et `jsdom` sont installés. Les tests de composants React ont besoin de `jsdom`.
 - **Impact :** Si tous les tests actuels sont des tests de logique pure (pas de composants), c'est correct. Mais dès qu'un test de composant sera ajouté, il échouera.
 - **Action proposée :** Vérifier les tests existants. Si aucun test de composant, laisser en `node` et documenter l'utilisation de `// @vitest-environment jsdom` par fichier. Sinon, passer à `jsdom`.
-- **Statut :** En attente
+- **Résolution :** Changement intentionnel dans `ff2d655` (2026-03-18) — les tests actuels sont des tests d'intégration DB (PGlite), `jsdom` non nécessaire. Pour de futurs tests de composants, utiliser `// @vitest-environment jsdom` en tête de fichier.
+- **Statut :** Non applicable — choix intentionnel
 
 ---
 
@@ -97,10 +98,11 @@ Audit des dépendances du projet Hotel Clair de Lune : versions, configuration, 
 - [ ] **P2** — Script `db:seed-admin` *(faible)*
 - [x] **P3** — Corriger chemin CSS `components.json` *(triviale)*
 - [x] **P4** — Supprimer doublon Radix *(faible)*
-- [ ] **P5** — Vérifier env Vitest *(faible)*
+- [x] **P5** — Vérifier env Vitest *(faible)* — N/A, choix intentionnel
 - [ ] **P6** — Installer `tw-animate-css` *(faible)*
 
 ## Journal de résolution
 
 - **P3** (2026-03-23) : `components.json` — `"css": "src/app/globals.css"` → `"css": "app/globals.css"`
 - **P4** (2026-03-23) : `bun remove @radix-ui/react-slot` — doublon avec `radix-ui`. Build + tests OK.
+- **P5** (2026-03-23) : Vérifié dans l'historique git — changement intentionnel (`ff2d655`, 18 mars). Pas d'action requise.
