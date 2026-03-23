@@ -68,7 +68,8 @@ Audit des dépendances du projet Hotel Clair de Lune : versions, configuration, 
 - **Problème :** Ni `tailwindcss-animate` ni `tw-animate-css` n'est installé. Les composants shadcn animés (Dialog, Sheet, Dropdown, etc.) en ont besoin.
 - **Impact :** Les animations d'entrée/sortie des composants shadcn ne fonctionnent pas.
 - **Action proposée :** Vérifier si des composants animés sont utilisés. Si oui, installer `tw-animate-css` et l'importer dans `globals.css`.
-- **Statut :** En attente
+- **Résolution :** `alert-dialog.tsx` et `select.tsx` utilisent `animate-in/out`, `fade-in/out`, `zoom-in/out` — classes fournies par `tw-animate-css`. Package installé (`v1.4.0`) et importé dans `globals.css`. Build OK.
+- **Statut :** Corrigé
 
 ---
 
@@ -99,10 +100,11 @@ Audit des dépendances du projet Hotel Clair de Lune : versions, configuration, 
 - [x] **P3** — Corriger chemin CSS `components.json` *(triviale)*
 - [x] **P4** — Supprimer doublon Radix *(faible)*
 - [x] **P5** — Vérifier env Vitest *(faible)* — N/A, choix intentionnel
-- [ ] **P6** — Installer `tw-animate-css` *(faible)*
+- [x] **P6** — Installer `tw-animate-css` *(faible)*
 
 ## Journal de résolution
 
 - **P3** (2026-03-23) : `components.json` — `"css": "src/app/globals.css"` → `"css": "app/globals.css"`
 - **P4** (2026-03-23) : `bun remove @radix-ui/react-slot` — doublon avec `radix-ui`. Build + tests OK.
 - **P5** (2026-03-23) : Vérifié dans l'historique git — changement intentionnel (`ff2d655`, 18 mars). Pas d'action requise.
+- **P6** (2026-03-23) : `bun add tw-animate-css` + `@import "tw-animate-css"` dans `globals.css`. Requis par `alert-dialog` et `select`. Build OK.
