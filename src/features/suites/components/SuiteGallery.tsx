@@ -15,6 +15,59 @@ type SuiteGalleryProps = {
   title: string;
 };
 
+type GalleryNavProps = {
+  direction: "prev" | "next";
+  onClick: () => void;
+};
+
+function GalleryNav({ direction, onClick }: GalleryNavProps) {
+  const isPrev = direction === "prev";
+  return (
+    <Button
+      onClick={onClick}
+      aria-label={isPrev ? "Image précédente" : "Image suivante"}
+      variant="outline"
+      size="icon"
+      className={`absolute ${isPrev ? "left-4" : "right-4"} top-1/2 -translate-y-1/2 rounded-full bg-white/90 backdrop-blur-sm shadow-md hover:bg-white size-11`}
+    >
+      <svg className="w-5 h-5 text-zinc-700" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden>
+        <polyline points={isPrev ? "15 18 9 12 15 6" : "9 18 15 12 9 6"} />
+      </svg>
+    </Button>
+  );
+}
+
+type GalleryDotsProps = {
+  count: number;
+  currentIndex: number;
+  onSelect: (index: number) => void;
+};
+
+function GalleryDots({ count, currentIndex, onSelect }: GalleryDotsProps) {
+  return (
+    <div
+      className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 items-center"
+      role="tablist"
+      aria-label="Navigation galerie"
+    >
+      {Array.from({ length: count }).map((_, index) => (
+        <button
+          key={index}
+          role="tab"
+          aria-selected={index === currentIndex}
+          aria-label={`Image ${index + 1}`}
+          onClick={() => onSelect(index)}
+          className={
+            index === currentIndex
+              ? "w-6 h-1.5 rounded-full bg-white transition-all"
+              : "w-1.5 h-1.5 rounded-full bg-white/50 transition-all"
+          }
+        />
+      ))}
+    </div>
+  );
+}
+
 export function SuiteGallery({ mainImage, images, title }: SuiteGalleryProps) {
   const slides: Slide[] = [
     { url: mainImage, alt: title },
@@ -44,65 +97,9 @@ export function SuiteGallery({ mainImage, images, title }: SuiteGalleryProps) {
 
       {slides.length > 1 && (
         <>
-          <Button
-            onClick={goToPrev}
-            aria-label="Image précédente"
-            variant="outline"
-            size="icon"
-            className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 backdrop-blur-sm shadow-md hover:bg-white size-11"
-          >
-            <svg
-              className="w-5 h-5 text-zinc-700"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              viewBox="0 0 24 24"
-              aria-hidden
-            >
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-          </Button>
-
-          <Button
-            onClick={goToNext}
-            aria-label="Image suivante"
-            variant="outline"
-            size="icon"
-            className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/90 backdrop-blur-sm shadow-md hover:bg-white size-11"
-          >
-            <svg
-              className="w-5 h-5 text-zinc-700"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              viewBox="0 0 24 24"
-              aria-hidden
-            >
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
-          </Button>
-
-          <div
-            className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 items-center"
-            role="tablist"
-            aria-label="Navigation galerie"
-          >
-            {slides.map((_, index) => (
-              <button
-                key={index}
-                role="tab"
-                aria-selected={index === currentIndex}
-                aria-label={`Image ${index + 1}`}
-                onClick={() => setCurrentIndex(index)}
-                className={
-                  index === currentIndex
-                    ? "w-6 h-1.5 rounded-full bg-white transition-all"
-                    : "w-1.5 h-1.5 rounded-full bg-white/50 transition-all"
-                }
-              />
-            ))}
-          </div>
-
+          <GalleryNav direction="prev" onClick={goToPrev} />
+          <GalleryNav direction="next" onClick={goToNext} />
+          <GalleryDots count={slides.length} currentIndex={currentIndex} onSelect={setCurrentIndex} />
           <div className="absolute bottom-4 right-6 bg-black/50 text-white text-xs font-medium px-3 py-1 rounded-md">
             {currentIndex + 1} / {slides.length}
           </div>

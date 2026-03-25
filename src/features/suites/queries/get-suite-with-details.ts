@@ -48,7 +48,7 @@ export async function getSuiteWithDetails(
     })
     .from(suite)
     .innerJoin(establishment, eq(suite.establishmentId, establishment.id))
-    .where(and(eq(suite.id, id), isNull(suite.deletedAt)))
+    .where(and(eq(suite.id, id), isNull(suite.deletedAt), isNull(establishment.deletedAt)))
     .limit(1);
 
   if (!suiteRow) return null;

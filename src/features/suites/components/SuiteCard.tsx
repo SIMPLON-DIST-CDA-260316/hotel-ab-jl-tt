@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { priceFormatter } from "@/lib/formatters";
 
 type SuiteCardProps = {
   suite: {
@@ -12,11 +13,6 @@ type SuiteCardProps = {
     capacity: number;
   };
 };
-
-const priceFormatter = new Intl.NumberFormat("fr-FR", {
-  style: "currency",
-  currency: "EUR",
-});
 
 export function SuiteCard({ suite }: SuiteCardProps) {
   return (
