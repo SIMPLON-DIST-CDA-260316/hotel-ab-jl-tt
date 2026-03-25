@@ -19,7 +19,7 @@ export function activeBookingOverlap(
         eq(booking.status, BOOKING_STATUSES.PENDING),
         isNotNull(booking.expiresAt),
         lt(booking.expiresAt, sql`now()`),
-      ),
+      )!,
     ),
     lt(booking.checkIn, checkOut),
     gt(booking.checkOut, checkIn),

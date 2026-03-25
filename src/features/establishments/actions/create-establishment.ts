@@ -8,7 +8,7 @@ import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth-guards";
 import { ROLES } from "@/config/roles";
 import { establishmentSchema } from "../lib/establishment-schema";
-import type { ActionResult } from "../types/action.types";
+import type { ActionResult } from "@/types/action.types";
 
 export async function createEstablishment(
   formData: FormData,

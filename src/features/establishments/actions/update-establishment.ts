@@ -6,7 +6,7 @@ import { and, eq, isNull } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth-guards";
 import { establishmentSchema } from "../lib/establishment-schema";
-import type { ActionResult } from "../types/action.types";
+import type { ActionResult } from "@/types/action.types";
 
 export async function updateEstablishment(
   id: string,

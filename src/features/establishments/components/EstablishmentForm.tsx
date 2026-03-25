@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { ActionResult } from "../types/action.types";
+import type { ActionResult } from "@/types/action.types";
 
 type FormState = ActionResult | null;
 
