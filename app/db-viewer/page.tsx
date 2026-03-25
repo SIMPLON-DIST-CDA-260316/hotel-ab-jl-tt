@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import * as schema from "@/lib/db/schema";
+import * as schema from "@/lib/db/schema/auth";
 import { extractColumns } from "@/features/db-viewer/lib/extract-columns";
 import { SchemaTable } from "@/features/db-viewer/components/SchemaTable";
 import { DataTable } from "@/features/db-viewer/components/DataTable";
