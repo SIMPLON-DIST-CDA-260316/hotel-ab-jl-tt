@@ -8,41 +8,110 @@
  * For the initial admin account, use seed-admin.ts instead.
  */
 import { db } from "@/lib/db";
-import { user } from "@/lib/db/schema/auth";
+import { user, account } from "@/lib/db/schema/auth";
 import { establishment, suite, booking } from "@/lib/db/schema/domain";
-import { eq } from "drizzle-orm";
+import { inArray } from "drizzle-orm";
 import { ROLES } from "@/config/roles";
 import { BOOKING_STATUSES } from "@/config/booking-statuses";
+import { hashPassword } from "better-auth/crypto";
+
+const SEED_PASSWORD = "Test1234!";
+const SEED_USER_IDS = [
+  "seed-admin-1",
+  "seed-manager-1",
+  "seed-manager-2",
+  "seed-manager-3",
+  "seed-client-1",
+];
 
 async function seed() {
   // Clean seed data for idempotence (order respects FK constraints)
   await db.delete(booking);
   await db.delete(suite);
   await db.delete(establishment);
-  await db.delete(user).where(eq(user.id, "seed-manager-1"));
-  await db.delete(user).where(eq(user.id, "seed-client-1"));
+  await db.delete(account).where(inArray(account.userId, SEED_USER_IDS));
+  await db.delete(user).where(inArray(user.id, SEED_USER_IDS));
 
-  await db.insert(user).values({
-    id: "seed-manager-1",
-    name: "Manager Test",
-    email: "manager@clairdelune.test",
-    emailVerified: true,
-    role: ROLES.MANAGER,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  });
+  const now = new Date();
+  const hashedPassword = await hashPassword(SEED_PASSWORD);
 
-  await db.insert(user).values({
-    id: "seed-client-1",
-    name: "Client Test",
-    email: "client@clairdelune.test",
-    emailVerified: true,
-    role: ROLES.CLIENT,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  });
+  // --- Users ---
 
-  const managerId = "seed-manager-1";
+  await db.insert(user).values([
+    {
+      id: "seed-admin-1",
+      name: "Admin Test",
+      email: "admin@clairdelune.test",
+      emailVerified: true,
+      role: ROLES.ADMIN,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      id: "seed-manager-1",
+      name: "Marie Dupont",
+      email: "manager@clairdelune.test",
+      emailVerified: true,
+      role: ROLES.MANAGER,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      id: "seed-manager-2",
+      name: "Pierre Martin",
+      email: "manager2@clairdelune.test",
+      emailVerified: true,
+      role: ROLES.MANAGER,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      id: "seed-manager-3",
+      name: "Sophie Bernard",
+      email: "manager3@clairdelune.test",
+      emailVerified: true,
+      role: ROLES.MANAGER,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      id: "seed-client-1",
+      name: "Client Test",
+      email: "client@clairdelune.test",
+      emailVerified: true,
+      role: ROLES.CLIENT,
+      createdAt: now,
+      updatedAt: now,
+    },
+  ]);
+
+  // --- Accounts (credential provider, same password for all seed users) ---
+
+  await db.insert(account).values(
+    SEED_USER_IDS.map((userId) => {
+      const seedUser = {
+        "seed-admin-1": "admin@clairdelune.test",
+        "seed-manager-1": "manager@clairdelune.test",
+        "seed-manager-2": "manager2@clairdelune.test",
+        "seed-manager-3": "manager3@clairdelune.test",
+        "seed-client-1": "client@clairdelune.test",
+      }[userId]!;
+
+      return {
+        id: crypto.randomUUID(),
+        accountId: seedUser,
+        providerId: "credential",
+        userId,
+        password: hashedPassword,
+        createdAt: now,
+        updatedAt: now,
+      };
+    }),
+  );
+
+  // --- Establishments ---
+  // manager-1: Paris + Lyon, manager-2: Lille
+  // manager-3 has no establishment (safe to delete in E2E)
 
   const establishments = await db
     .insert(establishment)
@@ -55,7 +124,7 @@ async function seed() {
         description: "Un havre de paix au cœur de la capitale.",
         checkInTime: "15:00",
         checkOutTime: "11:00",
-        managerId,
+        managerId: "seed-manager-1",
       },
       {
         name: "Clair de Lune — Lyon",
@@ -65,7 +134,7 @@ async function seed() {
         description: "Vue imprenable sur la Saône.",
         checkInTime: "14:00",
         checkOutTime: "11:00",
-        managerId,
+        managerId: "seed-manager-1",
       },
       {
         name: "Clair de Lune — Lille",
@@ -75,7 +144,7 @@ async function seed() {
         description: "Charme et convivialité dans le Vieux-Lille.",
         checkInTime: "15:00",
         checkOutTime: "10:30",
-        managerId,
+        managerId: "seed-manager-2",
       },
     ])
     .returning({ id: establishment.id, city: establishment.city });
@@ -169,8 +238,9 @@ async function seed() {
   ]);
 
   console.log(
-    "Seed complete: 1 manager + 1 client + 3 establishments + 4 suites + 2 bookings",
+    "Seed complete: 1 admin + 3 managers + 1 client + 3 establishments + 4 suites + 2 bookings",
   );
+  console.log(`All seed users share password: ${SEED_PASSWORD}`);
 }
 
 if (import.meta.main) {
