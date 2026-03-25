@@ -234,6 +234,7 @@ export const booking = pgTable(
     totalPrice: numeric("total_price", { precision: 10, scale: 2 }).notNull(),
     status: bookingStatusEnum("status").default(BOOKING_STATUSES.PENDING).notNull(),
     cancelledAt: timestamp("cancelled_at"),
+    expiresAt: timestamp("expires_at"),
     clientId: text("client_id")
       .notNull()
       .references(() => user.id, { onDelete: "restrict" }),
