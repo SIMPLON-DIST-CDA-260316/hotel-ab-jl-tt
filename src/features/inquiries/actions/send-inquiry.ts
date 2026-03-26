@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { inquiry } from "@/lib/db/schema";
+import { inquiry } from "@/lib/db/schema/domain";
 import { auth } from "@/lib/auth";
 import { type FormState, inquirySchema } from "../lib/send-inquiry-shema";
 import { headers } from "next/headers";
@@ -12,12 +12,9 @@ export async function sendInquiry(
   formData: FormData,
 ): Promise<FormState> {
   const raw = Object.fromEntries(formData);
-  console.log(raw);
   const parsed = inquirySchema.safeParse(raw);
-  console.log(parsed);
 
   if (!parsed.success) {
-    console.log("============================", parsed.error.flatten().fieldErrors)
     return {
       success: false,
       errors: parsed.error.flatten().fieldErrors,
@@ -26,7 +23,7 @@ export async function sendInquiry(
 
   const formEstablishmentId = parsed.data.establishment;
   const establishment = await getEstablishmentById(formEstablishmentId);
-
+  
   if (!establishment) {
     return {
       success: false,
