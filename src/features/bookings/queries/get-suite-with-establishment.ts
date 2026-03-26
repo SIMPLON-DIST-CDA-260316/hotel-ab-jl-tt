@@ -18,7 +18,7 @@ export async function getSuiteWithEstablishment(suiteId: string) {
     })
     .from(suite)
     .innerJoin(establishment, eq(suite.establishmentId, establishment.id))
-    .where(and(eq(suite.id, suiteId), isNull(suite.deletedAt)));
+    .where(and(eq(suite.id, suiteId), isNull(suite.deletedAt), isNull(establishment.deletedAt)));
 
   return foundSuite ?? null;
 }

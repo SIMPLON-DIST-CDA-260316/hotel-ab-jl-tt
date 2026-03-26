@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, and, isNull } from "drizzle-orm";
 
 import { db } from "@/lib/db";
 import {
@@ -43,7 +43,7 @@ export async function getBookingDetail(bookingId: string) {
     .from(booking)
     .innerJoin(suite, eq(booking.suiteId, suite.id))
     .innerJoin(establishment, eq(suite.establishmentId, establishment.id))
-    .where(eq(booking.id, bookingId));
+    .where(and(eq(booking.id, bookingId), isNull(establishment.deletedAt)));
 
   if (!bookingData) return null;
 
