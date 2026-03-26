@@ -2,27 +2,22 @@
 
 import { useActionState, useState, useMemo, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowLeft,
-  CalendarDays,
-  Check,
-  Loader2,
-  Users,
-} from "lucide-react";
+import { ArrowLeft, CalendarDays, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { MILLISECONDS_PER_DAY } from "@/lib/formatters";
+import { MILLISECONDS_PER_DAY, currencyFormatter } from "@/lib/formatters";
 import { createPendingBooking } from "../actions/create-pending-booking";
-import { computeOptionQuantity, formatPricingModel, PRICING_MODELS } from "../lib/pricing-models";
+import { computeOptionQuantity } from "../lib/pricing-models";
+import { CheckoutHeroSection } from "./CheckoutHeroSection";
+import { CheckoutOptionsSection } from "./CheckoutOptionsSection";
+import { CheckoutPricingSummary } from "./CheckoutPricingSummary";
 import { PendingBookingAlert } from "./PendingBookingAlert";
 import type { BookingActionResult } from "../types/booking.types";
+import type { SelectedOption } from "../types/booking.types";
 import type { EstablishmentOption } from "../queries/get-establishment-options";
 
 type CheckoutFormProps = {
@@ -37,16 +32,6 @@ type CheckoutFormProps = {
   initialCheckOut: string;
   initialGuestCount: number;
 };
-
-type SelectedOption = {
-  optionId: string;
-  quantity: number;
-};
-
-const currencyFormatter = new Intl.NumberFormat("fr-FR", {
-  style: "currency",
-  currency: "EUR",
-});
 
 const dateFormatter = new Intl.DateTimeFormat("fr-FR", {
   weekday: "short",
@@ -119,6 +104,7 @@ export function CheckoutForm({
   }, [selectedOptions, options, nightCount, guestCount]);
 
   const grandTotal = accommodationTotal + optionsTotal;
+  const hasDates = nightCount > 0;
 
   function toggleOption(optionId: string) {
     setSelectedOptions((previous) => {
@@ -186,16 +172,6 @@ export function CheckoutForm({
     setShouldReplace(true);
   }
 
-  const hasImage = suiteImage && !suiteImage.includes("placeholder");
-  const hasDates = nightCount > 0;
-
-  const includedOptions = options.filter(
-    (establishmentOption) => establishmentOption.included,
-  );
-  const selectableOptions = options.filter(
-    (establishmentOption) => !establishmentOption.included,
-  );
-
   return (
     <div className="space-y-6">
       {/* Back link */}
@@ -207,38 +183,14 @@ export function CheckoutForm({
       </Button>
 
       <Card className="gap-0 overflow-hidden py-0">
-        {/* Hero recap */}
-        <div className="relative">
-          <AspectRatio ratio={16 / 5}>
-            {hasImage ? (
-              <Image
-                src={suiteImage}
-                alt={suiteTitle}
-                fill
-                className="object-cover"
-                sizes="(min-width: 672px) 672px, 100vw"
-                priority
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
-                <span className="text-4xl font-bold text-primary/20">
-                  {suiteTitle.charAt(0)}
-                </span>
-              </div>
-            )}
-          </AspectRatio>
-        </div>
+        <CheckoutHeroSection
+          suiteTitle={suiteTitle}
+          suiteImage={suiteImage}
+          establishmentName={establishmentName}
+          pricePerNight={pricePerNight}
+        />
 
         <CardContent className="space-y-6 p-6">
-          {/* Suite info */}
-          <div>
-            <h1 className="text-xl font-bold sm:text-2xl">{suiteTitle}</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {establishmentName} ·{" "}
-              {currencyFormatter.format(pricePerNight)} / nuit
-            </p>
-          </div>
-
           <Separator />
 
           {/* Dates & guests */}
@@ -301,234 +253,27 @@ export function CheckoutForm({
             )}
           </section>
 
-          {/* Options */}
-          {options.length > 0 && (
-            <>
-              <Separator />
-              <section className="space-y-4">
-                <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                  Options
-                </h2>
-
-                {/* Included options */}
-                {includedOptions.length > 0 && (
-                  <div className="space-y-2">
-                    {includedOptions.map((includedOption) => (
-                      <div
-                        key={includedOption.optionId}
-                        className="flex items-center justify-between rounded-lg border border-green-200 bg-green-50/50 px-4 py-3 dark:border-green-800 dark:bg-green-950/30"
-                      >
-                        <div className="flex items-center gap-2">
-                          <Check className="size-4 text-green-600 dark:text-green-400" />
-                          <span className="text-sm font-medium">
-                            {includedOption.name}
-                          </span>
-                        </div>
-                        <Badge
-                          variant="outline"
-                          className="border-green-200 text-green-700 dark:border-green-800 dark:text-green-300"
-                        >
-                          Inclus
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Selectable options */}
-                {selectableOptions.length > 0 && (
-                  <div className="space-y-2">
-                    {selectableOptions.map((selectableOption) => {
-                      const isSelected = selectedOptions.some(
-                        (selectedOption) =>
-                          selectedOption.optionId ===
-                          selectableOption.optionId,
-                      );
-                      const selectedEntry = selectedOptions.find(
-                        (selectedOption) =>
-                          selectedOption.optionId ===
-                          selectableOption.optionId,
-                      );
-                      const isPerUnit =
-                        selectableOption.pricingModel === PRICING_MODELS.PER_UNIT;
-                      const effectiveQuantity = isSelected
-                        ? computeOptionQuantity(
-                          selectableOption.pricingModel,
-                          nightCount,
-                          guestCount,
-                          selectedEntry?.quantity ?? 1,
-                        )
-                        : 0;
-                      const lineTotal =
-                        effectiveQuantity * Number(selectableOption.price);
-
-                      return (
-                        <div
-                          key={selectableOption.optionId}
-                          className={`rounded-lg border px-4 py-3 transition-colors ${
-                            isSelected
-                              ? "border-primary/30 bg-primary/5"
-                              : "border-border"
-                          }`}
-                        >
-                          <div className="flex items-center justify-between">
-                            <button
-                              type="button"
-                              className="flex items-center gap-3 text-left"
-                              onClick={() =>
-                                toggleOption(selectableOption.optionId)
-                              }
-                            >
-                              <div
-                                className={`flex size-5 items-center justify-center rounded border transition-colors ${
-                                  isSelected
-                                    ? "border-primary bg-primary text-primary-foreground"
-                                    : "border-muted-foreground/30"
-                                }`}
-                              >
-                                {isSelected && (
-                                  <Check className="size-3" />
-                                )}
-                              </div>
-                              <div>
-                                <span className="text-sm font-medium">
-                                  {selectableOption.name}
-                                </span>
-                                {selectableOption.description && (
-                                  <p className="text-xs text-muted-foreground">
-                                    {selectableOption.description}
-                                  </p>
-                                )}
-                              </div>
-                            </button>
-                            <div className="text-right text-sm">
-                              <span className="font-medium">
-                                {currencyFormatter.format(
-                                  Number(selectableOption.price),
-                                )}
-                              </span>
-                              <span className="text-xs text-muted-foreground">
-                                {" "}
-                                {formatPricingModel(
-                                  selectableOption.pricingModel,
-                                )}
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Quantity selector for per_unit */}
-                          {isSelected && isPerUnit && (
-                            <div className="mt-2 flex items-center gap-2 pl-8">
-                              <Label
-                                htmlFor={`qty-${selectableOption.optionId}`}
-                                className="text-xs"
-                              >
-                                Quantité
-                              </Label>
-                              <Input
-                                id={`qty-${selectableOption.optionId}`}
-                                type="number"
-                                min={1}
-                                value={selectedEntry?.quantity ?? 1}
-                                onChange={(event) =>
-                                  updateOptionQuantity(
-                                    selectableOption.optionId,
-                                    Number(event.target.value),
-                                  )
-                                }
-                                className="h-8 w-20 text-sm"
-                              />
-                            </div>
-                          )}
-
-                          {/* Line total */}
-                          {isSelected && hasDates && lineTotal > 0 && (
-                            <p className="mt-1 pl-8 text-xs text-muted-foreground">
-                              Sous-total :{" "}
-                              {currencyFormatter.format(lineTotal)}
-                            </p>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </section>
-            </>
-          )}
+          <CheckoutOptionsSection
+            options={options}
+            selectedOptions={selectedOptions}
+            nightCount={nightCount}
+            guestCount={guestCount}
+            hasDates={hasDates}
+            onToggleOption={toggleOption}
+            onUpdateQuantity={updateOptionQuantity}
+          />
 
           <Separator />
 
-          {/* Price breakdown */}
-          <section className="space-y-3">
-            <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              Récapitulatif
-            </h2>
-
-            {hasDates ? (
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">
-                    {nightCount} nuit{nightCount > 1 ? "s" : ""} ×{" "}
-                    {currencyFormatter.format(pricePerNight)}
-                  </span>
-                  <span className="font-medium">
-                    {currencyFormatter.format(accommodationTotal)}
-                  </span>
-                </div>
-
-                {selectedOptions
-                  .filter((selectedOption) => {
-                    const optionDef = options.find(
-                      (establishmentOption) =>
-                        establishmentOption.optionId ===
-                        selectedOption.optionId,
-                    );
-                    return optionDef && !optionDef.included;
-                  })
-                  .map((selectedOption) => {
-                    const optionDef = options.find(
-                      (establishmentOption) =>
-                        establishmentOption.optionId ===
-                        selectedOption.optionId,
-                    );
-                    if (!optionDef) return null;
-                    const effectiveQuantity = computeOptionQuantity(
-                      optionDef.pricingModel,
-                      nightCount,
-                      guestCount,
-                      selectedOption.quantity,
-                    );
-                    const lineTotal =
-                      effectiveQuantity * Number(optionDef.price);
-
-                    return (
-                      <div
-                        key={selectedOption.optionId}
-                        className="flex justify-between"
-                      >
-                        <span className="text-muted-foreground">
-                          {optionDef.name}
-                        </span>
-                        <span className="font-medium">
-                          {currencyFormatter.format(lineTotal)}
-                        </span>
-                      </div>
-                    );
-                  })}
-
-                <Separator />
-                <div className="flex justify-between text-base font-semibold">
-                  <span>Total</span>
-                  <span>{currencyFormatter.format(grandTotal)}</span>
-                </div>
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">
-                Sélectionnez vos dates pour voir le récapitulatif.
-              </p>
-            )}
-          </section>
+          <CheckoutPricingSummary
+            nightCount={nightCount}
+            pricePerNight={pricePerNight}
+            accommodationTotal={accommodationTotal}
+            options={options}
+            selectedOptions={selectedOptions}
+            guestCount={guestCount}
+            grandTotal={grandTotal}
+          />
 
           {/* Errors */}
           {state?.success === false && "errors" in state && state.errors._form && (
