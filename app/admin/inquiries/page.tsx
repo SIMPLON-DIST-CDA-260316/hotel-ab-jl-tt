@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { getInquiries } from "@/features/inquiries/queries/get-inquiries";
 
-export default async function AdminManagersPage() {
+export default async function AdminInquiriesPage() {
   const inquiries = await getInquiries();
 
   const subjects = [

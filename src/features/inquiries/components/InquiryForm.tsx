@@ -22,10 +22,10 @@ import { type FormState } from "@/features/inquiries/lib/send-inquiry-shema";
 import { error } from "better-auth/api";
 
 interface ContactFormProps {
-  establishment: any;
+  establishment: NonNullable<Awaited<{id: string}>>;
 }
 
-export default function ContactForm({ establishment }: ContactFormProps) {
+export function ContactForm({ establishment }: ContactFormProps) {
   const [formState, formAction, pending] = useActionState<FormState, FormData>(
     sendInquiry,
     {

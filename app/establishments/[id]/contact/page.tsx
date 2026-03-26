@@ -1,8 +1,6 @@
-"use server";
-
 import { notFound } from "next/navigation";
 import { getEstablishmentById } from "@/features/establishments/queries/get-establishment-by-id";
-import ContactForm from "@/features/inquiries/components/InquiryForm";
+import {ContactForm} from "@/features/inquiries/components/InquiryForm";
 
 type Props = {
   params: Promise<{ id: string }>;
