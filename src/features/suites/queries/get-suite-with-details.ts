@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { suite, image, suiteAmenity, amenity, establishment } from "@/lib/db/schema/domain";
+import { suite, image, suiteAmenity, establishmentAmenity, amenity, establishment } from "@/lib/db/schema/domain";
 import { and, asc, eq, isNull } from "drizzle-orm";
 
 export type SuiteImage = {
@@ -53,7 +53,15 @@ export async function getSuiteWithDetails(
 
   if (!suiteRow) return null;
 
-  const [images, amenities] = await Promise.all([
+  const amenityFields = {
+    id: amenity.id,
+    name: amenity.name,
+    slug: amenity.slug,
+    icon: amenity.icon,
+    category: amenity.category,
+  };
+
+  const [images, suiteAmenities, inheritedAmenities] = await Promise.all([
     db
       .select({
         id: image.id,
@@ -65,17 +73,23 @@ export async function getSuiteWithDetails(
       .where(eq(image.suiteId, id))
       .orderBy(asc(image.position)),
     db
-      .select({
-        id: amenity.id,
-        name: amenity.name,
-        slug: amenity.slug,
-        icon: amenity.icon,
-        category: amenity.category,
-      })
+      .select(amenityFields)
       .from(suiteAmenity)
       .innerJoin(amenity, eq(suiteAmenity.amenityId, amenity.id))
       .where(eq(suiteAmenity.suiteId, id)),
+    db
+      .select(amenityFields)
+      .from(establishmentAmenity)
+      .innerJoin(amenity, eq(establishmentAmenity.amenityId, amenity.id))
+      .where(eq(establishmentAmenity.establishmentId, suiteRow.establishmentId)),
   ]);
+
+  // Merge inherited + suite-specific, deduplicate by id
+  const amenityMap = new Map<string, SuiteAmenity>();
+  for (const item of [...inheritedAmenities, ...suiteAmenities]) {
+    amenityMap.set(item.id, item);
+  }
+  const amenities = Array.from(amenityMap.values());
 
   return {
     id: suiteRow.id,

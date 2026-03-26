@@ -26,4 +26,5 @@ export const suiteSchema = z.object({
       "La superficie doit être un nombre positif",
     ),
   establishmentId: z.string().min(1, "L'établissement est obligatoire"),
+  amenityIds: z.array(z.string()).default([]),
 });
