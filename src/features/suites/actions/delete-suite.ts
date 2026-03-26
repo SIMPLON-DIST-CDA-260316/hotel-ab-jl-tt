@@ -1,10 +1,13 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
+
+import { eq, and, isNull } from "drizzle-orm";
+
 import { db } from "@/lib/db";
 import { suite, establishment } from "@/lib/db/schema/domain";
-import { eq, and, isNull } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
 import { requireManager } from "@/lib/auth-guards";
+
 import { hasFutureBookingsForSuite } from "../queries/has-future-bookings-for-suite";
 
 type DeleteSuiteResult =

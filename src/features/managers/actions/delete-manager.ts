@@ -1,10 +1,12 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
+
+import { eq, isNull, and } from "drizzle-orm";
+
 import { db } from "@/lib/db";
 import { user, session } from "@/lib/db/schema/auth";
 import { establishment } from "@/lib/db/schema/domain";
-import { eq, isNull, and } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth-guards";
 
 type DeleteManagerResult =

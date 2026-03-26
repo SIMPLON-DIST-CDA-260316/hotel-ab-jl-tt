@@ -1,6 +1,7 @@
+import { eq, desc } from "drizzle-orm";
+
 import { db } from "@/lib/db";
 import { booking, suite, establishment } from "@/lib/db/schema/domain";
-import { eq, desc } from "drizzle-orm";
 
 export async function getClientBookings(clientId: string) {
   return db

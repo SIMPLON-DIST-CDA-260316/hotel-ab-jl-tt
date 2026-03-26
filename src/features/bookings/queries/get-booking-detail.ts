@@ -1,3 +1,5 @@
+import { eq } from "drizzle-orm";
+
 import { db } from "@/lib/db";
 import {
   booking,
@@ -6,7 +8,6 @@ import {
   bookingOption,
   option,
 } from "@/lib/db/schema/domain";
-import { eq } from "drizzle-orm";
 
 export async function getBookingDetail(bookingId: string) {
   const [bookingData] = await db

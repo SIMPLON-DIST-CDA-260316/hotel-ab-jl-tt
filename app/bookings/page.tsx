@@ -1,12 +1,15 @@
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+
 import { CalendarDays, Luggage } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
+import { auth } from "@/lib/auth";
+import { BOOKING_STATUSES } from "@/config/booking-statuses";
+
 import { getClientBookings } from "@/features/bookings/queries/get-client-bookings";
 import { BookingCard } from "@/features/bookings/components/BookingCard";
-import { BOOKING_STATUSES } from "@/config/booking-statuses";
 
 const ACTIVE_STATUSES: Set<string> = new Set([
   BOOKING_STATUSES.PENDING,

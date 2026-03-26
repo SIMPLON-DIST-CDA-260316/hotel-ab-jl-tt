@@ -1,10 +1,11 @@
+import { eq } from "drizzle-orm";
+
 import { db } from "@/lib/db";
 import {
   suite,
   establishmentOption,
   option,
 } from "@/lib/db/schema/domain";
-import { eq } from "drizzle-orm";
 
 export async function getEstablishmentOptionsBySuiteId(suiteId: string) {
   const availableOptions = await db

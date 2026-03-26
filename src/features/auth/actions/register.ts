@@ -2,7 +2,16 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+
 import { auth } from "@/lib/auth";
+
+import { AUTH_ERROR_CODES } from "../lib/auth-error-codes";
+import { registerSchema } from "../lib/auth-schemas";
+
+import type {
+  AuthActionState,
+  RegisterFormValues,
+} from "../types/auth.types";
 
 function isHttpError(error: unknown, statusCode: number): boolean {
   return (
@@ -12,12 +21,6 @@ function isHttpError(error: unknown, statusCode: number): boolean {
     (error as Record<string, unknown>).statusCode === statusCode
   );
 }
-import { AUTH_ERROR_CODES } from "@/features/auth/lib/auth-error-codes";
-import { registerSchema } from "@/features/auth/lib/auth-schemas";
-import type {
-  AuthActionState,
-  RegisterFormValues,
-} from "@/features/auth/types/auth.types";
 
 export async function register(
   _previousState: AuthActionState<RegisterFormValues>,
