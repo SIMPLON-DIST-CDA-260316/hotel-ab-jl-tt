@@ -4,9 +4,9 @@ export function HighlightsSection() {
   return (
     <section className="py-20">
       <div className="mx-auto max-w-5xl px-6">
-        <p className="text-center text-sm font-semibold uppercase tracking-[0.2em] text-foreground/70">
+        <h2 className="text-center text-2xl font-semibold uppercase tracking-wide">
           Pourquoi nous choisir
-        </p>
+        </h2>
         <div className="mt-14 grid grid-cols-1 gap-12 sm:grid-cols-3">
           {HIGHLIGHTS.map((highlight) => (
             <div key={highlight.title} className="text-center">

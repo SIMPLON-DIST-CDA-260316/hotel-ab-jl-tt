@@ -18,14 +18,8 @@ export async function EstablishmentCarousel() {
               Découvrez nos maisons à travers la France
             </p>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="hidden md:block">
             <CarouselScrollButtons targetId="establishment-carousel" />
-            <Link
-              href="/establishments"
-              className="text-sm font-medium underline hover:no-underline"
-            >
-              Voir tous →
-            </Link>
           </div>
         </div>
         <div
@@ -38,6 +32,14 @@ export async function EstablishmentCarousel() {
               establishment={establishment}
             />
           ))}
+        </div>
+        <div className="mt-6 text-right">
+          <Link
+            href="/establishments"
+            className="text-sm font-semibold underline hover:no-underline"
+          >
+            Voir tous nos établissements →
+          </Link>
         </div>
       </div>
     </section>

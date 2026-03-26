@@ -46,9 +46,6 @@ export function EstablishmentCarouselCard({
         <h3 className="text-base font-semibold text-white drop-shadow-md">
           {displayName}
         </h3>
-        <p className="mt-0.5 text-sm text-white/80 drop-shadow-sm">
-          {establishment.city}
-        </p>
 
         {/* Hover-only info */}
         <div className="mt-2 flex max-h-0 items-center gap-2 overflow-hidden opacity-0 transition-all duration-300 group-hover:max-h-10 group-hover:opacity-100">

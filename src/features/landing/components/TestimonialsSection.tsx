@@ -32,9 +32,9 @@ export function TestimonialsSection() {
   return (
     <section className="bg-secondary py-20">
       <div className="mx-auto max-w-7xl px-6">
-        <p className="text-center text-sm font-semibold uppercase tracking-[0.2em] text-foreground/70">
+        <h2 className="text-center text-2xl font-semibold uppercase tracking-wide">
           Ce que disent nos hôtes
-        </p>
+        </h2>
         <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-3">
           {TESTIMONIALS.map((testimonial) => (
             <div

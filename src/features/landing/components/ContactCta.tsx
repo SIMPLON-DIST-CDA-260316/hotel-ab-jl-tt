@@ -15,7 +15,7 @@ export function ContactCta() {
         <Button
           asChild
           size="lg"
-          className="mt-8 bg-accent px-10 font-bold text-accent-foreground hover:bg-accent/90"
+          className="mt-8 bg-accent px-10 text-base font-bold text-accent-foreground hover:bg-accent/90"
         >
           <Link href="/inquiries/new">Contactez-nous</Link>
         </Button>
