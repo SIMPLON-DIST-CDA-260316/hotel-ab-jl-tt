@@ -1,0 +1,100 @@
+erDiagram
+    %% ─── MPD — Catalogue ───
+
+    user ||--o{ establishment : "manager_id"
+    establishment ||--o{ suite : "establishment_id"
+    suite ||--o{ image : "suite_id"
+
+    establishment ||--o{ establishment_amenity : "establishment_id"
+    amenity ||--o{ establishment_amenity : "amenity_id"
+
+    suite ||--o{ suite_amenity : "suite_id"
+    amenity ||--o{ suite_amenity : "amenity_id"
+
+    establishment ||--o{ establishment_option : "establishment_id"
+    option ||--o{ establishment_option : "option_id"
+
+    %% ─── Stub (référence cross-domain) ───
+
+    user {
+        text id PK
+    }
+
+    %% ─── Entités catalogue ───
+
+    establishment {
+        text id PK
+        text name "NOT NULL"
+        text address "NOT NULL"
+        text postal_code "NOT NULL"
+        text city "NOT NULL"
+        text description
+        text image
+        text phone
+        text email
+        time check_in_time "NOT NULL"
+        time check_out_time "NOT NULL"
+        text manager_id FK "NOT NULL → user"
+        timestamp created_at "NOT NULL"
+        timestamp updated_at "NOT NULL"
+        timestamp deleted_at "NULLABLE"
+    }
+
+    suite {
+        text id PK
+        text title "NOT NULL"
+        text description
+        decimal price "NOT NULL"
+        text main_image "NOT NULL"
+        int capacity "NOT NULL"
+        decimal area
+        text establishment_id FK "NOT NULL"
+        timestamp created_at "NOT NULL"
+        timestamp updated_at "NOT NULL"
+        timestamp deleted_at "NULLABLE"
+    }
+
+    image {
+        text id PK
+        text url "NOT NULL"
+        text alt
+        int position "NOT NULL"
+        text suite_id FK "NOT NULL, CASCADE"
+        timestamp created_at "NOT NULL"
+    }
+
+    amenity {
+        text id PK
+        text name UK "NOT NULL"
+        text slug UK "NOT NULL"
+        text category "NOT NULL"
+        text scope "property | room | both"
+        text icon
+    }
+
+    establishment_amenity {
+        text establishment_id FK "PK"
+        text amenity_id FK "PK"
+    }
+
+    suite_amenity {
+        text suite_id FK "PK"
+        text amenity_id FK "PK"
+    }
+
+    option {
+        text id PK
+        text name "NOT NULL"
+        text slug UK "NOT NULL"
+        text description
+        text icon
+        text pricing_model "NOT NULL"
+        decimal default_price "NOT NULL"
+    }
+
+    establishment_option {
+        text establishment_id FK "PK"
+        text option_id FK "PK"
+        decimal price "NOT NULL"
+        boolean included "DEFAULT false"
+    }

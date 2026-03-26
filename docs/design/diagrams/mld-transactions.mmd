@@ -1,0 +1,77 @@
+erDiagram
+    %% ─── MLD — Transactions ───
+
+    user ||--o{ booking : "client_id"
+    suite ||--o{ booking : "suite_id"
+    booking ||--o| review : "booking_id"
+    booking ||--o{ booking_option : ""
+    option ||--o{ booking_option : ""
+    user |o--o{ review : "user_id"
+    user |o--o{ inquiry : "user_id"
+    establishment |o--o{ inquiry : "establishment_id"
+
+    %% ─── Stubs (références cross-domain) ───
+
+    user {
+        _ id PK
+    }
+
+    suite {
+        _ id PK
+    }
+
+    establishment {
+        _ id PK
+    }
+
+    option {
+        _ id PK
+    }
+
+    %% ─── Entités transactions ───
+
+    booking {
+        _ id PK
+        _ reference
+        _ check_in
+        _ check_out
+        _ guest_count
+        _ price_per_night
+        _ total_price
+        _ status
+        _ cancelled_at
+        _ client_id FK
+        _ suite_id FK
+        _ created_at
+        _ updated_at
+    }
+
+    booking_option {
+        _ booking_id PK, FK
+        _ option_id PK, FK
+        _ quantity
+        _ unit_price
+    }
+
+    review {
+        _ id PK
+        _ rating
+        _ comment
+        _ flagged
+        _ booking_id FK
+        _ user_id FK
+        _ created_at
+        _ updated_at
+    }
+
+    inquiry {
+        _ id PK
+        _ name
+        _ email
+        _ subject
+        _ message
+        _ status
+        _ establishment_id FK
+        _ user_id FK
+        _ created_at
+    }

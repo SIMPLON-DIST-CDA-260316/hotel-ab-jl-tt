@@ -205,6 +205,11 @@ par email (via Resend) et le statut passe à `replied`.
 > Les propriétés de chaque entité sont détaillées dans le dictionnaire (section 1.1).
 > Les associations porteuses de données (PROVIDE, SELECT) sont documentées en section 1.3.
 
+![MCD — Diagramme entité-association](diagrams/mcd.svg)
+
+<details>
+<summary>Source Mermaid</summary>
+
 ```mermaid
 erDiagram
 
@@ -229,6 +234,8 @@ erDiagram
     ESTABLISHMENT |o--o{ INQUIRY : "RECEIVE (0,n)-(0,1)"
     USER |o--o{ INQUIRY : "SEND (0,n)-(0,1)"
 ```
+
+</details>
 
 ### 1.3 Détail des associations et cardinalités
 
@@ -325,6 +332,21 @@ erDiagram
 > **Note Mermaid :** La syntaxe ERD de Mermaid exige un type pour chaque attribut.
 > Les types indiqués ici sont une contrainte d'outil, pas du formalisme MLD.
 > En MLD strict, seuls les PK et FK sont spécifiés.
+
+#### Auth (user, session, account, verification)
+
+![MLD — Auth](diagrams/mld-auth.svg)
+
+#### Catalogue (establishment, suite, image, amenity, option)
+
+![MLD — Catalogue](diagrams/mld-catalog.svg)
+
+#### Transactions (booking, review, inquiry)
+
+![MLD — Transactions](diagrams/mld-transactions.svg)
+
+<details>
+<summary>Source Mermaid (diagramme complet original)</summary>
 
 ```mermaid
 erDiagram
@@ -529,6 +551,8 @@ erDiagram
         _ created_at
     }
 ```
+
+</details>
 
 ---
 
@@ -745,6 +769,21 @@ erDiagram
 > Ce diagramme ERD Mermaid représente le MPD complet avec types PostgreSQL,
 > contraintes et annotations physiques.
 
+#### Auth (user, session, account, verification)
+
+![MPD — Auth](diagrams/mpd-auth.svg)
+
+#### Catalogue (establishment, suite, image, amenity, option)
+
+![MPD — Catalogue](diagrams/mpd-catalog.svg)
+
+#### Transactions (booking, review, inquiry)
+
+![MPD — Transactions](diagrams/mpd-transactions.svg)
+
+<details>
+<summary>Source Mermaid (diagramme complet original)</summary>
+
 ```mermaid
 erDiagram
     %% ─── Relations ───
@@ -944,6 +983,8 @@ erDiagram
         timestamp created_at "NOT NULL"
     }
 ```
+
+</details>
 
 ### 3.5 Implémentation
 

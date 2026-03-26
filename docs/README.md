@@ -10,8 +10,8 @@
 ## Conception & modélisation
 
 - [Modèle MERISE (MCD / MLD / MPD)](design/merise.md)
-- [Diagrammes UML](design/uml.md)
-- [Données de test](design/seed-data.md)
+- [Diagrammes comportementaux (state, flowchart)](design/diagrammes-comportementaux.md)
+- [Diagramme de cas d'utilisation](design/use-case-UML.png)
 
 ## Architecture technique
 
@@ -31,7 +31,15 @@
 - [Architecture MVC + Next.js](research/mvc-nextjs-architecture.md)
 - [Guide Claude Code + Figma](research/guide-claude-code-figma.md)
 
+## Livrables
+
+- [Checklist et liens](deliverables/README.md)
+- [Documentation technique (source PDF)](deliverables/documentation-technique.md)
+- [Charte graphique (source PDF)](deliverables/charte-graphique.md)
+
 ## Archives
 
 - [Plans d'implémentation](logs/plans/) — issues #13, #14, #16, #17, #18
 - [Prompts de session](logs/prompts/) — instructions Claude Code
+- [Spec données de seed (archivé)](logs/2026-03-17_seed-data-spec.md)
+- [Diagramme de classes UML (archivé — doublon MERISE)](logs/2026-03-17_uml-class-diagram.md)

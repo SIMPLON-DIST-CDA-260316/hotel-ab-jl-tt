@@ -1,0 +1,38 @@
+erDiagram
+    %% ─── MPD — Auth & User ───
+
+    user ||--o{ session : "user_id"
+    user ||--o{ account : "user_id"
+
+    session {
+        text id PK
+        timestamp expires_at
+        text token UK
+        text user_id FK
+        text ip_address
+        text user_agent
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    account {
+        text id PK
+        text account_id
+        text provider_id
+        text user_id FK
+        text password
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    user {
+        text id PK
+        text name "NOT NULL"
+        text email UK "NOT NULL"
+        boolean email_verified "DEFAULT false"
+        text image
+        text role "DEFAULT client"
+        timestamp created_at "NOT NULL"
+        timestamp updated_at "NOT NULL"
+        timestamp deleted_at "NULLABLE"
+    }

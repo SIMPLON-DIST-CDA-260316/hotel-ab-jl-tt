@@ -1,0 +1,77 @@
+erDiagram
+    %% ─── MPD — Transactions ───
+
+    user ||--o{ booking : "client_id"
+    suite ||--o{ booking : "suite_id"
+    booking ||--o| review : "booking_id (unique)"
+    booking ||--o{ booking_option : "booking_id"
+    option ||--o{ booking_option : "option_id"
+    user |o--o{ review : "user_id (nullable)"
+    user |o--o{ inquiry : "user_id (nullable)"
+    establishment |o--o{ inquiry : "establishment_id (nullable)"
+
+    %% ─── Stubs (références cross-domain) ───
+
+    user {
+        text id PK
+    }
+
+    suite {
+        text id PK
+    }
+
+    establishment {
+        text id PK
+    }
+
+    option {
+        text id PK
+    }
+
+    %% ─── Entités transactions ───
+
+    booking {
+        text id PK
+        text reference UK "CDL-2026-XXXX"
+        date check_in "NOT NULL"
+        date check_out "NOT NULL"
+        int guest_count "NOT NULL"
+        decimal price_per_night "NOT NULL, snapshot"
+        decimal total_price "NOT NULL, facture finale"
+        text status "NOT NULL"
+        timestamp cancelled_at
+        text client_id FK "NOT NULL → user"
+        text suite_id FK "NOT NULL → suite"
+        timestamp created_at "NOT NULL"
+        timestamp updated_at "NOT NULL"
+    }
+
+    booking_option {
+        text booking_id FK "PK, CASCADE"
+        text option_id FK "PK"
+        int quantity "NOT NULL"
+        decimal unit_price "NOT NULL, snapshot"
+    }
+
+    review {
+        text id PK
+        int rating "NOT NULL, 1-5"
+        text comment
+        boolean flagged "DEFAULT false"
+        text booking_id FK "NOT NULL, UNIQUE"
+        text user_id FK "NULLABLE, SET NULL"
+        timestamp created_at "NOT NULL"
+        timestamp updated_at "NOT NULL"
+    }
+
+    inquiry {
+        text id PK
+        text name "NOT NULL"
+        text email "NOT NULL"
+        text subject "NOT NULL, enum"
+        text message "NOT NULL"
+        text status "DEFAULT unread"
+        text establishment_id FK "NULLABLE"
+        text user_id FK "NULLABLE"
+        timestamp created_at "NOT NULL"
+    }
