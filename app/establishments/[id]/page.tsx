@@ -4,6 +4,8 @@ import { getEstablishmentById } from "@/features/establishments/queries/get-esta
 import { getSuitesByEstablishment } from "@/features/suites/queries/get-suites-by-establishment";
 import { SuiteList } from "@/features/suites/components/SuiteList";
 import { SuiteListSkeleton } from "@/features/suites/components/SuiteListSkeleton";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -38,6 +40,11 @@ export default async function EstablishmentDetailPage({ params }: Props) {
         {establishment.email && (
           <p className="mt-1 text-sm">Email : {establishment.email}</p>
         )}
+        <Button className="mt-2">
+          <Link href={`/establishments/${id}/contact`}>
+            Contacter l'établissement
+          </Link>
+        </Button>
       </header>
 
       <section>
