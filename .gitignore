@@ -16,3 +16,5 @@ blob-report/
 
 public/uploads/*
 !public/uploads/.gitkeep
+
+*.local.*
