@@ -85,7 +85,8 @@ export function CheckoutForm({
         (establishmentOption) =>
           establishmentOption.optionId === selectedOption.optionId,
       );
-      if (!optionDef) return total;
+      // Included options are free — skip them to match server-side unit_price = 0
+      if (!optionDef || optionDef.included) return total;
 
       const effectiveQuantity = computeOptionQuantity(
         optionDef.pricingModel,
