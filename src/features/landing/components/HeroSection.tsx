@@ -1,0 +1,41 @@
+import Image from "next/image";
+import { HeroSearchCard } from "./HeroSearchCard";
+import { getEstablishmentsWithMinPrice } from "../queries/get-establishments-with-min-price";
+
+export async function HeroSection() {
+  const establishments = await getEstablishmentsWithMinPrice();
+
+  return (
+    <section className="relative flex min-h-[70vh] items-center overflow-hidden bg-primary">
+      <Image
+        src="/images/hero-banner.png"
+        alt="Paysage rural avec forêt et vallée"
+        fill
+        priority
+        className="object-cover opacity-40"
+      />
+
+      <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center gap-8 px-6 py-16 md:flex-row md:items-center md:gap-12">
+        {/* Branding */}
+        <div className="flex-1 text-primary-foreground">
+          <p className="text-sm font-medium uppercase tracking-[0.2em] text-ring">
+            Chaîne hôtelière rurale
+          </p>
+          <h1 className="mt-4 text-5xl font-light leading-tight md:text-6xl">
+            Trouver votre séjour
+            <br />
+            sous les étoiles
+          </h1>
+          <p className="mt-5 max-w-lg text-base leading-relaxed text-primary-foreground/70">
+            Des maisons de caractère nichées en forêt, en vallée, à deux pas
+            d&apos;un village. Loin du bruit, proches de l&apos;essentiel et des
+            étoiles.
+          </p>
+        </div>
+
+        {/* Search card */}
+        <HeroSearchCard establishments={establishments} />
+      </div>
+    </section>
+  );
+}
