@@ -57,7 +57,8 @@ export async function searchSuites(
 
   if (accessibility && accessibility.length > 0) {
     const accessibilityConditions = buildAccessibilityCondition(accessibility);
-    conditions.push(...accessibilityConditions);
+    // Filter undefined: or() returns SQL | undefined when called with no args
+    conditions.push(...accessibilityConditions.filter((condition) => condition !== undefined));
   }
 
   const matchingSuites = await db

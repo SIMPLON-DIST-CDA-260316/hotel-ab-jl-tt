@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Search } from "lucide-react";
 import { format } from "date-fns";
@@ -26,7 +26,7 @@ function parseDate(value: string | null): Date | undefined {
   return isNaN(parsed.getTime()) ? undefined : parsed;
 }
 
-export function SearchBarMobile(): JSX.Element {
+export function SearchBarMobile(): React.JSX.Element {
   const router = useRouter();
   const searchParams = useSearchParams();
 

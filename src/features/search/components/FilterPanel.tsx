@@ -43,7 +43,8 @@ export function FilterPanel({
       }
     }
 
-    router.push(`${pathname}?${params.toString()}`)
+    // Dynamic URL with search params — typed routes can't infer template literals
+    router.push(`${pathname}?${params.toString()}` as never)
   }
 
   function handleLocationsChange(cities: string[]): void {

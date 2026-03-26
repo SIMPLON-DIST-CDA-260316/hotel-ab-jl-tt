@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ function parseDate(value: string | null): Date | undefined {
   return isNaN(parsed.getTime()) ? undefined : parsed;
 }
 
-export function SearchBar(): JSX.Element {
+export function SearchBar(): React.JSX.Element {
   const router = useRouter();
   const searchParams = useSearchParams();
 
