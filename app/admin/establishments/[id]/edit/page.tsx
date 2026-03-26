@@ -6,6 +6,10 @@ import {
   getAmenitiesForEstablishments,
   getEstablishmentAmenityIds,
 } from "@/features/establishments/queries/get-amenities-for-establishments";
+import {
+  getAllOptions,
+  getEstablishmentOptions,
+} from "@/features/establishments/queries/get-options-for-establishments";
 
 type EditEstablishmentPageProps = {
   params: Promise<{ id: string }>;
@@ -16,11 +20,13 @@ export default async function EditEstablishmentPage({
 }: EditEstablishmentPageProps) {
   const { id } = await params;
 
-  const [establishment, availableAmenities, selectedAmenityIds] =
+  const [establishment, availableAmenities, selectedAmenityIds, availableOptions, optionConfigs] =
     await Promise.all([
       getEstablishmentById(id),
       getAmenitiesForEstablishments(),
       getEstablishmentAmenityIds(id),
+      getAllOptions(),
+      getEstablishmentOptions(id),
     ]);
 
   if (!establishment) {
@@ -34,6 +40,7 @@ export default async function EditEstablishmentPage({
       <EstablishmentForm
         action={updateAction}
         availableAmenities={availableAmenities}
+        availableOptions={availableOptions}
         defaultValues={{
           name: establishment.name,
           city: establishment.city,
@@ -45,6 +52,7 @@ export default async function EditEstablishmentPage({
           checkInTime: establishment.checkInTime,
           checkOutTime: establishment.checkOutTime,
           amenityIds: selectedAmenityIds,
+          optionConfigs,
         }}
         submitLabel="Enregistrer les modifications"
       />

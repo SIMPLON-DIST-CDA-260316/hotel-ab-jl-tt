@@ -5,8 +5,13 @@ import { redirect } from "next/navigation";
 import { and, eq, isNull } from "drizzle-orm";
 
 import { db } from "@/lib/db";
-import { establishment, establishmentAmenity } from "@/lib/db/schema/domain";
+import {
+  establishment,
+  establishmentAmenity,
+  establishmentOption,
+} from "@/lib/db/schema/domain";
 import { requireAdmin } from "@/lib/auth-guards";
+import { parseOptionEntries } from "../lib/parse-option-entries";
 
 import { establishmentSchema } from "../lib/establishment-schema";
 
@@ -52,6 +57,23 @@ export async function updateEstablishment(
     if (amenityIds.length > 0) {
       await db.insert(establishmentAmenity).values(
         amenityIds.map((amenityId) => ({ establishmentId: id, amenityId })),
+      );
+    }
+
+    // Replace option configs: delete existing, insert new selection
+    await db
+      .delete(establishmentOption)
+      .where(eq(establishmentOption.establishmentId, id));
+
+    const optionEntries = parseOptionEntries(formData);
+    if (optionEntries.length > 0) {
+      await db.insert(establishmentOption).values(
+        optionEntries.map(({ optionId, price, included }) => ({
+          establishmentId: id,
+          optionId,
+          price,
+          included,
+        })),
       );
     }
   } catch (error) {

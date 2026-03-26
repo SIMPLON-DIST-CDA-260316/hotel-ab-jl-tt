@@ -6,9 +6,14 @@ import { eq } from "drizzle-orm";
 
 import { db } from "@/lib/db";
 import { user } from "@/lib/db/schema/auth";
-import { establishment, establishmentAmenity } from "@/lib/db/schema/domain";
+import {
+  establishment,
+  establishmentAmenity,
+  establishmentOption,
+} from "@/lib/db/schema/domain";
 import { requireAdmin } from "@/lib/auth-guards";
 import { ROLES } from "@/config/roles";
+import { parseOptionEntries } from "../lib/parse-option-entries";
 
 import { establishmentSchema } from "../lib/establishment-schema";
 
@@ -65,6 +70,18 @@ export async function createEstablishment(
         amenityIds.map((amenityId) => ({
           establishmentId: created.id,
           amenityId,
+        })),
+      );
+    }
+
+    const optionEntries = parseOptionEntries(formData);
+    if (optionEntries.length > 0) {
+      await db.insert(establishmentOption).values(
+        optionEntries.map(({ optionId, price, included }) => ({
+          establishmentId: created.id,
+          optionId,
+          price,
+          included,
         })),
       );
     }
