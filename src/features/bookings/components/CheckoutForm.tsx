@@ -19,6 +19,7 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { createPendingBooking } from "../actions/create-pending-booking";
+import { computeOptionQuantity, formatPricingModel, PRICING_MODELS } from "../lib/pricing-models";
 import type { BookingActionResult } from "../types/booking.types";
 import type { EstablishmentOption } from "../queries/get-establishment-options";
 
@@ -52,45 +53,6 @@ const dateFormatter = new Intl.DateTimeFormat("fr-FR", {
   day: "numeric",
   month: "long",
 });
-
-function computeOptionQuantity(
-  pricingModel: string,
-  nightCount: number,
-  guestCount: number,
-  userQuantity: number,
-): number {
-  switch (pricingModel) {
-  case "per_person_per_night":
-    return guestCount * nightCount;
-  case "per_person_per_stay":
-    return guestCount;
-  case "per_night":
-    return nightCount;
-  case "per_stay":
-    return 1;
-  case "per_unit":
-    return userQuantity;
-  default:
-    return userQuantity;
-  }
-}
-
-function formatPricingModel(pricingModel: string): string {
-  switch (pricingModel) {
-  case "per_person_per_night":
-    return "/ pers. / nuit";
-  case "per_person_per_stay":
-    return "/ pers.";
-  case "per_night":
-    return "/ nuit";
-  case "per_stay":
-    return "/ séjour";
-  case "per_unit":
-    return "/ unité";
-  default:
-    return "";
-  }
-}
 
 export function CheckoutForm({
   suiteId,
@@ -360,7 +322,7 @@ export function CheckoutForm({
                           selectableOption.optionId,
                       );
                       const isPerUnit =
-                        selectableOption.pricingModel === "per_unit";
+                        selectableOption.pricingModel === PRICING_MODELS.PER_UNIT;
                       const effectiveQuantity = isSelected
                         ? computeOptionQuantity(
                           selectableOption.pricingModel,

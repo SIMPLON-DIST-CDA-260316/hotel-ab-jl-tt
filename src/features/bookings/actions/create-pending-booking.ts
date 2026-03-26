@@ -17,6 +17,7 @@ import { bookingSchema } from "../lib/booking-schema";
 import { generateBookingReference } from "../lib/generate-booking-reference";
 import { activeBookingOverlap } from "../lib/availability-filter";
 import { PENDING_EXPIRY_MINUTES } from "../lib/booking-constants";
+import { computeOptionQuantity, PRICING_MODELS } from "../lib/pricing-models";
 
 import type { BookingActionResult } from "../types/booking.types";
 
@@ -24,28 +25,6 @@ type SelectedOption = {
   optionId: string;
   quantity: number;
 };
-
-function computeOptionQuantity(
-  pricingModel: string,
-  nightCount: number,
-  guestCount: number,
-  userQuantity: number,
-): number {
-  switch (pricingModel) {
-  case "per_person_per_night":
-    return guestCount * nightCount;
-  case "per_person_per_stay":
-    return guestCount;
-  case "per_night":
-    return nightCount;
-  case "per_stay":
-    return 1;
-  case "per_unit":
-    return userQuantity;
-  default:
-    return userQuantity;
-  }
-}
 
 export async function createPendingBooking(
   formData: FormData,
@@ -187,7 +166,7 @@ export async function createPendingBooking(
     if (!estOption) continue; // Skip unknown options
 
     const model = optionModelMap.get(selectedOption.optionId);
-    const pricingModel = model?.pricingModel ?? "per_unit";
+    const pricingModel = model?.pricingModel ?? PRICING_MODELS.PER_UNIT;
 
     const unitPrice = estOption.included ? "0.00" : estOption.price;
     const effectiveQuantity = computeOptionQuantity(
