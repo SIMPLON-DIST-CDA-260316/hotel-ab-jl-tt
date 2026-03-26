@@ -3,6 +3,7 @@ import React from "react";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
 import { getActivePendingBooking } from "@/features/bookings/queries/get-active-pending-booking";
 import { PendingBookingBanner } from "@/features/bookings/components/PendingBookingBanner";
 
@@ -25,6 +26,7 @@ export default async function Layout({ children }: Readonly<{ children: React.Re
           />
         )}
         {children}
+        <Footer />
       </body>
     </html>
   );
