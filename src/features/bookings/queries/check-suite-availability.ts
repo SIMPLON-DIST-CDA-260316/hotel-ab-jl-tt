@@ -3,7 +3,7 @@ import { booking, suite } from "@/lib/db/schema/domain";
 import { and, eq, isNull } from "drizzle-orm";
 import { sql } from "drizzle-orm";
 import { activeBookingOverlap } from "../lib/availability-filter";
-import type { AvailabilityResult } from "../types/booking.types";
+import type { AvailabilityResult } from "@/types/availability.types";
 
 export async function checkSuiteAvailability(
   suiteId: string,

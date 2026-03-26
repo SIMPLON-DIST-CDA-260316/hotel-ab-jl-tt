@@ -13,10 +13,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { createPendingBooking } from "../actions/create-pending-booking";
-import type {
-  BookingActionResult,
-  AvailabilityResult,
-} from "../types/booking.types";
+import type { BookingActionResult } from "../types/booking.types";
+import type { AvailabilityResult } from "@/types/availability.types";
 
 type BookingFormProps = {
   suiteId: string;
@@ -34,6 +32,9 @@ export function BookingForm({
   capacity,
 }: BookingFormProps) {
   const router = useRouter();
+  const [checkIn, setCheckIn] = useState("");
+  const [checkOut, setCheckOut] = useState("");
+  const [guestCount, setGuestCount] = useState(1);
   const [availability, setAvailability] = useState<AvailabilityResult | null>(
     null,
   );
@@ -110,7 +111,11 @@ export function BookingForm({
                 type="date"
                 min={todayISO}
                 required
-                onChange={() => setAvailability(null)}
+                value={checkIn}
+                onChange={(event) => {
+                  setCheckIn(event.target.value);
+                  setAvailability(null);
+                }}
                 aria-describedby={
                   state?.success === false && state.errors?.checkIn
                     ? "checkIn-error"
@@ -131,7 +136,11 @@ export function BookingForm({
                 type="date"
                 min={todayISO}
                 required
-                onChange={() => setAvailability(null)}
+                value={checkOut}
+                onChange={(event) => {
+                  setCheckOut(event.target.value);
+                  setAvailability(null);
+                }}
                 aria-describedby={
                   state?.success === false && state.errors?.checkOut
                     ? "checkOut-error"
@@ -154,7 +163,8 @@ export function BookingForm({
               type="number"
               min={1}
               max={capacity}
-              defaultValue={1}
+              value={guestCount}
+              onChange={(event) => setGuestCount(Number(event.target.value))}
               required
               aria-describedby={
                 state?.success === false && state.errors?.guestCount
