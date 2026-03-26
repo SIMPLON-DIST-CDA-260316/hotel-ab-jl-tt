@@ -8,7 +8,7 @@ export async function EstablishmentCarousel() {
   if (establishments.length === 0) return null;
 
   return (
-    <section className="bg-gray-50 py-16">
+    <section className="bg-secondary py-16">
       <div className="mx-auto max-w-7xl px-6">
         <div className="flex items-end justify-between">
           <div>

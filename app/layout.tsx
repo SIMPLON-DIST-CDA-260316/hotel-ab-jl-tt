@@ -1,7 +1,14 @@
 import "./globals.css";
 import React from "react";
+import { Comfortaa } from "next/font/google";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
+
+const comfortaa = Comfortaa({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-comfortaa",
+});
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { getActivePendingBooking } from "@/features/bookings/queries/get-active-pending-booking";
@@ -15,8 +22,8 @@ export default async function Layout({ children }: Readonly<{ children: React.Re
     : null;
 
   return (
-    <html lang="fr" dir="ltr">
-      <body>
+    <html lang="fr" dir="ltr" className={comfortaa.variable}>
+      <body className="font-sans">
         <Header />
         {pendingBooking && pendingBooking.expiresAt && (
           <PendingBookingBanner

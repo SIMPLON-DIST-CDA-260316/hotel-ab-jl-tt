@@ -10,7 +10,7 @@ export function HighlightsSection() {
         <div className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-3">
           {HIGHLIGHTS.map((highlight) => (
             <div key={highlight.title} className="text-center">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-900 text-white">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary text-accent">
                 <highlight.icon className="h-5 w-5" />
               </div>
               <h3 className="mt-4 font-semibold">{highlight.title}</h3>

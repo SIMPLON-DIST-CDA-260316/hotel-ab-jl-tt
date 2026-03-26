@@ -9,8 +9,8 @@ function StarRating({ rating }: { rating: number }) {
           key={index}
           className={`h-4 w-4 ${
             index < rating
-              ? "fill-amber-400 text-amber-400"
-              : "fill-gray-200 text-gray-200"
+              ? "fill-accent text-accent"
+              : "fill-muted text-muted"
           }`}
         />
       ))}
@@ -20,7 +20,7 @@ function StarRating({ rating }: { rating: number }) {
 
 export function TestimonialsSection() {
   return (
-    <section className="bg-gray-50 py-16">
+    <section className="bg-secondary py-16">
       <div className="mx-auto max-w-7xl px-6">
         <p className="text-center text-xs uppercase tracking-[0.2em] text-muted-foreground">
           Ce que disent nos hôtes
@@ -32,10 +32,10 @@ export function TestimonialsSection() {
           {TESTIMONIALS.map((testimonial) => (
             <div
               key={testimonial.author}
-              className="rounded-lg bg-white p-6 shadow-sm"
+              className="rounded-lg bg-card p-6 shadow-sm"
             >
               <StarRating rating={testimonial.rating} />
-              <blockquote className="mt-4 text-sm italic leading-relaxed text-gray-600">
+              <blockquote className="mt-4 text-sm italic leading-relaxed text-muted-foreground">
                 &laquo; {testimonial.quote} &raquo;
               </blockquote>
               <div className="mt-4">
