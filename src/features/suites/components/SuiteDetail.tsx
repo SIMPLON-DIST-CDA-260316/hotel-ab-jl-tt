@@ -89,7 +89,7 @@ export function SuiteDetail({ suite, isAuthenticated }: SuiteDetailProps) {
             <SuiteEstablishmentCard establishment={suite.establishment} />
           </div>
 
-          <SuiteBookingSidebar capacity={suite.capacity} isAuthenticated={isAuthenticated} />
+          <SuiteBookingSidebar suiteId={suite.id} capacity={suite.capacity} pricePerNight={Number(suite.price)} isAuthenticated={isAuthenticated} />
         </div>
       </div>
     </div>
