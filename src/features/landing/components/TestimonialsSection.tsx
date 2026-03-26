@@ -32,7 +32,7 @@ export function TestimonialsSection() {
   return (
     <section className="bg-secondary py-20">
       <div className="mx-auto max-w-7xl px-6">
-        <p className="text-center text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+        <p className="text-center text-sm font-semibold uppercase tracking-[0.2em] text-foreground/70">
           Ce que disent nos hôtes
         </p>
         <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-3">

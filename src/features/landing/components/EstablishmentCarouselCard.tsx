@@ -10,6 +10,8 @@ interface EstablishmentCarouselCardProps {
 export function EstablishmentCarouselCard({
   establishment,
 }: EstablishmentCarouselCardProps) {
+  const displayName = establishment.name.replace(/^Clair de Lune\s*[—–-]\s*/i, "");
+
   const formattedMinPrice = establishment.minPrice
     ? `À partir de ${Number(establishment.minPrice).toLocaleString("fr-FR")} € / nuit`
     : null;
@@ -39,15 +41,17 @@ export function EstablishmentCarouselCard({
       {/* Gradient overlay — always visible at bottom, stronger on hover */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent transition-opacity duration-300 group-hover:from-black/80" />
 
-      {/* Content overlay — always visible */}
-      <div className="absolute inset-x-0 bottom-0 p-5">
-        <h3 className="text-base font-semibold text-white">
-          {establishment.name}
+      {/* Content overlay — centered vertically, shifts down on hover */}
+      <div className="absolute inset-x-0 bottom-0 flex flex-col justify-end p-5 transition-all duration-300">
+        <h3 className="text-base font-semibold text-white drop-shadow-md">
+          {displayName}
         </h3>
-        <p className="mt-0.5 text-sm text-white/80">{establishment.city}</p>
+        <p className="mt-0.5 text-sm text-white/80 drop-shadow-sm">
+          {establishment.city}
+        </p>
 
         {/* Hover-only info */}
-        <div className="mt-2 flex items-center gap-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+        <div className="mt-2 flex max-h-0 items-center gap-2 overflow-hidden opacity-0 transition-all duration-300 group-hover:max-h-10 group-hover:opacity-100">
           {establishment.suiteCount > 0 && (
             <Badge
               variant="secondary"
