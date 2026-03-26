@@ -5,8 +5,9 @@ import { redirect } from "next/navigation";
 import { and, eq, isNull } from "drizzle-orm";
 
 import { db } from "@/lib/db";
-import { suite, establishment, image } from "@/lib/db/schema/domain";
+import { suite, establishment, image, suiteAmenity } from "@/lib/db/schema/domain";
 import { requireManager } from "@/lib/auth-guards";
+import { getInheritedAmenityIds } from "../queries/get-amenities-for-suite";
 
 import { suiteSchema } from "../lib/suite-schema";
 import {
@@ -77,6 +78,7 @@ export async function updateSuite(
     area: formData.get("area"),
     // establishmentId is fixed in edit mode — injected from hidden input
     establishmentId: formData.get("establishmentId"),
+    amenityIds: formData.getAll("amenityIds"),
   };
 
   const parsed = suiteSchema.safeParse(raw);
@@ -86,7 +88,7 @@ export async function updateSuite(
   }
 
   const [existingSuite] = await db
-    .select({ id: suite.id, mainImage: suite.mainImage })
+    .select({ id: suite.id, mainImage: suite.mainImage, establishmentId: suite.establishmentId })
     .from(suite)
     .innerJoin(establishment, eq(suite.establishmentId, establishment.id))
     .where(
@@ -125,6 +127,12 @@ export async function updateSuite(
   }
 
   try {
+    const inheritedIds = await getInheritedAmenityIds(existingSuite.establishmentId);
+    const inheritedSet = new Set(inheritedIds);
+    const extraAmenityIds = parsed.data.amenityIds.filter(
+      (id) => !inheritedSet.has(id),
+    );
+
     const mainImageUrl = hasNewMainImage
       ? await saveUploadedFile(newMainImageFile)
       : existingSuite.mainImage;
@@ -134,6 +142,15 @@ export async function updateSuite(
     }
 
     await applyUpdateWithGallery(suiteId, parsed.data, mainImageUrl, galleryFiles);
+
+    // Replace suite-specific amenity links (inherited amenities are excluded)
+    await db.delete(suiteAmenity).where(eq(suiteAmenity.suiteId, suiteId));
+
+    if (extraAmenityIds.length > 0) {
+      await db.insert(suiteAmenity).values(
+        extraAmenityIds.map((amenityId) => ({ suiteId, amenityId })),
+      );
+    }
   } catch (error: unknown) {
     console.error("Failed to update suite:", error);
     return {

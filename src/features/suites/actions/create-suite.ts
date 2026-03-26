@@ -5,8 +5,9 @@ import { redirect } from "next/navigation";
 import { eq, and, isNull } from "drizzle-orm";
 
 import { db } from "@/lib/db";
-import { suite, image, establishment } from "@/lib/db/schema/domain";
+import { suite, image, establishment, suiteAmenity } from "@/lib/db/schema/domain";
 import { requireManager } from "@/lib/auth-guards";
+import { getInheritedAmenityIds } from "../queries/get-amenities-for-suite";
 
 import { suiteSchema } from "../lib/suite-schema";
 import {
@@ -27,6 +28,7 @@ async function insertSuiteWithGallery(
   establishmentId: string,
   mainImageUrl: string,
   galleryFiles: File[],
+  extraAmenityIds: string[],
 ): Promise<void> {
   const suiteId = crypto.randomUUID();
 
@@ -51,6 +53,12 @@ async function insertSuiteWithGallery(
 
     await db.insert(image).values(galleryInserts);
   }
+
+  if (extraAmenityIds.length > 0) {
+    await db.insert(suiteAmenity).values(
+      extraAmenityIds.map((amenityId) => ({ suiteId, amenityId })),
+    );
+  }
 }
 
 export async function createSuite(
@@ -65,6 +73,7 @@ export async function createSuite(
     capacity: formData.get("capacity"),
     area: formData.get("area"),
     establishmentId: formData.get("establishmentId"),
+    amenityIds: formData.getAll("amenityIds"),
   };
 
   const parsed = suiteSchema.safeParse(raw);
@@ -114,12 +123,19 @@ export async function createSuite(
   }
 
   try {
+    const inheritedIds = await getInheritedAmenityIds(managerEstablishment.id);
+    const inheritedSet = new Set(inheritedIds);
+    const extraAmenityIds = parsed.data.amenityIds.filter(
+      (id) => !inheritedSet.has(id),
+    );
+
     const mainImageUrl = await saveUploadedFile(mainImageFile);
     await insertSuiteWithGallery(
       parsed.data,
       managerEstablishment.id,
       mainImageUrl,
       galleryFiles,
+      extraAmenityIds,
     );
   } catch (error: unknown) {
     console.error("Failed to create suite:", error);
