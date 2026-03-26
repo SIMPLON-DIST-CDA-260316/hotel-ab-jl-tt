@@ -28,3 +28,19 @@ export const shortDateWithWeekdayFormatter = new Intl.DateTimeFormat("fr-FR", {
   day: "numeric",
   month: "long",
 });
+
+export const mediumDateFormatter = new Intl.DateTimeFormat("fr-FR", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+});
+
+export function formatTimeRemaining(milliseconds: number): string {
+  if (milliseconds <= 0) return "expiré";
+
+  const totalSeconds = Math.floor(milliseconds / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  return `${minutes}:${String(seconds).padStart(2, "0")}`;
+}

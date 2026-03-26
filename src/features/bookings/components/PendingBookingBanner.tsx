@@ -4,22 +4,13 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Clock, ArrowRight } from "lucide-react";
+import { formatTimeRemaining } from "@/lib/formatters";
 
 type PendingBookingBannerProps = {
   bookingId: string;
   suiteTitle: string;
   expiresAt: string;
 };
-
-function formatTimeRemaining(milliseconds: number): string {
-  if (milliseconds <= 0) return "expiré";
-
-  const totalSeconds = Math.floor(milliseconds / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-
-  return `${minutes}:${String(seconds).padStart(2, "0")}`;
-}
 
 export function PendingBookingBanner({
   bookingId,

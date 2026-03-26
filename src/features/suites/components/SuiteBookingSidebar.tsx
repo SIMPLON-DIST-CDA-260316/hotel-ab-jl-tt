@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { currencyFormatter } from "@/lib/formatters";
 import type { AvailabilityResult } from "@/types/availability.types";
 
 type SuiteBookingSidebarProps = {
@@ -16,11 +17,6 @@ type SuiteBookingSidebarProps = {
   pricePerNight: number;
   isAuthenticated: boolean;
 };
-
-const currencyFormatter = new Intl.NumberFormat("fr-FR", {
-  style: "currency",
-  currency: "EUR",
-});
 
 export function SuiteBookingSidebar({
   suiteId,

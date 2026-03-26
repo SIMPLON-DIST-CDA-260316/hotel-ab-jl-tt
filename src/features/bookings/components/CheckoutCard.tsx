@@ -11,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { currencyFormatter, mediumDateFormatter } from "@/lib/formatters";
 import { confirmBooking } from "../actions/confirm-booking";
 
 type CheckoutCardProps = {
@@ -68,16 +69,6 @@ export function CheckoutCard({
   const minutes = Math.floor(remainingSeconds / 60);
   const seconds = remainingSeconds % 60;
 
-  const dateFormatter = new Intl.DateTimeFormat("fr-FR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-  const currencyFormatter = new Intl.NumberFormat("fr-FR", {
-    style: "currency",
-    currency: "EUR",
-  });
-
   async function handleConfirm() {
     setIsPending(true);
     setError(null);
@@ -105,8 +96,8 @@ export function CheckoutCard({
             <strong>Suite :</strong> {suiteTitle}
           </p>
           <p>
-            <strong>Du</strong> {dateFormatter.format(new Date(checkIn))}{" "}
-            <strong>au</strong> {dateFormatter.format(new Date(checkOut))}
+            <strong>Du</strong> {mediumDateFormatter.format(new Date(checkIn))}{" "}
+            <strong>au</strong> {mediumDateFormatter.format(new Date(checkOut))}
           </p>
           <p>
             <strong>Voyageurs :</strong> {guestCount}
