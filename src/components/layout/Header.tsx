@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import Image from "next/image";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { LogoutButton } from "@/components/layout/LogoutButton";
@@ -9,7 +10,13 @@ export async function Header() {
 
   return (
     <header className="border-b px-6 py-3 flex items-center justify-between">
-      <Link href="/" className="font-semibold">
+      <Link href="/" className="flex items-center gap-2 font-semibold">
+        <Image
+          src="/images/logo.svg"
+          alt="Clair de Lune"
+          width={28}
+          height={28}
+        />
         Clair de Lune
       </Link>
       <nav className="flex items-center gap-2">

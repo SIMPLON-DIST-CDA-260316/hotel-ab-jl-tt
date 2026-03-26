@@ -5,7 +5,7 @@ export function HeroSection() {
   return (
     <section className="relative flex min-h-[70vh] items-center overflow-hidden bg-primary">
       <Image
-        src="/hero-banner.png"
+        src="/images/hero-banner.png"
         alt="Paysage rural avec forêt et vallée"
         fill
         priority
