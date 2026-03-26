@@ -186,6 +186,7 @@ Nathalie pilote la transformation digitale du groupe Hôtel Clair de Lune. Elle 
 - Créer, modifier ou supprimer des établissements et des comptes gérants rapidement
 - S'assurer que chaque gérant n'accède qu'à son propre établissement
 - Avoir confiance dans la sécurité des données clients (mots de passe, réservations)
+- Transférer les messages des clients aux gérants
 
 ### Frustrations
 - Les outils éparpillés qui obligent à jongler entre plusieurs interfaces
