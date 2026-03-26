@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState, useMemo } from "react";
+import { useActionState, useState, useMemo, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -21,6 +21,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { MILLISECONDS_PER_DAY } from "@/lib/formatters";
 import { createPendingBooking } from "../actions/create-pending-booking";
 import { computeOptionQuantity, formatPricingModel, PRICING_MODELS } from "../lib/pricing-models";
+import { PendingBookingAlert } from "./PendingBookingAlert";
 import type { BookingActionResult } from "../types/booking.types";
 import type { EstablishmentOption } from "../queries/get-establishment-options";
 
@@ -66,9 +67,15 @@ export function CheckoutForm({
   initialGuestCount,
 }: CheckoutFormProps) {
   const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
   const [checkIn, setCheckIn] = useState(initialCheckIn);
   const [checkOut, setCheckOut] = useState(initialCheckOut);
   const [guestCount, setGuestCount] = useState(initialGuestCount);
+  const [shouldReplace, setShouldReplace] = useState(false);
+  const [pendingAlert, setPendingAlert] = useState<{
+    suiteName: string;
+    reference: string;
+  } | null>(null);
   const [selectedOptions, setSelectedOptions] = useState<SelectedOption[]>(
     () =>
       options
@@ -147,15 +154,37 @@ export function CheckoutForm({
       formData.set("checkOut", checkOut);
       formData.set("guestCount", String(guestCount));
       formData.set("options", JSON.stringify(selectedOptions));
+      if (shouldReplace) {
+        formData.set("confirmReplace", "true");
+        setShouldReplace(false);
+      }
       const actionResult = await createPendingBooking(formData);
       if (actionResult.success) {
         router.push(`/bookings/${actionResult.bookingId}/checkout`);
+        return null;
+      }
+      if ("existingPending" in actionResult && actionResult.existingPending) {
+        setPendingAlert({
+          suiteName: actionResult.suiteName,
+          reference: actionResult.reference,
+        });
         return null;
       }
       return actionResult;
     },
     null,
   );
+
+  useEffect(() => {
+    if (shouldReplace && formRef.current) {
+      formRef.current.requestSubmit();
+    }
+  }, [shouldReplace]);
+
+  function handleConfirmReplace() {
+    setPendingAlert(null);
+    setShouldReplace(true);
+  }
 
   const hasImage = suiteImage && !suiteImage.includes("placeholder");
   const hasDates = nightCount > 0;
@@ -502,27 +531,27 @@ export function CheckoutForm({
           </section>
 
           {/* Errors */}
-          {state?.success === false && state.errors?._form && (
+          {state?.success === false && "errors" in state && state.errors._form && (
             <p className="text-sm text-destructive">{state.errors._form[0]}</p>
           )}
-          {state?.success === false && state.errors?.checkIn && (
+          {state?.success === false && "errors" in state && state.errors.checkIn && (
             <p className="text-sm text-destructive">
               {state.errors.checkIn[0]}
             </p>
           )}
-          {state?.success === false && state.errors?.checkOut && (
+          {state?.success === false && "errors" in state && state.errors.checkOut && (
             <p className="text-sm text-destructive">
               {state.errors.checkOut[0]}
             </p>
           )}
-          {state?.success === false && state.errors?.guestCount && (
+          {state?.success === false && "errors" in state && state.errors.guestCount && (
             <p className="text-sm text-destructive">
               {state.errors.guestCount[0]}
             </p>
           )}
 
           {/* Submit */}
-          <form>
+          <form ref={formRef}>
             <Button
               type="submit"
               className="h-12 w-full rounded-xl text-base font-semibold"
@@ -550,6 +579,14 @@ export function CheckoutForm({
           </p>
         </CardContent>
       </Card>
+
+      <PendingBookingAlert
+        open={pendingAlert !== null}
+        suiteName={pendingAlert?.suiteName ?? ""}
+        reference={pendingAlert?.reference ?? ""}
+        onConfirm={handleConfirmReplace}
+        onCancel={() => setPendingAlert(null)}
+      />
     </div>
   );
 }

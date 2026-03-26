@@ -1,6 +1,6 @@
 "use server";
 
-import { eq, and, sql, isNull } from "drizzle-orm";
+import { eq, and, sql, isNull, gt } from "drizzle-orm";
 
 import { db } from "@/lib/db";
 import {
@@ -81,19 +81,56 @@ export async function createPendingBooking(
     };
   }
 
-  // Cancel any existing pending booking for this user
-  await db
-    .update(booking)
-    .set({
-      status: BOOKING_STATUSES.CANCELLED,
-      cancelledAt: new Date(),
+  // Check for existing active pending booking
+  const confirmReplace = formData.get("confirmReplace") === "true";
+
+  const [existingPending] = await db
+    .select({
+      id: booking.id,
+      reference: booking.reference,
+      suiteId: booking.suiteId,
+      expiresAt: booking.expiresAt,
     })
+    .from(booking)
     .where(
       and(
         eq(booking.clientId, session.user.id),
         eq(booking.status, BOOKING_STATUSES.PENDING),
+        gt(booking.expiresAt, sql`now()`),
       ),
-    );
+    )
+    .limit(1);
+
+  if (existingPending && !confirmReplace) {
+    // Fetch suite name for the UI message
+    const [existingSuite] = await db
+      .select({ title: suite.title })
+      .from(suite)
+      .where(eq(suite.id, existingPending.suiteId));
+
+    return {
+      success: false,
+      existingPending: true,
+      suiteName: existingSuite?.title ?? "une autre suite",
+      reference: existingPending.reference,
+    };
+  }
+
+  // Cancel any existing pending bookings for this user
+  if (existingPending) {
+    await db
+      .update(booking)
+      .set({
+        status: BOOKING_STATUSES.CANCELLED,
+        cancelledAt: new Date(),
+      })
+      .where(
+        and(
+          eq(booking.clientId, session.user.id),
+          eq(booking.status, BOOKING_STATUSES.PENDING),
+        ),
+      );
+  }
 
   // Re-check availability (race condition protection)
   const [overlap] = await db
