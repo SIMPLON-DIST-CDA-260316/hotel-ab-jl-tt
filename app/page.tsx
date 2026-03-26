@@ -14,6 +14,9 @@ export default function Page() {
         <Link href="/admin/managers" className="underline">
           Administration — Gérants
         </Link>
+        <Link href="/admin/inquiries" className="underline">
+          Administration — Messages
+        </Link>
       </nav>
     </div>
   );
