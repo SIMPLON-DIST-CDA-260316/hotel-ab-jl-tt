@@ -103,7 +103,7 @@ export default function ContactForm({ establishment }: ContactFormProps) {
           </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="message">Message</Label>
-            <Textarea id="message" name="message"></Textarea>
+            <Textarea id="message" name="message" required></Textarea>
             {formState.errors && (
               <FieldError>{formState.errors.message}</FieldError>
             )}
