@@ -1,5 +1,7 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
+
 import { eq, and, sql } from "drizzle-orm";
 
 import { db } from "@/lib/db";
@@ -62,7 +64,7 @@ export async function confirmBooking(
   }
 
   // Atomic overlap check + confirmation in a transaction
-  return db.transaction(async (tx) => {
+  const result = await db.transaction(async (tx) => {
     // Lock overlapping bookings to prevent concurrent confirmations
     const [overlap] = await tx
       .select({ count: sql<number>`count(*)::int` })
@@ -107,4 +109,10 @@ export async function confirmBooking(
 
     return { success: true as const };
   });
+
+  if (result.success) {
+    revalidatePath("/bookings");
+  }
+
+  return result;
 }
