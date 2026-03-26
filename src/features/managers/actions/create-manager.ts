@@ -1,14 +1,18 @@
 "use server";
 
+import { redirect } from "next/navigation";
+
+import { eq } from "drizzle-orm";
+import { hashPassword } from "better-auth/crypto";
+
 import { db } from "@/lib/db";
 import { user, account } from "@/lib/db/schema/auth";
 import { establishment } from "@/lib/db/schema/domain";
-import { eq } from "drizzle-orm";
-import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth-guards";
-import { hashPassword } from "better-auth/crypto";
 import { ROLES } from "@/config/roles";
+
 import { createManagerSchema } from "../lib/manager-schema";
+
 import type { ActionResult } from "@/types/action.types";
 
 export async function createManager(

@@ -1,0 +1,3 @@
+export const PENDING_EXPIRY_MINUTES = 15;
+
+export const CANCELLATION_DELAY_DAYS = 3;

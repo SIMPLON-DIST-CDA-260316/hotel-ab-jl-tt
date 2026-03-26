@@ -15,6 +15,9 @@ export async function Header() {
       <nav className="flex items-center gap-2">
         {session ? (
           <>
+            <Button variant="ghost" size="sm" asChild>
+              <Link href="/bookings">Mes réservations</Link>
+            </Button>
             <span className="text-sm text-muted-foreground">{session.user.name}</span>
             <LogoutButton />
           </>

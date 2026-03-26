@@ -1,0 +1,45 @@
+{
+  "outputStyle": "Concise",
+  "permissions": {
+    "allow": [
+      "Bash(bun run dev)",
+      "Bash(bun run build)",
+      "Bash(bun run lint)",
+      "Bash(bun run test *)",
+      "Bash(bun run test:e2e *)",
+      "Bash(bun run db:seed-admin)",
+      "Bash(bunx shadcn@latest *)",
+      "Bash(docker compose up *)",
+      "Bash(docker compose ps *)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git branch *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git switch *)",
+      "Bash(git pull *)",
+      "Bash(bun *)",
+      "Read(*)"
+    ],
+    "ask": [
+      "Edit(.env)",
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Bash(git checkout *)",
+      "Bash(git stash *)",
+      "Bash(git worktree *)",
+      "Bash(git branch -D *)",
+      "Bash(git branch -d *)",
+      "Bash(bun run db:push)",
+      "Bash(bun run db:seed)",
+      "Bash(git push *)"
+    ],
+    "deny": [
+      "Bash(sudo *)",
+      "Bash(rm -rf /)",
+      "Read(.env)",
+      "Edit(.git/**)"
+    ]
+  }
+}

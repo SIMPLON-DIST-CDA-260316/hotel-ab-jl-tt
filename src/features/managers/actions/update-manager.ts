@@ -1,12 +1,16 @@
 "use server";
 
+import { redirect } from "next/navigation";
+
+import { eq, and, ne } from "drizzle-orm";
+
 import { db } from "@/lib/db";
 import { user } from "@/lib/db/schema/auth";
 import { establishment } from "@/lib/db/schema/domain";
-import { eq, and, ne } from "drizzle-orm";
-import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth-guards";
+
 import { updateManagerSchema } from "../lib/manager-schema";
+
 import type { ActionResult } from "@/types/action.types";
 
 export async function updateManager(
