@@ -12,9 +12,7 @@ export interface EstablishmentWithMinPrice {
   suiteCount: number;
 }
 
-export async function getEstablishmentsWithMinPrice(): Promise<
-  EstablishmentWithMinPrice[]
-> {
+export async function getEstablishmentsWithMinPrice(): Promise<EstablishmentWithMinPrice[]> {
   const rows = await db
     .select({
       id: establishment.id,

@@ -20,7 +20,9 @@ export function HeroSearchCard() {
     if (checkIn) params.set("checkIn", checkIn);
     if (checkOut) params.set("checkOut", checkOut);
     if (guests) params.set("guests", guests);
-    router.push(`/suites?${params.toString()}`);
+    // Route /suites will exist after feat/search-and-filters merge
+    const searchUrl = `/suites?${params.toString()}`;
+    router.push(searchUrl as Parameters<typeof router.push>[0]);
   }
 
   return (
