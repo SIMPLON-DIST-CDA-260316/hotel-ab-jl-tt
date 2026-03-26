@@ -1,10 +1,16 @@
+import Image from "next/image";
 import { HeroSearchCard } from "./HeroSearchCard";
 
 export function HeroSection() {
   return (
     <section className="relative flex min-h-[70vh] items-center overflow-hidden bg-primary">
-      {/* Gradient fallback — replace with next/image + real photo later */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/80 to-primary/60" />
+      <Image
+        src="/herro-banner.png"
+        alt="Paysage rural avec forêt et vallée"
+        fill
+        priority
+        className="object-cover opacity-40"
+      />
 
       <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center gap-8 px-6 py-16 md:flex-row md:items-center md:gap-12">
         {/* Branding */}
