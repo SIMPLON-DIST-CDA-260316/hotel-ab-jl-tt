@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { Star } from "lucide-react";
 import { TESTIMONIALS } from "../lib/landing-content";
 
@@ -19,9 +18,14 @@ function StarRating({ rating }: { rating: number }) {
   );
 }
 
-function getAvatarUrl(name: string): string {
-  const seed = encodeURIComponent(name);
-  return `https://api.dicebear.com/9.x/avataaars/svg?seed=${seed}&backgroundColor=b6e3f4,c0aede,d1d4f9`;
+function getInitials(name: string): string {
+  return name
+    .split(/[\s&]+/)
+    .filter((word) => word.length > 0)
+    .map((word) => word[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
 }
 
 export function TestimonialsSection() {
@@ -42,13 +46,12 @@ export function TestimonialsSection() {
                 &laquo; {testimonial.quote} &raquo;
               </blockquote>
               <div className="mt-5 flex items-center gap-3">
-                <Image
-                  src={getAvatarUrl(testimonial.author)}
-                  alt={testimonial.author}
-                  width={40}
-                  height={40}
-                  className="rounded-full"
-                />
+                <div
+                  className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground"
+                  aria-hidden="true"
+                >
+                  {getInitials(testimonial.author)}
+                </div>
                 <div>
                   <p className="text-sm font-semibold">
                     {testimonial.author}
