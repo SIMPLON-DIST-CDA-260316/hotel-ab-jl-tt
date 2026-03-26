@@ -1,20 +1,17 @@
-import Link from "next/link";
+import { HeroSection } from "@/features/landing/components/HeroSection";
+import { EstablishmentCarousel } from "@/features/landing/components/EstablishmentCarousel";
+import { HighlightsSection } from "@/features/landing/components/HighlightsSection";
+import { TestimonialsSection } from "@/features/landing/components/TestimonialsSection";
+import { ContactCta } from "@/features/landing/components/ContactCta";
 
-export default function Page() {
+export default function HomePage() {
   return (
-    <div className="flex flex-col gap-4 p-8">
-      <h1 className="text-2xl font-bold">Clair de Lune</h1>
-      <nav className="flex flex-col gap-2">
-        <Link href="/establishments" className="underline">
-          Nos établissements
-        </Link>
-        <Link href="/admin/establishments" className="underline">
-          Administration — Établissements
-        </Link>
-        <Link href="/admin/managers" className="underline">
-          Administration — Gérants
-        </Link>
-      </nav>
-    </div>
+    <main id="main-content">
+      <HeroSection />
+      <EstablishmentCarousel />
+      <HighlightsSection />
+      <TestimonialsSection />
+      <ContactCta />
+    </main>
   );
 }
