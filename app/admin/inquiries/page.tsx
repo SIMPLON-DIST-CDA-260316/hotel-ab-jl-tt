@@ -13,10 +13,6 @@ import { getInquiries } from "@/features/inquiries/queries/get-inquiries";
 
 export default async function AdminManagersPage() {
   const inquiries = await getInquiries();
-  console.log(
-    "------------------",
-    inquiries.map((inquiry) => inquiry),
-  );
 
   const subjects = [
     { name: "complaint", text: "Je souhaite poser une réclamation" },
@@ -62,24 +58,6 @@ export default async function AdminManagersPage() {
                   {subjects.find((s) => (s.name === inquiry.subject))?.text}
                 </TableCell>
                 <TableCell>{inquiry.establishmentName}</TableCell>
-                {/* <TableCell>
-                  {manager.establishments.length > 0 ? (
-                    manager.establishments
-                      .map((establishment) => establishment.name)
-                      .join(", ")
-                  ) : (
-                    <span className="text-muted-foreground">Non assigné</span>
-                  )}
-                </TableCell> */}
-                <TableCell className="text-right">
-                  <div className="flex justify-end gap-2">
-                    <Button variant="outline" size="sm" asChild>
-                      {/* <Link href={`/admin/managers/${manager.id}/edit`}>
-                        Répondre
-                      </Link> */}
-                    </Button>
-                  </div>
-                </TableCell>
               </TableRow>
             ))}
           </TableBody>
