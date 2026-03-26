@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { MILLISECONDS_PER_DAY, currencyFormatter } from "@/lib/formatters";
+import { MILLISECONDS_PER_DAY, currencyFormatter, shortDateWithWeekdayFormatter } from "@/lib/formatters";
 import { createPendingBooking } from "../actions/create-pending-booking";
 import { computeOptionQuantity } from "../lib/pricing-models";
 import { CheckoutHeroSection } from "./CheckoutHeroSection";
@@ -32,12 +32,6 @@ type CheckoutFormProps = {
   initialCheckOut: string;
   initialGuestCount: number;
 };
-
-const dateFormatter = new Intl.DateTimeFormat("fr-FR", {
-  weekday: "short",
-  day: "numeric",
-  month: "long",
-});
 
 export function CheckoutForm({
   suiteId,
@@ -242,11 +236,11 @@ export function CheckoutForm({
             {hasDates && (
               <p className="text-sm text-muted-foreground">
                 <span className="capitalize">
-                  {dateFormatter.format(new Date(checkIn))}
+                  {shortDateWithWeekdayFormatter.format(new Date(checkIn))}
                 </span>{" "}
                 →{" "}
                 <span className="capitalize">
-                  {dateFormatter.format(new Date(checkOut))}
+                  {shortDateWithWeekdayFormatter.format(new Date(checkOut))}
                 </span>{" "}
                 · {nightCount} nuit{nightCount > 1 ? "s" : ""}
               </p>

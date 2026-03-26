@@ -22,3 +22,9 @@ export const shortDateFormatter = new Intl.DateTimeFormat("fr-FR", {
   day: "numeric",
   month: "short",
 });
+
+export const shortDateWithWeekdayFormatter = new Intl.DateTimeFormat("fr-FR", {
+  weekday: "short",
+  day: "numeric",
+  month: "long",
+});
