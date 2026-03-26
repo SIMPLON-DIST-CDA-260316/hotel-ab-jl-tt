@@ -53,38 +53,40 @@ export async function createEstablishment(
 
   try {
     const { amenityIds, ...establishmentData } = parsed.data;
-
-    const [created] = await db
-      .insert(establishment)
-      .values({
-        ...establishmentData,
-        description: establishmentData.description || null,
-        phone: establishmentData.phone || null,
-        email: establishmentData.email || null,
-        managerId: manager.id,
-      })
-      .returning({ id: establishment.id });
-
-    if (amenityIds.length > 0) {
-      await db.insert(establishmentAmenity).values(
-        amenityIds.map((amenityId) => ({
-          establishmentId: created.id,
-          amenityId,
-        })),
-      );
-    }
-
     const optionEntries = parseOptionEntries(formData);
-    if (optionEntries.length > 0) {
-      await db.insert(establishmentOption).values(
-        optionEntries.map(({ optionId, price, included }) => ({
-          establishmentId: created.id,
-          optionId,
-          price,
-          included,
-        })),
-      );
-    }
+
+    await db.transaction(async (tx) => {
+      const [created] = await tx
+        .insert(establishment)
+        .values({
+          ...establishmentData,
+          description: establishmentData.description || null,
+          phone: establishmentData.phone || null,
+          email: establishmentData.email || null,
+          managerId: manager.id,
+        })
+        .returning({ id: establishment.id });
+
+      if (amenityIds.length > 0) {
+        await tx.insert(establishmentAmenity).values(
+          amenityIds.map((amenityId) => ({
+            establishmentId: created.id,
+            amenityId,
+          })),
+        );
+      }
+
+      if (optionEntries.length > 0) {
+        await tx.insert(establishmentOption).values(
+          optionEntries.map(({ optionId, price, included }) => ({
+            establishmentId: created.id,
+            optionId,
+            price,
+            included,
+          })),
+        );
+      }
+    });
   } catch (error) {
     console.error("Failed to create establishment:", error);
     return {

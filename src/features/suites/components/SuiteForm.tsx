@@ -1,10 +1,8 @@
 "use client";
 
-import { useActionState, useRef, useState } from "react";
-import Image from "next/image";
+import { useActionState, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,10 +19,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { SuiteAmenitiesField } from "./SuiteAmenitiesField";
+import { SuiteImageFields } from "./SuiteImageFields";
 import type { ActionError } from "../types/action.types";
 import type { SuiteAmenityOption } from "../queries/get-amenities-for-suite";
-
-const MAX_TOTAL_IMAGES_SIZE_BYTES = 4 * 1024 * 1024;
 
 type Establishment = { id: string; name: string };
 
@@ -63,22 +61,7 @@ export function SuiteForm({
     null,
   );
 
-  const mainImageRef = useRef<HTMLInputElement>(null);
-  const galleryRef = useRef<HTMLInputElement>(null);
-  const [totalSizeError, setTotalSizeError] = useState<string | null>(null);
-
-  function checkTotalSize() {
-    const mainSize = mainImageRef.current?.files?.[0]?.size ?? 0;
-    const gallerySize = Array.from(galleryRef.current?.files ?? []).reduce(
-      (sum, file) => sum + file.size,
-      0,
-    );
-    if (mainSize + gallerySize > MAX_TOTAL_IMAGES_SIZE_BYTES) {
-      setTotalSizeError("Le total des images ne doit pas dépasser 4 Mo");
-    } else {
-      setTotalSizeError(null);
-    }
-  }
+  const [hasSizeError, setHasSizeError] = useState(false);
 
   const isEditMode = defaultValues !== undefined;
   const defaultEstablishmentId =
@@ -236,122 +219,19 @@ export function SuiteForm({
             </div>
           </div>
 
-          <div>
-            <Label htmlFor="mainImage">
-              Image principale {isEditMode ? "(laisser vide pour conserver)" : "*"}
-            </Label>
-            {isEditMode && defaultValues?.mainImageUrl && (
-              <div className="mb-2">
-                <Image
-                  src={defaultValues.mainImageUrl}
-                  alt="Image principale actuelle"
-                  width={160}
-                  height={100}
-                  className="h-24 w-40 rounded-md object-cover"
-                />
-              </div>
-            )}
-            <Input
-              ref={mainImageRef}
-              id="mainImage"
-              name="mainImage"
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              required={!isEditMode}
-              onChange={checkTotalSize}
-              aria-describedby={
-                state?.errors?.mainImage ? "mainImage-error" : undefined
-              }
-            />
-            {state?.errors?.mainImage && (
-              <p id="mainImage-error" className="text-sm text-destructive">
-                {state.errors.mainImage[0]}
-              </p>
-            )}
-          </div>
+          <SuiteImageFields
+            isEditMode={isEditMode}
+            mainImageUrl={defaultValues?.mainImageUrl}
+            mainImageError={state?.errors?.mainImage?.[0]}
+            galleryError={state?.errors?.galleryImages?.[0]}
+            onSizeError={setHasSizeError}
+          />
 
-          <div>
-            <Label htmlFor="galleryImages">
-              {isEditMode ? "Ajouter des images à la galerie" : "Galerie d'images"}
-            </Label>
-            <Input
-              ref={galleryRef}
-              id="galleryImages"
-              name="galleryImages"
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              multiple
-              onChange={checkTotalSize}
-              aria-describedby={
-                [
-                  state?.errors?.galleryImages ? "galleryImages-error" : null,
-                  totalSizeError ? "total-size-error" : null,
-                ]
-                  .filter(Boolean)
-                  .join(" ") || undefined
-              }
-            />
-            <p className="text-muted-foreground mt-1 text-xs">
-              Formats acceptés : jpg, png, webp — 4 Mo max au total
-            </p>
-            {state?.errors?.galleryImages && (
-              <p id="galleryImages-error" className="text-sm text-destructive">
-                {state.errors.galleryImages[0]}
-              </p>
-            )}
-            {totalSizeError && (
-              <p id="total-size-error" role="alert" className="text-sm text-destructive">
-                {totalSizeError}
-              </p>
-            )}
-          </div>
-
-          {availableAmenities.length > 0 && (
-            <div>
-              <p className="mb-2 text-sm font-medium">Aménités</p>
-              <div className="grid gap-2 sm:grid-cols-2">
-                {availableAmenities.map((amenityItem) => {
-                  const isInherited = inheritedAmenityIds.includes(amenityItem.id);
-                  const isChecked =
-                    isInherited ||
-                    (defaultValues?.selectedAmenityIds?.includes(amenityItem.id) ??
-                      false);
-                  return (
-                    <div
-                      key={amenityItem.id}
-                      className="flex items-center gap-2"
-                    >
-                      <Checkbox
-                        id={`amenity-${amenityItem.id}`}
-                        name="amenityIds"
-                        value={amenityItem.id}
-                        defaultChecked={isChecked}
-                        disabled={isInherited}
-                        aria-label={
-                          isInherited
-                            ? `${amenityItem.name} (hérité de l'établissement)`
-                            : undefined
-                        }
-                      />
-                      <Label
-                        htmlFor={`amenity-${amenityItem.id}`}
-                        className={
-                          isInherited
-                            ? "font-normal text-muted-foreground"
-                            : "font-normal"
-                        }
-                      >
-                        {amenityItem.name}
-                        {isInherited && (
-                          <span className="ml-1 text-xs">(établissement)</span>
-                        )}
-                      </Label>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
+          <SuiteAmenitiesField
+            availableAmenities={availableAmenities}
+            inheritedAmenityIds={inheritedAmenityIds}
+            selectedAmenityIds={defaultValues?.selectedAmenityIds}
+          />
 
           {state?.errors?._form && (
             <p role="alert" className="text-sm text-destructive">
@@ -359,7 +239,7 @@ export function SuiteForm({
             </p>
           )}
 
-          <Button type="submit" disabled={isPending || totalSizeError !== null}>
+          <Button type="submit" disabled={isPending || hasSizeError}>
             {isPending ? "En cours..." : resolvedSubmitLabel}
           </Button>
         </form>

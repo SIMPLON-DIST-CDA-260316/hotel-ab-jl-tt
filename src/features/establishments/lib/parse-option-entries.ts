@@ -10,7 +10,9 @@ type OptionEntry = {
  * Only returns entries for selected option IDs with a valid positive price.
  */
 export function parseOptionEntries(formData: FormData): OptionEntry[] {
-  const selectedIds = formData.getAll("optionIds") as string[];
+  const selectedIds = formData
+    .getAll("optionIds")
+    .filter((entry): entry is string => typeof entry === "string");
 
   return selectedIds.flatMap((optionId) => {
     const rawPrice = formData.get(`option_price_${optionId}`);

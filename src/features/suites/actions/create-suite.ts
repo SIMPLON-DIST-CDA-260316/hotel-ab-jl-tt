@@ -32,33 +32,38 @@ async function insertSuiteWithGallery(
 ): Promise<void> {
   const suiteId = crypto.randomUUID();
 
-  await db.insert(suite).values({
-    id: suiteId,
-    title: data.title,
-    description: data.description || null,
-    price: data.price.replace(",", "."),
-    mainImage: mainImageUrl,
-    capacity: Number(data.capacity),
-    area: data.area ? data.area.replace(",", ".") : null,
-    establishmentId,
+  // Save gallery files before the transaction — file IO cannot be rolled back
+  const galleryInserts = galleryFiles.length > 0
+    ? await Promise.all(
+        galleryFiles.map(async (file, index) => {
+          const url = await saveUploadedFile(file);
+          return { url, alt: null, position: index + 1, suiteId };
+        }),
+      )
+    : [];
+
+  await db.transaction(async (tx) => {
+    await tx.insert(suite).values({
+      id: suiteId,
+      title: data.title,
+      description: data.description || null,
+      price: data.price.replace(",", "."),
+      mainImage: mainImageUrl,
+      capacity: Number(data.capacity),
+      area: data.area ? data.area.replace(",", ".") : null,
+      establishmentId,
+    });
+
+    if (galleryInserts.length > 0) {
+      await tx.insert(image).values(galleryInserts);
+    }
+
+    if (extraAmenityIds.length > 0) {
+      await tx.insert(suiteAmenity).values(
+        extraAmenityIds.map((amenityId) => ({ suiteId, amenityId })),
+      );
+    }
   });
-
-  if (galleryFiles.length > 0) {
-    const galleryInserts = await Promise.all(
-      galleryFiles.map(async (file, index) => {
-        const url = await saveUploadedFile(file);
-        return { url, alt: null, position: index + 1, suiteId };
-      }),
-    );
-
-    await db.insert(image).values(galleryInserts);
-  }
-
-  if (extraAmenityIds.length > 0) {
-    await db.insert(suiteAmenity).values(
-      extraAmenityIds.map((amenityId) => ({ suiteId, amenityId })),
-    );
-  }
 }
 
 export async function createSuite(

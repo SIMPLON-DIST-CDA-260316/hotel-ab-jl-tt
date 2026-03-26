@@ -38,44 +38,46 @@ export async function updateEstablishment(
 
   try {
     const { amenityIds, ...establishmentData } = parsed.data;
-
-    await db
-      .update(establishment)
-      .set({
-        ...establishmentData,
-        description: establishmentData.description || null,
-        phone: establishmentData.phone || null,
-        email: establishmentData.email || null,
-      })
-      .where(and(eq(establishment.id, id), isNull(establishment.deletedAt)));
-
-    // Replace amenity links: delete existing, insert new selection
-    await db
-      .delete(establishmentAmenity)
-      .where(eq(establishmentAmenity.establishmentId, id));
-
-    if (amenityIds.length > 0) {
-      await db.insert(establishmentAmenity).values(
-        amenityIds.map((amenityId) => ({ establishmentId: id, amenityId })),
-      );
-    }
-
-    // Replace option configs: delete existing, insert new selection
-    await db
-      .delete(establishmentOption)
-      .where(eq(establishmentOption.establishmentId, id));
-
     const optionEntries = parseOptionEntries(formData);
-    if (optionEntries.length > 0) {
-      await db.insert(establishmentOption).values(
-        optionEntries.map(({ optionId, price, included }) => ({
-          establishmentId: id,
-          optionId,
-          price,
-          included,
-        })),
-      );
-    }
+
+    await db.transaction(async (tx) => {
+      await tx
+        .update(establishment)
+        .set({
+          ...establishmentData,
+          description: establishmentData.description || null,
+          phone: establishmentData.phone || null,
+          email: establishmentData.email || null,
+        })
+        .where(and(eq(establishment.id, id), isNull(establishment.deletedAt)));
+
+      // Replace amenity links: delete existing, insert new selection
+      await tx
+        .delete(establishmentAmenity)
+        .where(eq(establishmentAmenity.establishmentId, id));
+
+      if (amenityIds.length > 0) {
+        await tx.insert(establishmentAmenity).values(
+          amenityIds.map((amenityId) => ({ establishmentId: id, amenityId })),
+        );
+      }
+
+      // Replace option configs: delete existing, insert new selection
+      await tx
+        .delete(establishmentOption)
+        .where(eq(establishmentOption.establishmentId, id));
+
+      if (optionEntries.length > 0) {
+        await tx.insert(establishmentOption).values(
+          optionEntries.map(({ optionId, price, included }) => ({
+            establishmentId: id,
+            optionId,
+            price,
+            included,
+          })),
+        );
+      }
+    });
   } catch (error) {
     console.error("Failed to update establishment:", error);
     return {

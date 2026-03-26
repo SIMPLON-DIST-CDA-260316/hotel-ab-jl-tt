@@ -18,51 +18,6 @@ import {
 
 import type { ActionError } from "../types/action.types";
 
-async function applyUpdateWithGallery(
-  suiteId: string,
-  data: {
-    title: string;
-    description?: string;
-    price: string;
-    capacity: string;
-    area?: string;
-  },
-  mainImageUrl: string,
-  galleryFiles: File[],
-): Promise<void> {
-  await db
-    .update(suite)
-    .set({
-      title: data.title,
-      description: data.description || null,
-      price: data.price.replace(",", "."),
-      mainImage: mainImageUrl,
-      capacity: Number(data.capacity),
-      area: data.area ? data.area.replace(",", ".") : null,
-    })
-    .where(and(eq(suite.id, suiteId), isNull(suite.deletedAt)));
-
-  if (galleryFiles.length > 0) {
-    const existingImages = await db
-      .select({ position: image.position })
-      .from(image)
-      .where(eq(image.suiteId, suiteId));
-
-    const nextPosition =
-      existingImages.length > 0
-        ? Math.max(...existingImages.map((img) => img.position)) + 1
-        : 1;
-
-    const galleryInserts = await Promise.all(
-      galleryFiles.map(async (file, index) => {
-        const url = await saveUploadedFile(file);
-        return { url, alt: null, position: nextPosition + index, suiteId };
-      }),
-    );
-
-    await db.insert(image).values(galleryInserts);
-  }
-}
 
 export async function updateSuite(
   suiteId: string,
@@ -130,7 +85,7 @@ export async function updateSuite(
     const inheritedIds = await getInheritedAmenityIds(existingSuite.establishmentId);
     const inheritedSet = new Set(inheritedIds);
     const extraAmenityIds = parsed.data.amenityIds.filter(
-      (id) => !inheritedSet.has(id),
+      (amenityId) => !inheritedSet.has(amenityId),
     );
 
     const mainImageUrl = hasNewMainImage
@@ -141,16 +96,54 @@ export async function updateSuite(
       await deleteUploadedFile(existingSuite.mainImage);
     }
 
-    await applyUpdateWithGallery(suiteId, parsed.data, mainImageUrl, galleryFiles);
+    // Pre-save gallery files before the transaction — file IO cannot be rolled back
+    const galleryInserts = galleryFiles.length > 0
+      ? await (async () => {
+          const existingImages = await db
+            .select({ position: image.position })
+            .from(image)
+            .where(eq(image.suiteId, suiteId));
 
-    // Replace suite-specific amenity links (inherited amenities are excluded)
-    await db.delete(suiteAmenity).where(eq(suiteAmenity.suiteId, suiteId));
+          const nextPosition =
+            existingImages.length > 0
+              ? Math.max(...existingImages.map((img) => img.position)) + 1
+              : 1;
 
-    if (extraAmenityIds.length > 0) {
-      await db.insert(suiteAmenity).values(
-        extraAmenityIds.map((amenityId) => ({ suiteId, amenityId })),
-      );
-    }
+          return Promise.all(
+            galleryFiles.map(async (file, index) => {
+              const url = await saveUploadedFile(file);
+              return { url, alt: null, position: nextPosition + index, suiteId };
+            }),
+          );
+        })()
+      : [];
+
+    await db.transaction(async (tx) => {
+      await tx
+        .update(suite)
+        .set({
+          title: parsed.data.title,
+          description: parsed.data.description || null,
+          price: parsed.data.price.replace(",", "."),
+          mainImage: mainImageUrl,
+          capacity: Number(parsed.data.capacity),
+          area: parsed.data.area ? parsed.data.area.replace(",", ".") : null,
+        })
+        .where(and(eq(suite.id, suiteId), isNull(suite.deletedAt)));
+
+      if (galleryInserts.length > 0) {
+        await tx.insert(image).values(galleryInserts);
+      }
+
+      // Replace suite-specific amenity links (inherited amenities are excluded)
+      await tx.delete(suiteAmenity).where(eq(suiteAmenity.suiteId, suiteId));
+
+      if (extraAmenityIds.length > 0) {
+        await tx.insert(suiteAmenity).values(
+          extraAmenityIds.map((amenityId) => ({ suiteId, amenityId })),
+        );
+      }
+    });
   } catch (error: unknown) {
     console.error("Failed to update suite:", error);
     return {
