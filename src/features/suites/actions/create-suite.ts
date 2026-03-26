@@ -5,8 +5,9 @@ import { redirect } from "next/navigation";
 import { eq, and, isNull } from "drizzle-orm";
 
 import { db } from "@/lib/db";
-import { suite, image, establishment } from "@/lib/db/schema/domain";
+import { suite, image, establishment, suiteAmenity } from "@/lib/db/schema/domain";
 import { requireManager } from "@/lib/auth-guards";
+import { getInheritedAmenityIds } from "../queries/get-amenities-for-suite";
 
 import { suiteSchema } from "../lib/suite-schema";
 import {
@@ -27,30 +28,42 @@ async function insertSuiteWithGallery(
   establishmentId: string,
   mainImageUrl: string,
   galleryFiles: File[],
+  extraAmenityIds: string[],
 ): Promise<void> {
   const suiteId = crypto.randomUUID();
 
-  await db.insert(suite).values({
-    id: suiteId,
-    title: data.title,
-    description: data.description || null,
-    price: data.price.replace(",", "."),
-    mainImage: mainImageUrl,
-    capacity: Number(data.capacity),
-    area: data.area ? data.area.replace(",", ".") : null,
-    establishmentId,
+  // Save gallery files before the transaction — file IO cannot be rolled back
+  const galleryInserts = galleryFiles.length > 0
+    ? await Promise.all(
+        galleryFiles.map(async (file, index) => {
+          const url = await saveUploadedFile(file);
+          return { url, alt: null, position: index + 1, suiteId };
+        }),
+      )
+    : [];
+
+  await db.transaction(async (tx) => {
+    await tx.insert(suite).values({
+      id: suiteId,
+      title: data.title,
+      description: data.description || null,
+      price: data.price.replace(",", "."),
+      mainImage: mainImageUrl,
+      capacity: Number(data.capacity),
+      area: data.area ? data.area.replace(",", ".") : null,
+      establishmentId,
+    });
+
+    if (galleryInserts.length > 0) {
+      await tx.insert(image).values(galleryInserts);
+    }
+
+    if (extraAmenityIds.length > 0) {
+      await tx.insert(suiteAmenity).values(
+        extraAmenityIds.map((amenityId) => ({ suiteId, amenityId })),
+      );
+    }
   });
-
-  if (galleryFiles.length > 0) {
-    const galleryInserts = await Promise.all(
-      galleryFiles.map(async (file, index) => {
-        const url = await saveUploadedFile(file);
-        return { url, alt: null, position: index + 1, suiteId };
-      }),
-    );
-
-    await db.insert(image).values(galleryInserts);
-  }
 }
 
 export async function createSuite(
@@ -65,6 +78,7 @@ export async function createSuite(
     capacity: formData.get("capacity"),
     area: formData.get("area"),
     establishmentId: formData.get("establishmentId"),
+    amenityIds: formData.getAll("amenityIds"),
   };
 
   const parsed = suiteSchema.safeParse(raw);
@@ -114,12 +128,19 @@ export async function createSuite(
   }
 
   try {
+    const inheritedIds = await getInheritedAmenityIds(managerEstablishment.id);
+    const inheritedSet = new Set(inheritedIds);
+    const extraAmenityIds = parsed.data.amenityIds.filter(
+      (id) => !inheritedSet.has(id),
+    );
+
     const mainImageUrl = await saveUploadedFile(mainImageFile);
     await insertSuiteWithGallery(
       parsed.data,
       managerEstablishment.id,
       mainImageUrl,
       galleryFiles,
+      extraAmenityIds,
     );
   } catch (error: unknown) {
     console.error("Failed to create suite:", error);

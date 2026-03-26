@@ -6,9 +6,14 @@ import { eq } from "drizzle-orm";
 
 import { db } from "@/lib/db";
 import { user } from "@/lib/db/schema/auth";
-import { establishment } from "@/lib/db/schema/domain";
+import {
+  establishment,
+  establishmentAmenity,
+  establishmentOption,
+} from "@/lib/db/schema/domain";
 import { requireAdmin } from "@/lib/auth-guards";
 import { ROLES } from "@/config/roles";
+import { parseOptionEntries } from "../lib/parse-option-entries";
 
 import { establishmentSchema } from "../lib/establishment-schema";
 
@@ -19,7 +24,10 @@ export async function createEstablishment(
 ): Promise<ActionResult> {
   await requireAdmin();
 
-  const raw = Object.fromEntries(formData);
+  const raw = {
+    ...Object.fromEntries(formData),
+    amenityIds: formData.getAll("amenityIds"),
+  };
   const parsed = establishmentSchema.safeParse(raw);
 
   if (!parsed.success) {
@@ -44,12 +52,40 @@ export async function createEstablishment(
   }
 
   try {
-    await db.insert(establishment).values({
-      ...parsed.data,
-      description: parsed.data.description || null,
-      phone: parsed.data.phone || null,
-      email: parsed.data.email || null,
-      managerId: manager.id,
+    const { amenityIds, ...establishmentData } = parsed.data;
+    const optionEntries = parseOptionEntries(formData);
+
+    await db.transaction(async (tx) => {
+      const [created] = await tx
+        .insert(establishment)
+        .values({
+          ...establishmentData,
+          description: establishmentData.description || null,
+          phone: establishmentData.phone || null,
+          email: establishmentData.email || null,
+          managerId: manager.id,
+        })
+        .returning({ id: establishment.id });
+
+      if (amenityIds.length > 0) {
+        await tx.insert(establishmentAmenity).values(
+          amenityIds.map((amenityId) => ({
+            establishmentId: created.id,
+            amenityId,
+          })),
+        );
+      }
+
+      if (optionEntries.length > 0) {
+        await tx.insert(establishmentOption).values(
+          optionEntries.map(({ optionId, price, included }) => ({
+            establishmentId: created.id,
+            optionId,
+            price,
+            included,
+          })),
+        );
+      }
     });
   } catch (error) {
     console.error("Failed to create establishment:", error);

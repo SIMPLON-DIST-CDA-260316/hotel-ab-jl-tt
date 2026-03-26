@@ -10,6 +10,7 @@ export const establishmentSchema = z.object({
   email: z.union([z.literal(""), z.string().email("Email invalide")]).optional(),
   checkInTime: z.string().min(1, "L'heure de check-in est obligatoire"),
   checkOutTime: z.string().min(1, "L'heure de check-out est obligatoire"),
+  amenityIds: z.array(z.string()).default([]),
 });
 
 export type EstablishmentFormData = z.infer<typeof establishmentSchema>;

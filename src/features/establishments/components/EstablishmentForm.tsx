@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,6 +13,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import type { ActionResult } from "@/types/action.types";
+import { EstablishmentOptionsField } from "./EstablishmentOptionsField";
+import type { EstablishmentAmenity } from "../queries/get-amenities-for-establishments";
+import type {
+  EstablishmentOptionAvailable,
+  EstablishmentOptionConfig,
+} from "../queries/get-options-for-establishments";
 
 type FormState = ActionResult | null;
 
@@ -27,13 +34,19 @@ type EstablishmentFormProps = {
     email?: string | null;
     checkInTime?: string | null;
     checkOutTime?: string | null;
+    amenityIds?: string[];
+    optionConfigs?: EstablishmentOptionConfig[];
   };
+  availableAmenities?: EstablishmentAmenity[];
+  availableOptions?: EstablishmentOptionAvailable[];
   submitLabel?: string;
 };
 
 export function EstablishmentForm({
   action,
   defaultValues,
+  availableAmenities = [],
+  availableOptions = [],
   submitLabel = "Créer",
 }: EstablishmentFormProps) {
   const [state, formAction, isPending] = useActionState(
@@ -180,6 +193,43 @@ export function EstablishmentForm({
               />
             </div>
           </div>
+
+          {availableAmenities.length > 0 && (
+            <div>
+              <p className="mb-2 text-sm font-medium">Aménités</p>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {availableAmenities.map((amenityItem) => {
+                  const isChecked =
+                    defaultValues?.amenityIds?.includes(amenityItem.id) ??
+                    false;
+                  return (
+                    <div
+                      key={amenityItem.id}
+                      className="flex items-center gap-2"
+                    >
+                      <Checkbox
+                        id={`amenity-${amenityItem.id}`}
+                        name="amenityIds"
+                        value={amenityItem.id}
+                        defaultChecked={isChecked}
+                      />
+                      <Label
+                        htmlFor={`amenity-${amenityItem.id}`}
+                        className="font-normal"
+                      >
+                        {amenityItem.name}
+                      </Label>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          <EstablishmentOptionsField
+            availableOptions={availableOptions}
+            defaultOptionConfigs={defaultValues?.optionConfigs}
+          />
 
           {state?.errors?._form && (
             <p role="alert" className="text-sm text-destructive">

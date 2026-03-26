@@ -1,6 +1,10 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { getEstablishmentById } from "@/features/establishments/queries/get-establishment-by-id";
+import { getEstablishmentPublicAmenities } from "@/features/establishments/queries/get-establishment-public-amenities";
+import { getEstablishmentPublicOptions } from "@/features/establishments/queries/get-establishment-public-options";
+import { EstablishmentAmenitiesSection } from "@/features/establishments/components/EstablishmentAmenitiesSection";
+import { EstablishmentOptionsSection } from "@/features/establishments/components/EstablishmentOptionsSection";
 import { getSuitesByEstablishment } from "@/features/suites/queries/get-suites-by-establishment";
 import { SuiteList } from "@/features/suites/components/SuiteList";
 import { SuiteListSkeleton } from "@/features/suites/components/SuiteListSkeleton";
@@ -11,7 +15,12 @@ type Props = {
 
 export default async function EstablishmentDetailPage({ params }: Props) {
   const { id } = await params;
-  const establishment = await getEstablishmentById(id);
+
+  const [establishment, amenities, options] = await Promise.all([
+    getEstablishmentById(id),
+    getEstablishmentPublicAmenities(id),
+    getEstablishmentPublicOptions(id),
+  ]);
 
   if (!establishment) {
     notFound();
@@ -39,6 +48,9 @@ export default async function EstablishmentDetailPage({ params }: Props) {
           <p className="mt-1 text-sm">Email : {establishment.email}</p>
         )}
       </header>
+
+      <EstablishmentAmenitiesSection amenities={amenities} />
+      <EstablishmentOptionsSection options={options} />
 
       <section>
         <h2 className="mb-4 text-xl font-semibold">Nos suites</h2>
