@@ -37,8 +37,13 @@ export function CancelBookingButton({ bookingId }: CancelBookingButtonProps) {
     <>
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button variant="destructive" size="sm" disabled={isPending}>
-            {isPending ? "Annulation..." : "Annuler la réservation"}
+          <Button
+            variant="ghost"
+            size="sm"
+            disabled={isPending}
+            className="h-auto px-2 py-1 text-xs text-muted-foreground hover:text-destructive"
+          >
+            {isPending ? "Annulation..." : "Annuler"}
           </Button>
         </AlertDialogTrigger>
         <AlertDialogContent>

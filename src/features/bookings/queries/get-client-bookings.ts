@@ -13,6 +13,7 @@ export async function getClientBookings(clientId: string) {
       pricePerNight: booking.pricePerNight,
       totalPrice: booking.totalPrice,
       status: booking.status,
+      suiteId: booking.suiteId,
       expiresAt: booking.expiresAt,
       cancelledAt: booking.cancelledAt,
       createdAt: booking.createdAt,
