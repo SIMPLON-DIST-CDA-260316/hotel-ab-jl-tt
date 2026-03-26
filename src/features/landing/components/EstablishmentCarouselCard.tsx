@@ -36,7 +36,7 @@ export function EstablishmentCarouselCard({
       </div>
       <div className="p-4">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="font-semibold leading-tight group-hover:underline">
+          <h3 className="text-base font-semibold leading-tight group-hover:underline">
             {establishment.name}
           </h3>
           {establishment.suiteCount > 0 && (

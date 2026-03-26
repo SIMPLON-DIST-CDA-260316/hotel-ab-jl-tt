@@ -28,7 +28,7 @@ export function HeroSearchCard() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex w-full flex-col gap-4 rounded-xl border border-white/20 bg-[rgba(255,255,255,0.12)] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.25)] backdrop-blur-xl md:w-72"
+      className="flex w-full flex-col gap-4 rounded-xl border border-white/20 bg-[rgba(0,0,0,0.45)] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl md:w-80"
     >
       <h2 className="text-sm font-semibold text-white">
         Réservez votre séjour

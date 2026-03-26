@@ -24,7 +24,7 @@ export async function EstablishmentCarousel() {
             Voir tous →
           </Link>
         </div>
-        <div className="-mx-6 mt-8 flex gap-4 overflow-x-auto px-6 pb-4">
+        <div className="-mx-6 mt-8 flex gap-4 overflow-x-auto px-6 pb-4 scrollbar-none">
           {establishments.map((establishment) => (
             <EstablishmentCarouselCard
               key={establishment.id}

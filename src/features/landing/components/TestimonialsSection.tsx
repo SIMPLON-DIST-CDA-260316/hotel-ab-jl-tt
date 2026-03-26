@@ -22,7 +22,7 @@ export function TestimonialsSection() {
   return (
     <section className="bg-secondary py-16">
       <div className="mx-auto max-w-7xl px-6">
-        <p className="text-center text-xs uppercase tracking-[0.2em] text-muted-foreground">
+        <p className="text-center text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
           Ce que disent nos hôtes
         </p>
         <h2 className="mt-2 text-center text-2xl font-semibold">
@@ -32,7 +32,7 @@ export function TestimonialsSection() {
           {TESTIMONIALS.map((testimonial) => (
             <div
               key={testimonial.author}
-              className="rounded-lg bg-card p-6 shadow-sm"
+              className="rounded-lg bg-card p-6 shadow-md border border-border"
             >
               <StarRating rating={testimonial.rating} />
               <blockquote className="mt-4 text-sm italic leading-relaxed text-muted-foreground">
