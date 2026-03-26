@@ -72,7 +72,8 @@ export function SuiteBookingSidebar({
     setError(null);
   }
 
-  const bookingUrl = `/suites/${suiteId}/book?checkIn=${checkIn}&checkOut=${checkOut}&guestCount=${guestCount}`;
+  // Query params in dynamic URLs are not recognized by typed routes
+  const bookingUrl = `/suites/${suiteId}/book?checkIn=${checkIn}&checkOut=${checkOut}&guestCount=${guestCount}` as unknown as "/suites/[id]/book";
 
   return (
     <aside

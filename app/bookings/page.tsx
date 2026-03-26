@@ -8,7 +8,7 @@ import { getClientBookings } from "@/features/bookings/queries/get-client-bookin
 import { BookingCard } from "@/features/bookings/components/BookingCard";
 import { BOOKING_STATUSES } from "@/config/booking-statuses";
 
-const ACTIVE_STATUSES = new Set([
+const ACTIVE_STATUSES: Set<string> = new Set([
   BOOKING_STATUSES.PENDING,
   BOOKING_STATUSES.CONFIRMED,
 ]);
