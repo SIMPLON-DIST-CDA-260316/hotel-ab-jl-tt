@@ -10,11 +10,19 @@ import {
   ArrowLeft,
   ExternalLink,
   BedDouble,
-  ConciergeBell,
 } from "lucide-react";
 import { requireSession } from "@/lib/auth-guards";
+import { MILLISECONDS_PER_DAY, fullDateFormatter } from "@/lib/formatters";
 import { getBookingDetail } from "@/features/bookings/queries/get-booking-detail";
 import { CancelBookingButton } from "@/features/bookings/components/CancelBookingButton";
+import { DetailRow } from "@/features/bookings/components/DetailRow";
+import { SectionHeader } from "@/features/bookings/components/SectionHeader";
+import { BookingOptionsSection } from "@/features/bookings/components/BookingOptionsSection";
+import { BookingPricingSection } from "@/features/bookings/components/BookingPricingSection";
+import {
+  STATUS_LABELS,
+  STATUS_BADGE_CLASSES,
+} from "@/features/bookings/lib/booking-status-display";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,67 +31,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { BOOKING_STATUSES } from "@/config/booking-statuses";
 import { CANCELLATION_DELAY_DAYS } from "@/features/bookings/lib/booking-constants";
 
-const STATUS_LABELS: Record<string, string> = {
-  [BOOKING_STATUSES.PENDING]: "En attente",
-  [BOOKING_STATUSES.CONFIRMED]: "Confirmée",
-  [BOOKING_STATUSES.CANCELLED]: "Annulée",
-  [BOOKING_STATUSES.COMPLETED]: "Terminée",
-};
-
-const STATUS_BADGE_CLASSES: Record<string, string> = {
-  [BOOKING_STATUSES.PENDING]:
-    "border-amber-200/60 bg-amber-50/90 text-amber-700 dark:border-amber-800 dark:bg-amber-950/90 dark:text-amber-300",
-  [BOOKING_STATUSES.CONFIRMED]:
-    "border-green-200/60 bg-green-50/90 text-green-700 dark:border-green-800 dark:bg-green-950/90 dark:text-green-300",
-  [BOOKING_STATUSES.CANCELLED]:
-    "border-red-200/60 bg-red-50/90 text-red-700 dark:border-red-800 dark:bg-red-950/90 dark:text-red-300",
-  [BOOKING_STATUSES.COMPLETED]:
-    "border-zinc-200/60 bg-zinc-50/90 text-zinc-600 dark:border-zinc-700 dark:bg-zinc-900/90 dark:text-zinc-400",
-};
-
-const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
-
-const currencyFormatter = new Intl.NumberFormat("fr-FR", {
-  style: "currency",
-  currency: "EUR",
-});
-
-const dateFormatter = new Intl.DateTimeFormat("fr-FR", {
-  weekday: "long",
-  day: "numeric",
-  month: "long",
-  year: "numeric",
-});
-
-function DetailRow({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex items-baseline justify-between gap-4">
-      <span className="shrink-0 text-sm text-muted-foreground">{label}</span>
-      <span className="text-right text-sm font-medium">{children}</span>
-    </div>
-  );
-}
-
-function SectionHeader({
-  icon,
-  children,
-}: {
-  icon: React.ReactNode;
-  children: React.ReactNode;
-}) {
-  return (
-    <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-      {icon}
-      {children}
-    </h2>
-  );
-}
+const PLACEHOLDER_IMAGE_MARKER = "placeholder";
 
 export default async function BookingDetailPage({
   params,
@@ -115,11 +63,10 @@ export default async function BookingDetailPage({
 
   const hasImage =
     bookingData.suite.mainImage &&
-    !bookingData.suite.mainImage.includes("placeholder");
+    !bookingData.suite.mainImage.includes(PLACEHOLDER_IMAGE_MARKER);
 
   return (
     <main id="main-content" className="container mx-auto max-w-2xl px-4 py-8">
-      {/* Back link */}
       <Button variant="ghost" size="sm" className="mb-6 -ml-2" asChild>
         <Link href="/bookings">
           <ArrowLeft className="mr-1 size-4" />
@@ -128,7 +75,6 @@ export default async function BookingDetailPage({
       </Button>
 
       <Card className="gap-0 overflow-hidden py-0">
-        {/* Hero image */}
         <AspectRatio ratio={16 / 7}>
           {hasImage ? (
             <Image
@@ -190,12 +136,12 @@ export default async function BookingDetailPage({
             <div className="space-y-2">
               <DetailRow label="Arrivée">
                 <span className="capitalize">
-                  {dateFormatter.format(checkInDate)}
+                  {fullDateFormatter.format(checkInDate)}
                 </span>
               </DetailRow>
               <DetailRow label="Départ">
                 <span className="capitalize">
-                  {dateFormatter.format(checkOutDate)}
+                  {fullDateFormatter.format(checkOutDate)}
                 </span>
               </DetailRow>
               <DetailRow label="Durée">
@@ -271,89 +217,17 @@ export default async function BookingDetailPage({
             </div>
           </section>
 
-          {/* Options */}
-          {bookingData.options.length > 0 && (
-            <>
-              <Separator />
-              <section className="space-y-3">
-                <SectionHeader
-                  icon={
-                    <ConciergeBell
-                      className="size-3.5 text-primary"
-                      aria-hidden
-                    />
-                  }
-                >
-                  Options
-                </SectionHeader>
-                <div className="space-y-2">
-                  {bookingData.options.map((bookingOptionItem) => {
-                    const isIncluded =
-                      Number(bookingOptionItem.unitPrice) === 0;
-                    const lineTotal =
-                      bookingOptionItem.quantity *
-                      Number(bookingOptionItem.unitPrice);
-
-                    return (
-                      <DetailRow
-                        key={bookingOptionItem.name}
-                        label={`${bookingOptionItem.icon ? `${bookingOptionItem.icon} ` : ""}${bookingOptionItem.name}${bookingOptionItem.quantity > 1 ? ` ×${bookingOptionItem.quantity}` : ""}`}
-                      >
-                        {isIncluded ? (
-                          <span className="text-green-700 dark:text-green-300">
-                            Inclus
-                          </span>
-                        ) : (
-                          currencyFormatter.format(lineTotal)
-                        )}
-                      </DetailRow>
-                    );
-                  })}
-                </div>
-              </section>
-            </>
-          )}
+          <BookingOptionsSection options={bookingData.options} />
 
           <Separator />
 
-          {/* Tarification */}
-          <section className="space-y-3">
-            <SectionHeader icon={null}>Tarification</SectionHeader>
-            <div className="space-y-2">
-              <DetailRow
-                label={`${nightCount} nuit${nightCount > 1 ? "s" : ""} × ${currencyFormatter.format(Number(bookingData.pricePerNight))}`}
-              >
-                {currencyFormatter.format(
-                  nightCount * Number(bookingData.pricePerNight),
-                )}
-              </DetailRow>
-              {bookingData.options
-                .filter(
-                  (bookingOptionItem) =>
-                    Number(bookingOptionItem.unitPrice) > 0,
-                )
-                .map((bookingOptionItem) => (
-                  <DetailRow
-                    key={bookingOptionItem.name}
-                    label={`${bookingOptionItem.name}${bookingOptionItem.quantity > 1 ? ` ×${bookingOptionItem.quantity}` : ""}`}
-                  >
-                    {currencyFormatter.format(
-                      bookingOptionItem.quantity *
-                        Number(bookingOptionItem.unitPrice),
-                    )}
-                  </DetailRow>
-                ))}
-              <Separator />
-              <div className="flex items-baseline justify-between gap-4">
-                <span className="text-base font-semibold">Total</span>
-                <span className="text-base font-semibold">
-                  {currencyFormatter.format(Number(bookingData.totalPrice))}
-                </span>
-              </div>
-            </div>
-          </section>
+          <BookingPricingSection
+            nightCount={nightCount}
+            pricePerNight={bookingData.pricePerNight}
+            options={bookingData.options}
+            totalPrice={bookingData.totalPrice}
+          />
 
-          {/* Actions */}
           {isConfirmedFuture && (
             <>
               <Separator />
