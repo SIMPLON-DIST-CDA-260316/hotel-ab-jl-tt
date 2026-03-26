@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Star } from "lucide-react";
 import { TESTIMONIALS } from "../lib/landing-content";
 
@@ -18,31 +19,44 @@ function StarRating({ rating }: { rating: number }) {
   );
 }
 
+function getAvatarUrl(name: string): string {
+  const seed = encodeURIComponent(name);
+  return `https://api.dicebear.com/9.x/avataaars/svg?seed=${seed}&backgroundColor=b6e3f4,c0aede,d1d4f9`;
+}
+
 export function TestimonialsSection() {
   return (
-    <section className="bg-secondary py-16">
+    <section className="bg-secondary py-20">
       <div className="mx-auto max-w-7xl px-6">
         <p className="text-center text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
           Ce que disent nos hôtes
         </p>
-        <h2 className="mt-2 text-center text-2xl font-semibold">
-          Témoignages
-        </h2>
-        <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-3">
+        <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-3">
           {TESTIMONIALS.map((testimonial) => (
             <div
               key={testimonial.author}
-              className="rounded-lg bg-card p-6 shadow-md border border-border"
+              className="rounded-xl border border-border bg-card p-6 shadow-md"
             >
               <StarRating rating={testimonial.rating} />
               <blockquote className="mt-4 text-sm italic leading-relaxed text-muted-foreground">
                 &laquo; {testimonial.quote} &raquo;
               </blockquote>
-              <div className="mt-4">
-                <p className="text-sm font-semibold">{testimonial.author}</p>
-                <p className="text-xs text-muted-foreground">
-                  {testimonial.establishment} · Google Reviews
-                </p>
+              <div className="mt-5 flex items-center gap-3">
+                <Image
+                  src={getAvatarUrl(testimonial.author)}
+                  alt={testimonial.author}
+                  width={40}
+                  height={40}
+                  className="rounded-full"
+                />
+                <div>
+                  <p className="text-sm font-semibold">
+                    {testimonial.author}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {testimonial.establishment} · Google Reviews
+                  </p>
+                </div>
               </div>
             </div>
           ))}

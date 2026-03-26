@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getEstablishmentsWithMinPrice } from "../queries/get-establishments-with-min-price";
 import { EstablishmentCarouselCard } from "./EstablishmentCarouselCard";
+import { CarouselScrollButtons } from "./CarouselScrollButtons";
 
 export async function EstablishmentCarousel() {
   const establishments = await getEstablishmentsWithMinPrice();
@@ -17,14 +18,20 @@ export async function EstablishmentCarousel() {
               Découvrez nos maisons à travers la France
             </p>
           </div>
-          <Link
-            href="/establishments"
-            className="text-sm font-medium underline hover:no-underline"
-          >
-            Voir tous →
-          </Link>
+          <div className="flex items-center gap-4">
+            <CarouselScrollButtons targetId="establishment-carousel" />
+            <Link
+              href="/establishments"
+              className="text-sm font-medium underline hover:no-underline"
+            >
+              Voir tous →
+            </Link>
+          </div>
         </div>
-        <div className="-mx-6 mt-8 flex gap-4 overflow-x-auto px-6 pb-4 scrollbar-none">
+        <div
+          id="establishment-carousel"
+          className="-mx-6 mt-8 flex gap-5 overflow-x-auto scroll-smooth px-6 pb-4 scrollbar-none"
+        >
           {establishments.map((establishment) => (
             <EstablishmentCarouselCard
               key={establishment.id}

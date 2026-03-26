@@ -5,13 +5,33 @@ import { type FormEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import type { EstablishmentWithMinPrice } from "../queries/get-establishments-with-min-price";
 
-export function HeroSearchCard() {
+function getTomorrowDate(): string {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  return tomorrow.toISOString().split("T")[0];
+}
+
+function getDayAfterTomorrowDate(): string {
+  const dayAfter = new Date();
+  dayAfter.setDate(dayAfter.getDate() + 2);
+  return dayAfter.toISOString().split("T")[0];
+}
+
+interface HeroSearchCardProps {
+  establishments: EstablishmentWithMinPrice[];
+}
+
+export function HeroSearchCard({ establishments }: HeroSearchCardProps) {
   const router = useRouter();
   const [destination, setDestination] = useState("");
-  const [checkIn, setCheckIn] = useState("");
-  const [checkOut, setCheckOut] = useState("");
-  const [guests, setGuests] = useState("");
+  const [checkIn, setCheckIn] = useState(getTomorrowDate);
+  const [checkOut, setCheckOut] = useState(getDayAfterTomorrowDate);
+  const [guests, setGuests] = useState("1");
+  const [withBaby, setWithBaby] = useState(false);
+  const [withPet, setWithPet] = useState(false);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -20,6 +40,8 @@ export function HeroSearchCard() {
     if (checkIn) params.set("checkIn", checkIn);
     if (checkOut) params.set("checkOut", checkOut);
     if (guests) params.set("guests", guests);
+    if (withBaby) params.set("baby", "true");
+    if (withPet) params.set("pet", "true");
     // Route /suites will exist after feat/search-and-filters merge
     const searchUrl = `/suites?${params.toString()}`;
     router.push(searchUrl as Parameters<typeof router.push>[0]);
@@ -28,28 +50,40 @@ export function HeroSearchCard() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex w-full flex-col gap-4 rounded-xl border border-white/20 bg-[rgba(0,0,0,0.45)] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.3)] backdrop-blur-xl md:w-80"
+      className="flex w-full flex-col gap-5 rounded-2xl border border-accent/30 bg-[rgba(0,0,0,0.55)] p-7 shadow-[0_12px_40px_rgba(0,0,0,0.4)] backdrop-blur-xl md:w-96"
     >
-      <h2 className="text-sm font-semibold text-white">
+      <h2 className="text-base font-semibold text-primary-foreground">
         Réservez votre séjour
       </h2>
 
       <div>
-        <Label htmlFor="hero-destination" className="text-xs text-white/70">
+        <Label htmlFor="hero-destination" className="text-xs font-medium text-white/70">
           Destination
         </Label>
-        <Input
+        <select
           id="hero-destination"
-          placeholder="Région, département..."
           value={destination}
           onChange={(event) => setDestination(event.target.value)}
-          className="mt-1 border-white/20 bg-white/15 text-white placeholder:text-white/50"
-        />
+          className="mt-1 flex h-9 w-full rounded-md border border-white/20 bg-white/15 px-3 py-1 text-sm text-white shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        >
+          <option value="" className="text-foreground">
+            Tous les établissements
+          </option>
+          {establishments.map((establishment) => (
+            <option
+              key={establishment.id}
+              value={establishment.city}
+              className="text-foreground"
+            >
+              {establishment.name} — {establishment.city}
+            </option>
+          ))}
+        </select>
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-3">
         <div>
-          <Label htmlFor="hero-check-in" className="text-xs text-white/70">
+          <Label htmlFor="hero-check-in" className="text-xs font-medium text-white/70">
             Arrivée
           </Label>
           <Input
@@ -61,7 +95,7 @@ export function HeroSearchCard() {
           />
         </div>
         <div>
-          <Label htmlFor="hero-check-out" className="text-xs text-white/70">
+          <Label htmlFor="hero-check-out" className="text-xs font-medium text-white/70">
             Départ
           </Label>
           <Input
@@ -75,21 +109,50 @@ export function HeroSearchCard() {
       </div>
 
       <div>
-        <Label htmlFor="hero-guests" className="text-xs text-white/70">
+        <Label htmlFor="hero-guests" className="text-xs font-medium text-white/70">
           Voyageurs
         </Label>
         <Input
           id="hero-guests"
           type="number"
           min="1"
-          placeholder="Nombre de personnes"
+          max="10"
           value={guests}
           onChange={(event) => setGuests(event.target.value)}
-          className="mt-1 border-white/20 bg-white/15 text-white placeholder:text-white/50"
+          className="mt-1 border-white/20 bg-white/15 text-white"
         />
       </div>
 
-      <Button type="submit" variant="secondary" className="mt-2 w-full">
+      <div className="flex gap-5">
+        <div className="flex items-center gap-2">
+          <Checkbox
+            id="hero-baby"
+            checked={withBaby}
+            onCheckedChange={(checked) => setWithBaby(checked === true)}
+            className="border-white/40 data-[state=checked]:bg-accent data-[state=checked]:border-accent"
+          />
+          <Label htmlFor="hero-baby" className="text-xs text-white/70 cursor-pointer">
+            Lit bébé
+          </Label>
+        </div>
+        <div className="flex items-center gap-2">
+          <Checkbox
+            id="hero-pet"
+            checked={withPet}
+            onCheckedChange={(checked) => setWithPet(checked === true)}
+            className="border-white/40 data-[state=checked]:bg-accent data-[state=checked]:border-accent"
+          />
+          <Label htmlFor="hero-pet" className="text-xs text-white/70 cursor-pointer">
+            Animal
+          </Label>
+        </div>
+      </div>
+
+      <Button
+        type="submit"
+        size="lg"
+        className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+      >
         Rechercher
       </Button>
     </form>

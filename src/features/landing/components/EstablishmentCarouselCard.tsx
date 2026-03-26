@@ -11,50 +11,56 @@ export function EstablishmentCarouselCard({
   establishment,
 }: EstablishmentCarouselCardProps) {
   const formattedMinPrice = establishment.minPrice
-    ? `${Number(establishment.minPrice).toLocaleString("fr-FR")} €`
+    ? `À partir de ${Number(establishment.minPrice).toLocaleString("fr-FR")} € / nuit`
     : null;
 
   return (
     <Link
       href={`/establishments/${establishment.id}`}
-      className="group block w-64 flex-shrink-0 overflow-hidden rounded-lg border bg-white shadow-sm transition-shadow hover:shadow-md md:w-72"
+      className="group relative block h-64 w-72 flex-shrink-0 overflow-hidden rounded-xl md:w-80"
     >
-      <div className="relative aspect-[16/10] bg-gray-200">
+      {/* Image fills entire card */}
+      <div className="absolute inset-0 bg-muted">
         {establishment.image ? (
           <Image
             src={establishment.image}
             alt={establishment.name}
             fill
-            className="object-cover"
-            sizes="288px"
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            sizes="320px"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-sm text-gray-400">
+          <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
             Photo à venir
           </div>
         )}
       </div>
-      <div className="p-4">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="text-base font-semibold leading-tight group-hover:underline">
-            {establishment.name}
-          </h3>
+
+      {/* Gradient overlay — always visible at bottom, stronger on hover */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent transition-opacity duration-300 group-hover:from-black/80" />
+
+      {/* Content overlay — always visible */}
+      <div className="absolute inset-x-0 bottom-0 p-5">
+        <h3 className="text-base font-semibold text-white">
+          {establishment.name}
+        </h3>
+        <p className="mt-0.5 text-sm text-white/80">{establishment.city}</p>
+
+        {/* Hover-only info */}
+        <div className="mt-2 flex items-center gap-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
           {establishment.suiteCount > 0 && (
-            <Badge variant="secondary" className="flex-shrink-0 text-xs">
+            <Badge
+              variant="secondary"
+              className="bg-white/20 text-xs text-white backdrop-blur-sm"
+            >
               {establishment.suiteCount}{" "}
               {establishment.suiteCount > 1 ? "suites" : "suite"}
             </Badge>
           )}
+          {formattedMinPrice && (
+            <span className="text-xs text-white/90">{formattedMinPrice}</span>
+          )}
         </div>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {establishment.city}
-        </p>
-        {formattedMinPrice && (
-          <p className="mt-2 text-sm">
-            <span className="font-semibold">{formattedMinPrice}</span>
-            <span className="text-muted-foreground"> / nuit</span>
-          </p>
-        )}
       </div>
     </Link>
   );

@@ -1,7 +1,10 @@
 import Image from "next/image";
 import { HeroSearchCard } from "./HeroSearchCard";
+import { getEstablishmentsWithMinPrice } from "../queries/get-establishments-with-min-price";
 
-export function HeroSection() {
+export async function HeroSection() {
+  const establishments = await getEstablishmentsWithMinPrice();
+
   return (
     <section className="relative flex min-h-[70vh] items-center overflow-hidden bg-primary">
       <Image
@@ -31,7 +34,7 @@ export function HeroSection() {
         </div>
 
         {/* Search card */}
-        <HeroSearchCard />
+        <HeroSearchCard establishments={establishments} />
       </div>
     </section>
   );
