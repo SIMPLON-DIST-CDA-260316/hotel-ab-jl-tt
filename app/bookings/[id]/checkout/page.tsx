@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { BOOKING_STATUSES } from "@/config/booking-statuses";
+import { MILLISECONDS_PER_DAY } from "@/lib/formatters";
 import { getBookingForCheckout } from "@/features/bookings/queries/get-booking-for-checkout";
 import { CheckoutCard } from "@/features/bookings/components/CheckoutCard";
 
@@ -32,7 +33,7 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
   const nightCount = Math.ceil(
     (new Date(bookingData.checkOut).getTime() -
       new Date(bookingData.checkIn).getTime()) /
-      (1000 * 60 * 60 * 24),
+      MILLISECONDS_PER_DAY,
   );
 
   return (

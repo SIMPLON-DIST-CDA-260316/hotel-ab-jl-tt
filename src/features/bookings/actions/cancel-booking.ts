@@ -8,6 +8,7 @@ import { db } from "@/lib/db";
 import { booking } from "@/lib/db/schema/domain";
 import { requireSession } from "@/lib/auth-guards";
 import { BOOKING_STATUSES } from "@/config/booking-statuses";
+import { MILLISECONDS_PER_DAY } from "@/lib/formatters";
 
 import { CANCELLATION_DELAY_DAYS } from "../lib/booking-constants";
 
@@ -57,7 +58,7 @@ export async function cancelBooking(
   const now = new Date();
   const checkInDate = new Date(foundBooking.checkIn);
   const daysUntilCheckIn = Math.ceil(
-    (checkInDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
+    (checkInDate.getTime() - now.getTime()) / MILLISECONDS_PER_DAY,
   );
 
   if (daysUntilCheckIn <= CANCELLATION_DELAY_DAYS) {

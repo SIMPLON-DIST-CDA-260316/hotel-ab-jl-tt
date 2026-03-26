@@ -12,6 +12,7 @@ import {
 } from "@/lib/db/schema/domain";
 import { requireSession } from "@/lib/auth-guards";
 import { BOOKING_STATUSES } from "@/config/booking-statuses";
+import { MILLISECONDS_PER_DAY } from "@/lib/formatters";
 
 import { bookingSchema } from "../lib/booking-schema";
 import { generateBookingReference } from "../lib/generate-booking-reference";
@@ -110,7 +111,7 @@ export async function createPendingBooking(
   }
 
   const nightCount = Math.ceil(
-    (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24),
+    (checkOut.getTime() - checkIn.getTime()) / MILLISECONDS_PER_DAY,
   );
   const pricePerNight = Number(foundSuite.price);
   const accommodationTotal = nightCount * pricePerNight;

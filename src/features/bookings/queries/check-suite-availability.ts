@@ -3,6 +3,8 @@ import { and, eq, isNull, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { booking, suite } from "@/lib/db/schema/domain";
 
+import { MILLISECONDS_PER_DAY } from "@/lib/formatters";
+
 import { activeBookingOverlap } from "../lib/availability-filter";
 
 import type { AvailabilityResult } from "@/types/availability.types";
@@ -25,7 +27,7 @@ export async function checkSuiteAvailability(
     .where(activeBookingOverlap(suiteId, checkIn, checkOut));
 
   const nightCount = Math.ceil(
-    (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24),
+    (checkOut.getTime() - checkIn.getTime()) / MILLISECONDS_PER_DAY,
   );
   const pricePerNight = Number(foundSuite.price);
   const totalPrice = nightCount * pricePerNight;

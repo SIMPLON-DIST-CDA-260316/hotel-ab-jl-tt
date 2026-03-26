@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { MILLISECONDS_PER_DAY } from "@/lib/formatters";
 import { createPendingBooking } from "../actions/create-pending-booking";
 import { computeOptionQuantity, formatPricingModel, PRICING_MODELS } from "../lib/pricing-models";
 import type { BookingActionResult } from "../types/booking.types";
@@ -40,8 +41,6 @@ type SelectedOption = {
   optionId: string;
   quantity: number;
 };
-
-const MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
 
 const currencyFormatter = new Intl.NumberFormat("fr-FR", {
   style: "currency",
