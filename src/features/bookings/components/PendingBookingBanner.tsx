@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Clock, ArrowRight } from "lucide-react";
 
 type PendingBookingBannerProps = {
@@ -25,6 +26,9 @@ export function PendingBookingBanner({
   suiteTitle,
   expiresAt,
 }: PendingBookingBannerProps) {
+  const pathname = usePathname();
+  const isOnCheckoutPage = pathname.startsWith(`/bookings/${bookingId}/checkout`);
+
   const [timeRemaining, setTimeRemaining] = useState(() =>
     new Date(expiresAt).getTime() - Date.now(),
   );
@@ -42,7 +46,7 @@ export function PendingBookingBanner({
     return () => clearInterval(interval);
   }, [expiresAt]);
 
-  if (timeRemaining <= 0) return null;
+  if (timeRemaining <= 0 || isOnCheckoutPage) return null;
 
   const isUrgent = timeRemaining < 2 * 60 * 1000;
 
