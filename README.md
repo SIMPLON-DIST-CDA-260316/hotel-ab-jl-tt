@@ -33,16 +33,16 @@ cd hotel-ab-jl-tt
 cp .env.example .env
 ```
 
-Remplir les valeurs dans `.env` :
+Remplir `BETTER_AUTH_SECRET` dans `.env` :
 
 ```env
 DATABASE_URL=postgresql://hotel:hotel@localhost:5432/hotel_clair_de_lune
 BETTER_AUTH_SECRET=your-secret-here
-BETTER_AUTH_URL=http://localhost:3000
-NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3000
 ```
 
 > **Note :** Garder `localhost` dans `DATABASE_URL`. L'Option B (tout en Docker) override automatiquement cette valeur via `docker-compose.yml`.
+>
+> `BETTER_AUTH_URL` et `NEXT_PUBLIC_BETTER_AUTH_URL` ont un fallback à `http://localhost:3000` dans le code — inutile de les définir en dev local. Les renseigner uniquement si l'URL de l'application change (production, port custom, etc.).
 
 ### Option A — Dev local (recommandée)
 
