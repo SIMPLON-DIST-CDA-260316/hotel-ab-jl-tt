@@ -92,6 +92,9 @@ export function UserMenu({ isAuthenticated, userName, userRole }: UserMenuProps)
             <DropdownMenuItem asChild>
               <Link href="/manager/suites">Gérer mes suites</Link>
             </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/manager/bookings">Réservations</Link>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
           </>
         )}
