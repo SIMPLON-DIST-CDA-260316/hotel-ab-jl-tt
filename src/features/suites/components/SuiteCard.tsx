@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { priceFormatter } from "@/lib/formatters";
 
 type SuiteCardProps = {
@@ -17,7 +18,7 @@ type SuiteCardProps = {
 export function SuiteCard({ suite }: SuiteCardProps) {
   return (
     <Card className="overflow-hidden">
-      <div className="relative aspect-video">
+      <div className="relative aspect-[16/10]">
         <Image
           src={suite.mainImage}
           alt={suite.title}
@@ -32,17 +33,18 @@ export function SuiteCard({ suite }: SuiteCardProps) {
           {suite.capacity} personne{suite.capacity > 1 ? "s" : ""}
         </p>
       </CardHeader>
-      <CardContent>
-        {suite.description && (
-          <p className="text-sm">{suite.description}</p>
-        )}
-        <Link
-          href={`/suites/${suite.id}`}
-          className="mt-3 inline-block text-sm underline"
-        >
-          Voir la suite
-        </Link>
-      </CardContent>
+      {suite.description && (
+        <CardContent>
+          <p className="text-sm text-muted-foreground">{suite.description}</p>
+        </CardContent>
+      )}
+      <CardFooter>
+        <Button asChild variant="outline" size="sm">
+          <Link href={`/suites/${suite.id}`}>
+            Voir la suite
+          </Link>
+        </Button>
+      </CardFooter>
     </Card>
   );
 }
