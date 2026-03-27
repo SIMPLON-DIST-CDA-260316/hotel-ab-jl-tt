@@ -8,6 +8,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -68,14 +69,30 @@ export function UserMenu({ isAuthenticated, userName, userRole }: UserMenuProps)
     });
   }
 
+  const initials = userName
+    ? userName
+        .split(" ")
+        .map((part) => part[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+    : null;
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label={`Menu de ${userName}`}>
-          <User className="h-5 w-5" />
+        <Button variant="ghost" aria-label={`Menu de ${userName}`} className="gap-2">
+          <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground">
+            {initials ?? <User className="size-3.5" />}
+          </span>
+          <span className="hidden text-sm font-medium md:inline">{userName}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
+        <DropdownMenuLabel className="font-normal md:hidden">
+          {userName}
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator className="md:hidden" />
         {userRole === ROLES.ADMIN && (
           <>
             <DropdownMenuItem asChild>
