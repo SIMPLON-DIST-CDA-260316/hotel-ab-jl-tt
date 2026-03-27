@@ -8,16 +8,21 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { authClient } from "@/lib/auth-client";
+import { ROLES } from "@/config/roles";
+import type { Role } from "@/types/role.types";
 
 interface UserMenuProps {
   isAuthenticated: boolean;
   userName?: string;
+  userRole?: Role;
 }
 
-export function UserMenu({ isAuthenticated, userName }: UserMenuProps) {
+export function UserMenu({ isAuthenticated, userName, userRole }: UserMenuProps) {
   const router = useRouter();
 
   if (!isAuthenticated) {
@@ -64,14 +69,52 @@ export function UserMenu({ isAuthenticated, userName }: UserMenuProps) {
     });
   }
 
+  const initials = userName
+    ? userName
+        .split(" ")
+        .map((part) => part[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+    : null;
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label={`Menu de ${userName}`}>
-          <User className="h-5 w-5" />
+        <Button variant="ghost" aria-label={`Menu de ${userName}`} className="gap-2">
+          <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-medium text-primary-foreground">
+            {initials ?? <User className="size-3.5" />}
+          </span>
+          <span className="hidden text-sm font-medium md:inline">{userName}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
+        <DropdownMenuLabel className="font-normal md:hidden">
+          {userName}
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator className="md:hidden" />
+        {userRole === ROLES.ADMIN && (
+          <>
+            <DropdownMenuItem asChild>
+              <Link href="/admin/establishments">Gérer les établissements</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/admin/managers">Gérer les gérants</Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
+        {userRole === ROLES.MANAGER && (
+          <>
+            <DropdownMenuItem asChild>
+              <Link href="/manager/suites">Gérer mes suites</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/manager/bookings">Réservations</Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
         <DropdownMenuItem asChild>
           <Link href="/bookings">Mes réservations</Link>
         </DropdownMenuItem>
