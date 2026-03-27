@@ -1,0 +1,38 @@
+erDiagram
+    %% ─── MLD — Auth & User ───
+
+    user ||--o{ session : "user_id"
+    user ||--o{ account : "user_id"
+
+    session {
+        _ id PK
+        _ expires_at
+        _ token
+        _ user_id FK
+        _ ip_address
+        _ user_agent
+        _ created_at
+        _ updated_at
+    }
+
+    account {
+        _ id PK
+        _ account_id
+        _ provider_id
+        _ user_id FK
+        _ password
+        _ created_at
+        _ updated_at
+    }
+
+    user {
+        _ id PK
+        _ name
+        _ email
+        _ email_verified
+        _ image
+        _ role
+        _ created_at
+        _ updated_at
+        _ deleted_at
+    }

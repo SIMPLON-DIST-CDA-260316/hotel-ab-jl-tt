@@ -1,0 +1,100 @@
+erDiagram
+    %% ─── MLD — Catalogue ───
+
+    user ||--o{ establishment : "manager_id"
+    establishment ||--o{ suite : "establishment_id"
+    suite ||--o{ image : "suite_id"
+
+    establishment ||--o{ establishment_amenity : ""
+    amenity ||--o{ establishment_amenity : ""
+
+    suite ||--o{ suite_amenity : ""
+    amenity ||--o{ suite_amenity : ""
+
+    establishment ||--o{ establishment_option : ""
+    option ||--o{ establishment_option : ""
+
+    %% ─── Stub (référence cross-domain) ───
+
+    user {
+        _ id PK
+    }
+
+    %% ─── Entités catalogue ───
+
+    establishment {
+        _ id PK
+        _ name
+        _ address
+        _ postal_code
+        _ city
+        _ description
+        _ image
+        _ phone
+        _ email
+        _ check_in_time
+        _ check_out_time
+        _ manager_id FK
+        _ created_at
+        _ updated_at
+        _ deleted_at
+    }
+
+    suite {
+        _ id PK
+        _ title
+        _ description
+        _ price
+        _ main_image
+        _ capacity
+        _ area
+        _ establishment_id FK
+        _ created_at
+        _ updated_at
+        _ deleted_at
+    }
+
+    image {
+        _ id PK
+        _ url
+        _ alt
+        _ position
+        _ suite_id FK
+        _ created_at
+    }
+
+    amenity {
+        _ id PK
+        _ name
+        _ slug
+        _ category
+        _ scope
+        _ icon
+    }
+
+    establishment_amenity {
+        _ establishment_id PK, FK
+        _ amenity_id PK, FK
+    }
+
+    suite_amenity {
+        _ suite_id PK, FK
+        _ amenity_id PK, FK
+    }
+
+    option {
+        _ id PK
+        _ name
+        _ slug
+        _ description
+        _ icon
+        _ pricing_model
+        _ default_price
+    }
+
+    establishment_option {
+        _ establishment_id PK, FK
+        _ option_id PK, FK
+        _ price
+        _ included
+    }

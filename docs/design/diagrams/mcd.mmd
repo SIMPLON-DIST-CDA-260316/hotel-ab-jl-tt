@@ -1,0 +1,22 @@
+erDiagram
+
+    %% ─── Associations 1:N ───
+
+    USER ||--o{ ESTABLISHMENT : "MANAGE (0,n)-(1,1)"
+    USER ||--o{ BOOKING : "BOOK (0,n)-(1,1)"
+    ESTABLISHMENT ||--o{ SUITE : "OFFER (0,n)-(1,1)"
+    SUITE ||--o{ IMAGE : "ILLUSTRATE (0,n)-(1,1)"
+    SUITE ||--o{ BOOKING : "CONCERN (0,n)-(1,1)"
+
+    %% ─── Associations N:N ───
+
+    AMENITY }o--o{ ESTABLISHMENT : "EQUIP property (0,n)-(0,n)"
+    AMENITY }o--o{ SUITE : "EQUIP room (0,n)-(0,n)"
+    OPTION }o--o{ ESTABLISHMENT : "PROVIDE (0,n)-(0,n) [price, included]"
+    OPTION }o--o{ BOOKING : "SELECT (0,n)-(0,n) [quantity, unit_price]"
+
+    %% ─── Associations 1:1 et optionnelles ───
+
+    BOOKING ||--o| REVIEW : "EVALUATE (0,1)-(1,1)"
+    ESTABLISHMENT |o--o{ INQUIRY : "RECEIVE (0,n)-(0,1)"
+    USER |o--o{ INQUIRY : "SEND (0,n)-(0,1)"
