@@ -28,11 +28,11 @@ export default async function SuitesPage({ searchParams }: Props) {
           <FilterPanel filterOptions={filterOptions} />
         </aside>
 
-        {/* Mobile filter trigger */}
-        <MobileFilterSheet filterOptions={filterOptions} />
-
-        {/* Results grid */}
-        <div className="flex-1">
+        {/* Main content column */}
+        <div className="min-w-0 flex-1">
+          {/* Mobile filter trigger */}
+          <MobileFilterSheet filterOptions={filterOptions} />
+          {/* Results grid */}
           <SuiteSearchGrid suites={suites} />
         </div>
       </div>
