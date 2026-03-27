@@ -14,40 +14,40 @@ Le design system utilise une palette **violet / doré** en espace colorimétriqu
 
 ### 1.1 Mode clair (par défaut)
 
-| Rôle | Token CSS | Valeur OKLCH | Hex approx. | Usage |
-|------|-----------|-------------|-------------|-------|
-| Background | `--background` | `oklch(0.977 0.010 81.8)` | `#FBF7F0` | Fond de page (crème chaud) |
-| Foreground | `--foreground` | `oklch(0.263 0.105 303.5)` | `#30114D` | Texte principal (violet foncé) |
-| Card | `--card` | `oklch(1 0 0)` | `#FFFFFF` | Fond des cartes (blanc) |
-| Card text | `--card-foreground` | `oklch(0.263 0.105 303.5)` | `#30114D` | Texte sur cartes |
-| Primary | `--primary` | `oklch(0.263 0.105 303.5)` | `#30114D` | Boutons, liens principaux (violet foncé) |
-| Primary text | `--primary-foreground` | `oklch(0.985 0 0)` | `#FAFAFA` | Texte sur primary |
-| Secondary | `--secondary` | `oklch(0.93 0.020 303.5)` | `#EAE5F3` | Boutons secondaires (lavande clair) |
-| Secondary text | `--secondary-foreground` | `oklch(0.263 0.105 303.5)` | `#30114D` | Texte sur secondary |
-| Muted | `--muted` | `oklch(0.95 0.010 303.5)` | `#F0EDF4` | États désactivés |
-| Muted text | `--muted-foreground` | `oklch(0.50 0.030 303.5)` | `#675F72` | Texte secondaire |
-| Accent | `--accent` | `oklch(0.751 0.100 74.3)` | `#D4A563` | Couleur d'accentuation (doré) |
-| Accent light | `--accent-light` | `oklch(0.817 0.089 81.9)` | `#E0BE80` | Accent clair (doré pâle) |
-| Accent text | `--accent-foreground` | `oklch(0.263 0.105 303.5)` | `#30114D` | Texte sur accent |
-| Destructive | `--destructive` | `oklch(0.577 0.245 27.325)` | `#E7000B` | Suppression, erreurs (rouge) |
-| Border | `--border` | `oklch(0.90 0.020 303.5)` | `#E1DBE9` | Bordures (lavande subtil) |
-| Ring | `--ring` | `oklch(0.713 0.137 307.0)` | `#B98AE5` | Focus ring (violet moyen) |
+| Rôle | Token CSS | Valeur OKLCH | Aperçu | Usage |
+|------|-----------|-------------|--------|-------|
+| Background | `--background` | `oklch(0.977 0.010 81.8)` | ![](https://img.shields.io/badge/-%20%20%20%20%20%20%20%20-FBF7F0) | Fond de page (crème chaud) |
+| Foreground | `--foreground` | `oklch(0.263 0.105 303.5)` | ![](https://img.shields.io/badge/-%20%20%20%20%20%20%20%20-30114D) | Texte principal (violet foncé) |
+| Card | `--card` | `oklch(1 0 0)` | ![](https://img.shields.io/badge/-%20%20%20%20%20%20%20%20-FFFFFF) | Fond des cartes (blanc) |
+| Card text | `--card-foreground` | `oklch(0.263 0.105 303.5)` | ![](https://img.shields.io/badge/-%20%20%20%20%20%20%20%20-30114D) | Texte sur cartes |
+| Primary | `--primary` | `oklch(0.263 0.105 303.5)` | ![](https://img.shields.io/badge/-%20%20%20%20%20%20%20%20-30114D) | Boutons, liens principaux (violet foncé) |
+| Primary text | `--primary-foreground` | `oklch(0.985 0 0)` | ![](https://img.shields.io/badge/-%20%20%20%20%20%20%20%20-FAFAFA) | Texte sur primary |
+| Secondary | `--secondary` | `oklch(0.93 0.020 303.5)` | ![](https://img.shields.io/badge/-%20%20%20%20%20%20%20%20-EAE5F3) | Boutons secondaires (lavande clair) |
+| Secondary text | `--secondary-foreground` | `oklch(0.263 0.105 303.5)` | ![](https://img.shields.io/badge/-%20%20%20%20%20%20%20%20-30114D) | Texte sur secondary |
+| Muted | `--muted` | `oklch(0.95 0.010 303.5)` | ![](https://img.shields.io/badge/-%20%20%20%20%20%20%20%20-F0EDF4) | États désactivés |
+| Muted text | `--muted-foreground` | `oklch(0.50 0.030 303.5)` | ![](https://img.shields.io/badge/-%20%20%20%20%20%20%20%20-675F72) | Texte secondaire |
+| Accent | `--accent` | `oklch(0.751 0.100 74.3)` | ![](https://img.shields.io/badge/-%20%20%20%20%20%20%20%20-D4A563) | Couleur d'accentuation (doré) |
+| Accent light | `--accent-light` | `oklch(0.817 0.089 81.9)` | ![](https://img.shields.io/badge/-%20%20%20%20%20%20%20%20-E0BE80) | Accent clair (doré pâle) |
+| Accent text | `--accent-foreground` | `oklch(0.263 0.105 303.5)` | ![](https://img.shields.io/badge/-%20%20%20%20%20%20%20%20-30114D) | Texte sur accent |
+| Destructive | `--destructive` | `oklch(0.577 0.245 27.325)` | ![](https://img.shields.io/badge/-%20%20%20%20%20%20%20%20-E7000B) | Suppression, erreurs (rouge) |
+| Border | `--border` | `oklch(0.90 0.020 303.5)` | ![](https://img.shields.io/badge/-%20%20%20%20%20%20%20%20-E1DBE9) | Bordures (lavande subtil) |
+| Ring | `--ring` | `oklch(0.713 0.137 307.0)` | ![](https://img.shields.io/badge/-%20%20%20%20%20%20%20%20-B98AE5) | Focus ring (violet moyen) |
 
 ### 1.2 Mode sombre
 
-| Rôle | Token CSS | Valeur OKLCH | Hex approx. | Usage |
-|------|-----------|-------------|-------------|-------|
-| Background | `--background` | `oklch(0.20 0.06 303.5)` | `#1C0D2C` | Fond de page (violet très foncé) |
-| Foreground | `--foreground` | `oklch(0.985 0 0)` | `#FAFAFA` | Texte principal (blanc cassé) |
-| Card | `--card` | `oklch(0.263 0.105 303.5)` | `#30114D` | Fond des cartes (violet foncé) |
-| Primary | `--primary` | `oklch(0.713 0.137 307.0)` | `#B98AE5` | Boutons, liens (violet moyen) |
-| Primary text | `--primary-foreground` | `oklch(0.263 0.105 303.5)` | `#30114D` | Texte sur primary |
-| Secondary | `--secondary` | `oklch(0.35 0.060 303.5)` | `#413254` | Boutons secondaires |
-| Muted | `--muted` | `oklch(0.35 0.060 303.5)` | `#413254` | États désactivés |
-| Muted text | `--muted-foreground` | `oklch(0.713 0.137 307.0)` | `#B98AE5` | Texte secondaire (violet moyen) |
-| Accent | `--accent` | `oklch(0.751 0.100 74.3)` | `#D4A563` | Accentuation (doré) |
-| Destructive | `--destructive` | `oklch(0.704 0.191 22.216)` | `#FF6467` | Suppression, erreurs (rouge clair) |
-| Border | `--border` | `oklch(1 0 0 / 10%)` | `#FFFFFF1A` | Bordures (blanc 10% opacité) |
+| Rôle | Token CSS | Valeur OKLCH | Aperçu | Usage |
+|------|-----------|-------------|--------|-------|
+| Background | `--background` | `oklch(0.20 0.06 303.5)` | ![](https://img.shields.io/badge/-%20%20%20%20%20%20%20%20-1C0D2C) | Fond de page (violet très foncé) |
+| Foreground | `--foreground` | `oklch(0.985 0 0)` | ![](https://img.shields.io/badge/-%20%20%20%20%20%20%20%20-FAFAFA) | Texte principal (blanc cassé) |
+| Card | `--card` | `oklch(0.263 0.105 303.5)` | ![](https://img.shields.io/badge/-%20%20%20%20%20%20%20%20-30114D) | Fond des cartes (violet foncé) |
+| Primary | `--primary` | `oklch(0.713 0.137 307.0)` | ![](https://img.shields.io/badge/-%20%20%20%20%20%20%20%20-B98AE5) | Boutons, liens (violet moyen) |
+| Primary text | `--primary-foreground` | `oklch(0.263 0.105 303.5)` | ![](https://img.shields.io/badge/-%20%20%20%20%20%20%20%20-30114D) | Texte sur primary |
+| Secondary | `--secondary` | `oklch(0.35 0.060 303.5)` | ![](https://img.shields.io/badge/-%20%20%20%20%20%20%20%20-413254) | Boutons secondaires |
+| Muted | `--muted` | `oklch(0.35 0.060 303.5)` | ![](https://img.shields.io/badge/-%20%20%20%20%20%20%20%20-413254) | États désactivés |
+| Muted text | `--muted-foreground` | `oklch(0.713 0.137 307.0)` | ![](https://img.shields.io/badge/-%20%20%20%20%20%20%20%20-B98AE5) | Texte secondaire (violet moyen) |
+| Accent | `--accent` | `oklch(0.751 0.100 74.3)` | ![](https://img.shields.io/badge/-%20%20%20%20%20%20%20%20-D4A563) | Accentuation (doré) |
+| Destructive | `--destructive` | `oklch(0.704 0.191 22.216)` | ![](https://img.shields.io/badge/-%20%20%20%20%20%20%20%20-FF6467) | Suppression, erreurs (rouge clair) |
+| Border | `--border` | `oklch(1 0 0 / 10%)` | ![](https://img.shields.io/badge/-%20%20%20%20%20%20%20%20-FFFFFF) | Bordures (blanc 10% opacité) |
 
 ### 1.3 Approche
 
@@ -60,16 +60,17 @@ Le design system utilise une palette **violet / doré** en espace colorimétriqu
 
 ## 2. Typographie
 
-### 2.1 Police système
+### 2.1 Police
 
-L'application utilise la **stack de polices système** par défaut du navigateur :
+L'application utilise **Comfortaa**, une police Google Fonts arrondie et géométrique :
 
 ```css
-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-             "Helvetica Neue", Arial, sans-serif;
+font-family: var(--font-comfortaa), sans-serif;
 ```
 
-**Justification :** performances optimales (aucun téléchargement de police), rendu natif sur chaque OS, cohérence avec les conventions de l'interface système.
+Chargée via `next/font/google` avec `display: swap` pour un rendu optimisé (pas de FOIT).
+
+**Justification :** typographie douce et arrondie, en accord avec l'univers hôtelier haut de gamme du Clair de Lune.
 
 ### 2.2 Hiérarchie typographique
 
@@ -114,7 +115,16 @@ L'interface est construite avec **shadcn/ui** (preset New York), personnalisée 
 
 ---
 
-## 4. Wireframes
+## 4. Logo
+
+| Variante | Visuel |
+|----------|--------|
+| Pictogramme | ![Pictogramme Clair de Lune](assets/logo.svg) |
+| Pictogramme + Baseline | ![Logo Clair de Lune](assets/logo-with-baseline.svg) |
+
+---
+
+## 5. Wireframes
 
 Wireframes de la fonctionnalité **"Consulter les établissements et les suites"** (US4), en version mobile et desktop.
 
@@ -127,14 +137,6 @@ Page d'entrée avec recherche de séjour (destination, dates, voyageurs) et aper
 | Mobile | Desktop |
 |--------|---------|
 | ![Accueil — mobile](assets/wireframe-accueil-mobile.png) | ![Accueil — desktop](assets/wireframe-accueil-desktop.png) |
-
-### 4.2 Liste des établissements
-
-Page listant tous les établissements du groupe avec nom, ville et description.
-
-| Mobile | Desktop |
-|--------|---------|
-| ![Établissements — mobile](assets/wireframe-etablissements-mobile.png) | ![Établissements — desktop](assets/wireframe-etablissements-desktop.png) |
 
 ### 4.3 Recherche
 
@@ -153,4 +155,3 @@ Page de détail avec galerie d'images, description, prix et informations de la s
 | ![Suite — mobile](assets/wireframe-suite-mobile.png) | ![Suite — desktop](assets/wireframe-suite-desktop.png) |
 
 > **Export :** Depuis Figma, sélectionner chaque frame (Mobile / Desktop) puis File > Export > PNG (2x). Stocker les fichiers dans `docs/deliverables/assets/`.
-
