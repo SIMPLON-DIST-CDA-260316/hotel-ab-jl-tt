@@ -10,6 +10,7 @@ Application de gestion hôtelière.
 - **ORM** : Drizzle ORM
 - **Authentification** : Better Auth
 - **Runtime / Package manager** : [Bun](https://bun.com/)
+- **Tests** : Vitest + Playwright
 - **Conteneurisation** : Docker + Docker Compose
 
 ## Démarrage rapide
@@ -32,11 +33,13 @@ cd hotel-ab-jl-tt
 cp .env.example .env
 ```
 
-Remplir `BETTER_AUTH_SECRET` dans `.env` :
+Remplir les valeurs dans `.env` :
 
 ```env
 DATABASE_URL=postgresql://hotel:hotel@localhost:5432/hotel_clair_de_lune
 BETTER_AUTH_SECRET=your-secret-here
+BETTER_AUTH_URL=http://localhost:3000
+NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3000
 ```
 
 > **Note :** Garder `localhost` dans `DATABASE_URL`. L'Option B (tout en Docker) override automatiquement cette valeur via `docker-compose.yml`.
@@ -61,7 +64,7 @@ Pour arrêter :
 
 ```bash
 # Ctrl+C pour stopper Next.js, puis :
-docker compose down db      # Arrête PostgreSQL
+docker compose stop db      # Arrête PostgreSQL
 ```
 
 ### Option B — Tout en Docker
@@ -82,17 +85,20 @@ docker compose down         # Arrête tous les services
 
 ## Scripts disponibles
 
-| Commande          | Description                                     |
-|-------------------|-------------------------------------------------|
-| `bun run dev`     | Lance le serveur de développement               |
-| `bun run build`   | Compile l'application pour la production        |
-| `bun run start`   | Démarre le serveur de production                |
-| `bun run lint`    | Vérifie le code avec ESLint                     |
-| `bun run db:push`        | Applique le schéma Drizzle à la base de données |
+| Commande                 | Description                                      |
+|--------------------------|--------------------------------------------------|
+| `bun run dev`            | Lance le serveur de développement                |
+| `bun run build`          | Compile l'application pour la production         |
+| `bun run start`          | Démarre le serveur de production                 |
+| `bun run lint`           | Vérifie le code avec ESLint                      |
+| `bun run db:push`        | Applique le schéma Drizzle à la base de données  |
 | `bun run db:seed`        | Insère les données de test (idempotent)          |
 | `bun run db:seed-admin`  | Crée le compte administrateur initial            |
 | `bun run test`           | Lance les tests unitaires (Vitest)               |
-| `bun run test:e2e`       | Lance les tests E2E (Playwright, serveur requis) |
+| `bun run test:watch`     | Lance les tests en mode watch                    |
+| `bun run test:ui`        | Lance les tests avec l'interface Vitest UI       |
+| `bun run test:e2e`       | Lance les tests E2E (Playwright)                 |
+| `bun run test:e2e:ui`    | Lance les tests E2E avec l'interface Playwright  |
 
 ## Compte administrateur initial
 
