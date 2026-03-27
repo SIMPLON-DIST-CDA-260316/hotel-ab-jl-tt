@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { auth } from "@/lib/auth";
+import { safeRedirectUrl } from "@/lib/safe-redirect";
 
 import { AUTH_ERROR_CODES } from "../lib/auth-error-codes";
 import { loginSchema } from "../lib/auth-schemas";
@@ -59,6 +60,6 @@ export async function login(
     return { status: "error", formError: AUTH_ERROR_CODES.UNKNOWN_ERROR };
   }
 
-  // callbackUrl is dynamic user input — bypass typed routes check
-  redirect((callbackUrl ?? "/") as Parameters<typeof redirect>[0]);
+  // callbackUrl is dynamic user input — sanitize to prevent open redirect
+  redirect(safeRedirectUrl(callbackUrl) as Parameters<typeof redirect>[0]);
 }

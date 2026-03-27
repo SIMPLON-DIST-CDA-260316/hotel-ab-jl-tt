@@ -68,6 +68,14 @@ export function SuiteBookingSidebar({
     setError(null);
   }
 
+  // Build callbackUrl with only non-empty booking params
+  const loginCallbackParams = new URLSearchParams();
+  if (checkIn) loginCallbackParams.set("checkIn", checkIn);
+  if (checkOut) loginCallbackParams.set("checkOut", checkOut);
+  if (guestCount > 1) loginCallbackParams.set("guestCount", String(guestCount));
+  const loginCallbackQuery = loginCallbackParams.toString();
+  const loginCallbackPath = `/suites/${suiteId}/book${loginCallbackQuery ? `?${loginCallbackQuery}` : ""}`;
+
   // Query params in dynamic URLs are not recognized by typed routes
   const bookingUrl = `/suites/${suiteId}/book?checkIn=${checkIn}&checkOut=${checkOut}&guestCount=${guestCount}` as unknown as "/suites/[id]/book";
 
@@ -216,7 +224,7 @@ export function SuiteBookingSidebar({
                   className="h-11 w-full rounded-xl font-semibold"
                   asChild
                 >
-                  <Link href={`/sign-in?callbackUrl=${encodeURIComponent(`/suites/${suiteId}/book?checkIn=${checkIn}&checkOut=${checkOut}&guestCount=${guestCount}`)}`}>
+                  <Link href={`/sign-in?callbackUrl=${encodeURIComponent(loginCallbackPath)}`}>
                     Se connecter pour réserver
                   </Link>
                 </Button>

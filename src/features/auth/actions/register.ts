@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { auth } from "@/lib/auth";
+import { safeRedirectUrl } from "@/lib/safe-redirect";
 
 import { AUTH_ERROR_CODES } from "../lib/auth-error-codes";
 import { registerSchema } from "../lib/auth-schemas";
@@ -64,5 +65,5 @@ export async function register(
     return { status: "error", formError: AUTH_ERROR_CODES.UNKNOWN_ERROR };
   }
 
-  redirect((callbackUrl ?? "/") as Parameters<typeof redirect>[0]);
+  redirect(safeRedirectUrl(callbackUrl) as Parameters<typeof redirect>[0]);
 }
