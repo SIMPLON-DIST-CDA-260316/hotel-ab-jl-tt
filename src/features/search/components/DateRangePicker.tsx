@@ -45,19 +45,15 @@ export function DateRangePicker({
   }
 
   return (
-    <div className="flex flex-col gap-1">
-      <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-        Dates
-      </span>
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            variant="ghost"
-            className="h-auto justify-start p-0 text-sm font-normal shadow-none hover:bg-transparent"
-          >
-            <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
-            {formatDateRange()}
-          </Button>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="ghost"
+          className="h-auto justify-start gap-2 p-0 text-sm font-normal shadow-none hover:bg-transparent"
+        >
+          <CalendarIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
+          <span className="whitespace-nowrap">{formatDateRange()}</span>
+        </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
@@ -69,7 +65,6 @@ export function DateRangePicker({
             locale={fr}
           />
         </PopoverContent>
-      </Popover>
-    </div>
+    </Popover>
   );
 }

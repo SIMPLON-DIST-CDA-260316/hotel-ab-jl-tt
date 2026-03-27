@@ -37,11 +37,11 @@ export function SuiteSearchCard({ suite }: SuiteSearchCardProps) {
             {suite.capacity}
           </span>
         </div>
-        <div className="mt-1 flex items-center gap-1">
-          <Badge variant="secondary" className="text-xs font-normal">
+        <div className="mt-1 flex min-w-0 items-center gap-1">
+          <Badge variant="secondary" className="shrink-0 text-xs font-normal">
             {suite.establishmentName}
           </Badge>
-          <span className="text-xs text-muted-foreground">
+          <span className="truncate text-xs text-muted-foreground">
             · {suite.city}
           </span>
         </div>

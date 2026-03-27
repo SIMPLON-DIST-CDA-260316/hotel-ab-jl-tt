@@ -17,7 +17,11 @@ function parseDate(value: string | null): Date | undefined {
   return isNaN(parsed.getTime()) ? undefined : parsed;
 }
 
-export function SearchBar(): React.JSX.Element {
+interface SearchBarProps {
+  cities: string[];
+}
+
+export function SearchBar({ cities }: SearchBarProps): React.JSX.Element {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -57,14 +61,14 @@ export function SearchBar(): React.JSX.Element {
   }
 
   return (
-    <div className="flex items-center rounded-full border bg-background shadow-sm">
-      <div className="px-6 py-3">
-        <DestinationInput value={destination} onChange={setDestination} />
+    <div className="flex items-center rounded-full border bg-background px-2 shadow-sm">
+      <div className="px-4 py-2.5">
+        <DestinationInput value={destination} onChange={setDestination} cities={cities} />
       </div>
 
-      <Separator orientation="vertical" className="h-8" />
+      <Separator orientation="vertical" className="h-5" />
 
-      <div className="px-6 py-3">
+      <div className="px-4 py-2.5">
         <DateRangePicker
           checkIn={checkIn}
           checkOut={checkOut}
@@ -72,17 +76,17 @@ export function SearchBar(): React.JSX.Element {
         />
       </div>
 
-      <Separator orientation="vertical" className="h-8" />
+      <Separator orientation="vertical" className="h-5" />
 
-      <div className="flex items-center gap-2 pl-6 pr-3 py-3">
+      <div className="flex items-center gap-2 py-2.5 pl-4 pr-2">
         <GuestSelector value={guestCount} onChange={setGuestCount} />
         <Button
           onClick={handleSearch}
           size="icon"
-          className="ml-2 h-9 w-9 shrink-0 rounded-full"
+          className="h-8 w-8 shrink-0 rounded-full"
           aria-label="Rechercher"
         >
-          <Search className="h-4 w-4" />
+          <Search className="h-3.5 w-3.5" />
         </Button>
       </div>
     </div>

@@ -27,10 +27,10 @@ export function MobileFilterSheet({ filterOptions }: MobileFilterSheetProps) {
           </Button>
         </SheetTrigger>
         <SheetContent side="bottom" className="max-h-[80vh] overflow-y-auto rounded-t-2xl">
-          <SheetHeader>
-            <SheetTitle>Filtres</SheetTitle>
-          </SheetHeader>
-          <div className="py-4">
+          <div className="px-6 pb-8">
+            <SheetHeader className="px-0 pb-4">
+              <SheetTitle>Filtres</SheetTitle>
+            </SheetHeader>
             <FilterPanel filterOptions={filterOptions} />
           </div>
         </SheetContent>

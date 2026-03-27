@@ -26,7 +26,11 @@ function parseDate(value: string | null): Date | undefined {
   return isNaN(parsed.getTime()) ? undefined : parsed;
 }
 
-export function SearchBarMobile(): React.JSX.Element {
+interface SearchBarMobileProps {
+  cities: string[];
+}
+
+export function SearchBarMobile({ cities }: SearchBarMobileProps): React.JSX.Element {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -103,7 +107,7 @@ export function SearchBarMobile(): React.JSX.Element {
         </SheetHeader>
 
         <div className="flex flex-col gap-6">
-          <DestinationInput value={destination} onChange={setDestination} />
+          <DestinationInput value={destination} onChange={setDestination} cities={cities} />
           <DateRangePicker
             checkIn={checkIn}
             checkOut={checkOut}
