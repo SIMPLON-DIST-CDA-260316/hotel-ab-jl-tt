@@ -19,7 +19,7 @@ export const inquirySchema = z.object({
 export type InquiryFormData = z.infer<typeof inquirySchema>;
 
 export type FormState = {
-  values?: z.infer<typeof inquirySchema>
+  values?: Partial<z.infer<typeof inquirySchema>>
   errors?: null | Partial<Record<keyof z.infer<typeof inquirySchema>, string[]> & {_form: string[]}>
   success: boolean
 }

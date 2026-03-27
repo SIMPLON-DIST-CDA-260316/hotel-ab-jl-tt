@@ -68,6 +68,15 @@ export function SuiteForm({
     defaultValues?.establishmentId ??
     (establishments.length === 1 ? establishments[0].id : undefined);
 
+  const [title, setTitle] = useState(defaultValues?.title ?? "");
+  const [description, setDescription] = useState(defaultValues?.description ?? "");
+  const [price, setPrice] = useState(defaultValues?.price ?? "");
+  const [capacity, setCapacity] = useState(
+    defaultValues?.capacity !== undefined ? String(defaultValues.capacity) : "",
+  );
+  const [area, setArea] = useState(defaultValues?.area ?? "");
+  const [establishmentId, setEstablishmentId] = useState(defaultEstablishmentId);
+
   const resolvedSubmitLabel =
     submitLabel ?? (isEditMode ? "Enregistrer les modifications" : "Créer la suite");
 
@@ -88,7 +97,8 @@ export function SuiteForm({
               <Select
                 name="establishmentId"
                 required
-                defaultValue={defaultEstablishmentId}
+                value={establishmentId}
+                onValueChange={setEstablishmentId}
               >
                 <SelectTrigger
                   id="establishmentId"
@@ -119,11 +129,11 @@ export function SuiteForm({
             </div>
           )}
 
-          {defaultEstablishmentId && (
+          {establishmentId && (
             <input
               type="hidden"
               name="establishmentId"
-              value={defaultEstablishmentId}
+              value={establishmentId}
             />
           )}
 
@@ -133,7 +143,8 @@ export function SuiteForm({
               id="title"
               name="title"
               required
-              defaultValue={defaultValues?.title ?? ""}
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
               aria-describedby={
                 state?.errors?.title ? "title-error" : undefined
               }
@@ -151,7 +162,8 @@ export function SuiteForm({
               id="description"
               name="description"
               rows={4}
-              defaultValue={defaultValues?.description ?? ""}
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
             />
           </div>
 
@@ -165,7 +177,8 @@ export function SuiteForm({
                 step="0.01"
                 min="0.01"
                 required
-                defaultValue={defaultValues?.price ?? ""}
+                value={price}
+                onChange={(event) => setPrice(event.target.value)}
                 aria-describedby={
                   state?.errors?.price ? "price-error" : undefined
                 }
@@ -186,7 +199,8 @@ export function SuiteForm({
                 min="1"
                 step="1"
                 required
-                defaultValue={defaultValues?.capacity ?? ""}
+                value={capacity}
+                onChange={(event) => setCapacity(event.target.value)}
                 aria-describedby={
                   state?.errors?.capacity ? "capacity-error" : undefined
                 }
@@ -206,7 +220,8 @@ export function SuiteForm({
                 type="number"
                 step="0.01"
                 min="0.01"
-                defaultValue={defaultValues?.area ?? ""}
+                value={area}
+                onChange={(event) => setArea(event.target.value)}
                 aria-describedby={
                   state?.errors?.area ? "area-error" : undefined
                 }

@@ -216,7 +216,7 @@ export function SuiteBookingSidebar({
                   className="h-11 w-full rounded-xl font-semibold"
                   asChild
                 >
-                  <Link href={`/sign-in?callbackUrl=/suites/${suiteId}/book`}>
+                  <Link href={`/sign-in?callbackUrl=${encodeURIComponent(`/suites/${suiteId}/book?checkIn=${checkIn}&checkOut=${checkOut}&guestCount=${guestCount}`)}`}>
                     Se connecter pour réserver
                   </Link>
                 </Button>

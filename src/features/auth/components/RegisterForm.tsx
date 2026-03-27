@@ -20,7 +20,11 @@ const FORM_ERROR_MESSAGES: Record<string, string> = {
 
 const INITIAL_STATE: AuthActionState<RegisterFormValues> = { status: "idle" };
 
-export function RegisterForm() {
+interface RegisterFormProps {
+  callbackUrl?: string;
+}
+
+export function RegisterForm({ callbackUrl }: RegisterFormProps) {
   const [state, formAction, isPending] = useActionState(register, INITIAL_STATE);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -53,6 +57,10 @@ export function RegisterForm() {
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
+      {callbackUrl ? (
+        <input type="hidden" name="callbackUrl" value={callbackUrl} />
+      ) : null}
+
       {formError ? (
         <p role="alert" className="text-sm text-destructive">
           {FORM_ERROR_MESSAGES[formError] ?? FORM_ERROR_MESSAGES[AUTH_ERROR_CODES.UNKNOWN_ERROR]}
@@ -154,7 +162,7 @@ export function RegisterForm() {
 
       <p className="text-center text-sm text-muted-foreground">
         Déjà un compte ?{" "}
-        <Link href="/sign-in" className="text-primary underline hover:text-primary/80">
+        <Link href={callbackUrl ? `/sign-in?callbackUrl=${encodeURIComponent(callbackUrl)}` : "/sign-in"} className="text-primary underline hover:text-primary/80">
           Se connecter
         </Link>
       </p>

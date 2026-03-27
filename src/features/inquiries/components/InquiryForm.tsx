@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useActionState } from "react";
+import { useActionState, useState } from "react";
 import { notFound } from "next/navigation";
 import Form from "next/form";
 import { Input } from "@/components/ui/input";
@@ -19,7 +19,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { sendInquiry } from "@/features/inquiries/actions/send-inquiry";
 import { type FormState } from "@/features/inquiries/lib/send-inquiry-shema";
-import { error } from "better-auth/api";
 
 interface ContactFormProps {
   establishment: NonNullable<Awaited<{id: string}>>;
@@ -40,6 +39,22 @@ export function ContactForm({ establishment }: ContactFormProps) {
       },
     },
   );
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
+  const [lastSuccess, setLastSuccess] = useState(false);
+
+  if (formState.success && !lastSuccess) {
+    setName("");
+    setEmail("");
+    setSubject("");
+    setMessage("");
+    setLastSuccess(true);
+  } else if (!formState.success && lastSuccess) {
+    setLastSuccess(false);
+  }
 
   if (!establishment) {
     notFound();
@@ -66,21 +81,34 @@ export function ContactForm({ establishment }: ContactFormProps) {
           />
           <div className="flex flex-col gap-2">
             <Label htmlFor="name">Nom</Label>
-            <Input id="name" name="name" type="text"></Input>
-            {formState.errors && (
+            <Input
+              id="name"
+              name="name"
+              type="text"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+            />
+            {formState.errors?.name && (
               <FieldError>{formState.errors.name}</FieldError>
             )}
           </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" name="email" type="" required></Input>
-            {formState.errors && (
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              required
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+            />
+            {formState.errors?.email && (
               <FieldError>{formState.errors.email[0]}</FieldError>
             )}
           </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="subject">Objet</Label>
-            <Select name="subject" defaultValue={formState?.values?.subject}>
+            <Select name="subject" value={subject || undefined} onValueChange={setSubject}>
               <SelectTrigger
                 id="subject"
                 className="max-w-[230px] min-w-[200px] sm:max-w-none"
@@ -89,22 +117,28 @@ export function ContactForm({ establishment }: ContactFormProps) {
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  {subjects.map((s) => (
-                    <SelectItem key={s.name} value={s.name}>
-                      {s.text}
+                  {subjects.map((subjectOption) => (
+                    <SelectItem key={subjectOption.name} value={subjectOption.name}>
+                      {subjectOption.text}
                     </SelectItem>
                   ))}
                 </SelectGroup>
               </SelectContent>
             </Select>
-            {formState.errors && (
+            {formState.errors?.subject && (
               <FieldError>{formState.errors.subject}</FieldError>
             )}
           </div>
           <div className="flex flex-col gap-2">
             <Label htmlFor="message">Message</Label>
-            <Textarea id="message" name="message" required></Textarea>
-            {formState.errors && (
+            <Textarea
+              id="message"
+              name="message"
+              required
+              value={message}
+              onChange={(event) => setMessage(event.target.value)}
+            />
+            {formState.errors?.message && (
               <FieldError>{formState.errors.message}</FieldError>
             )}
           </div>

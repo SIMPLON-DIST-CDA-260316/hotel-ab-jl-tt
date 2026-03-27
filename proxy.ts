@@ -24,13 +24,21 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
   }
 
   if (pathname.startsWith("/admin")) {
-    if (!isAuthenticated || role !== ROLES.ADMIN) {
+    if (!isAuthenticated) {
+      const callbackUrl = encodeURIComponent(pathname);
+      return NextResponse.redirect(new URL(`/sign-in?callbackUrl=${callbackUrl}`, request.url));
+    }
+    if (role !== ROLES.ADMIN) {
       return NextResponse.redirect(new URL("/sign-in", request.url));
     }
   }
 
   if (pathname.startsWith("/manager")) {
-    if (!isAuthenticated || role !== ROLES.MANAGER) {
+    if (!isAuthenticated) {
+      const callbackUrl = encodeURIComponent(pathname);
+      return NextResponse.redirect(new URL(`/sign-in?callbackUrl=${callbackUrl}`, request.url));
+    }
+    if (role !== ROLES.MANAGER) {
       return NextResponse.redirect(new URL("/sign-in", request.url));
     }
   }

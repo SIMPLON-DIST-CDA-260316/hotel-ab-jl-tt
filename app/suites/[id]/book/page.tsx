@@ -17,7 +17,13 @@ export default async function BookPage({ params, searchParams }: BookPageProps) 
   const session = await auth.api.getSession({ headers: await headers() });
 
   if (!session) {
-    redirect(`/sign-in?callbackUrl=/suites/${id}/book`);
+    const bookingParams = new URLSearchParams();
+    if (queryParams.checkIn) bookingParams.set("checkIn", queryParams.checkIn);
+    if (queryParams.checkOut) bookingParams.set("checkOut", queryParams.checkOut);
+    if (queryParams.guestCount) bookingParams.set("guestCount", queryParams.guestCount);
+    const queryString = bookingParams.toString();
+    const callbackPath = `/suites/${id}/book${queryString ? `?${queryString}` : ""}`;
+    redirect(`/sign-in?callbackUrl=${encodeURIComponent(callbackPath)}`);
   }
 
   const [suiteData, establishmentOptions] = await Promise.all([

@@ -46,6 +46,8 @@ export async function register(
     return { status: "error", fieldErrors };
   }
 
+  const callbackUrl = formData.get("callbackUrl") as string | null;
+
   const { firstName, lastName, email, password } = parsed.data;
   const name = `${firstName} ${lastName}`;
 
@@ -62,5 +64,5 @@ export async function register(
     return { status: "error", formError: AUTH_ERROR_CODES.UNKNOWN_ERROR };
   }
 
-  redirect("/");
+  redirect((callbackUrl ?? "/") as Parameters<typeof redirect>[0]);
 }

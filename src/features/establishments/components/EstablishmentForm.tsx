@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -54,6 +54,16 @@ export function EstablishmentForm({
     null,
   );
 
+  const [name, setName] = useState(defaultValues?.name ?? "");
+  const [address, setAddress] = useState(defaultValues?.address ?? "");
+  const [postalCode, setPostalCode] = useState(defaultValues?.postalCode ?? "");
+  const [city, setCity] = useState(defaultValues?.city ?? "");
+  const [description, setDescription] = useState(defaultValues?.description ?? "");
+  const [phone, setPhone] = useState(defaultValues?.phone ?? "");
+  const [emailValue, setEmailValue] = useState(defaultValues?.email ?? "");
+  const [checkInTime, setCheckInTime] = useState(defaultValues?.checkInTime ?? "15:00");
+  const [checkOutTime, setCheckOutTime] = useState(defaultValues?.checkOutTime ?? "11:00");
+
   return (
     <Card>
       <CardHeader>
@@ -69,7 +79,8 @@ export function EstablishmentForm({
               id="name"
               name="name"
               autoComplete="organization"
-              defaultValue={defaultValues?.name ?? ""}
+              value={name}
+              onChange={(event) => setName(event.target.value)}
               aria-describedby={state?.errors?.name ? "name-error" : undefined}
               required
             />
@@ -86,7 +97,8 @@ export function EstablishmentForm({
               id="address"
               name="address"
               autoComplete="street-address"
-              defaultValue={defaultValues?.address ?? ""}
+              value={address}
+              onChange={(event) => setAddress(event.target.value)}
               aria-describedby={
                 state?.errors?.address ? "address-error" : undefined
               }
@@ -106,7 +118,8 @@ export function EstablishmentForm({
                 id="postalCode"
                 name="postalCode"
                 autoComplete="postal-code"
-                defaultValue={defaultValues?.postalCode ?? ""}
+                value={postalCode}
+                onChange={(event) => setPostalCode(event.target.value)}
                 aria-describedby={
                   state?.errors?.postalCode ? "postalCode-error" : undefined
                 }
@@ -124,7 +137,8 @@ export function EstablishmentForm({
                 id="city"
                 name="city"
                 autoComplete="address-level2"
-                defaultValue={defaultValues?.city ?? ""}
+                value={city}
+                onChange={(event) => setCity(event.target.value)}
                 aria-describedby={
                   state?.errors?.city ? "city-error" : undefined
                 }
@@ -143,7 +157,8 @@ export function EstablishmentForm({
             <Textarea
               id="description"
               name="description"
-              defaultValue={defaultValues?.description ?? ""}
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
               rows={4}
             />
           </div>
@@ -155,7 +170,8 @@ export function EstablishmentForm({
                 id="checkInTime"
                 name="checkInTime"
                 type="time"
-                defaultValue={defaultValues?.checkInTime ?? "15:00"}
+                value={checkInTime}
+                onChange={(event) => setCheckInTime(event.target.value)}
                 required
               />
             </div>
@@ -165,7 +181,8 @@ export function EstablishmentForm({
                 id="checkOutTime"
                 name="checkOutTime"
                 type="time"
-                defaultValue={defaultValues?.checkOutTime ?? "11:00"}
+                value={checkOutTime}
+                onChange={(event) => setCheckOutTime(event.target.value)}
                 required
               />
             </div>
@@ -179,7 +196,8 @@ export function EstablishmentForm({
                 name="phone"
                 type="tel"
                 autoComplete="tel"
-                defaultValue={defaultValues?.phone ?? ""}
+                value={phone}
+                onChange={(event) => setPhone(event.target.value)}
               />
             </div>
             <div>
@@ -189,7 +207,8 @@ export function EstablishmentForm({
                 name="email"
                 type="email"
                 autoComplete="email"
-                defaultValue={defaultValues?.email ?? ""}
+                value={emailValue}
+                onChange={(event) => setEmailValue(event.target.value)}
               />
             </div>
           </div>

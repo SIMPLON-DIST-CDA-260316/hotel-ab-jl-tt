@@ -3,7 +3,7 @@
 import { db } from "@/lib/db";
 import { inquiry } from "@/lib/db/schema/domain";
 import { auth } from "@/lib/auth";
-import { type FormState, inquirySchema } from "../lib/send-inquiry-shema";
+import { type FormState, type InquiryFormData, inquirySchema } from "../lib/send-inquiry-shema";
 import { headers } from "next/headers";
 import { getEstablishmentById } from "@/features/establishments/queries/get-establishment-by-id";
 
@@ -18,6 +18,13 @@ export async function sendInquiry(
     return {
       success: false,
       errors: parsed.error.flatten().fieldErrors,
+      values: {
+        name: String(raw.name ?? ""),
+        email: String(raw.email ?? ""),
+        subject: raw.subject as InquiryFormData["subject"] | undefined,
+        establishment: String(raw.establishment ?? ""),
+        message: String(raw.message ?? ""),
+      },
     };
   }
 
@@ -47,6 +54,13 @@ export async function sendInquiry(
     return {
       success: false,
       errors: { _form: ["Une erreur est survenue lors de l'envoi"] },
+      values: {
+        name: parsed.data.name,
+        email: parsed.data.email,
+        subject: parsed.data.subject,
+        establishment: parsed.data.establishment,
+        message: parsed.data.message,
+      },
     };
   }
   return {
