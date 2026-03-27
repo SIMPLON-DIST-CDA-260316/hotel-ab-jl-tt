@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { headers } from "next/headers";
+import Image from "next/image";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { SearchBar } from "@/features/search/components/SearchBar";
@@ -11,10 +12,16 @@ export async function Header() {
   const session = await auth.api.getSession({ headers: await headers() });
 
   return (
-    <header className="border-b px-4 py-3">
+    <header className="border-b px-4 py-3 md:px-6">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
-        <Link href="/" className="shrink-0 font-semibold">
-          Hôtels Clair de Lune
+        <Link href="/" className="flex shrink-0 items-center gap-3 text-xl font-bold">
+          <Image
+            src="/images/logo.svg"
+            alt="Clair de Lune"
+            width={36}
+            height={36}
+          />
+          <span className="hidden sm:inline">Clair de Lune</span>
         </Link>
 
         <Suspense fallback={null}>

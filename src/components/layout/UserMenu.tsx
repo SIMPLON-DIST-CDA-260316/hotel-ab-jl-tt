@@ -22,11 +22,21 @@ export function UserMenu({ isAuthenticated, userName }: UserMenuProps) {
 
   if (!isAuthenticated) {
     return (
-      <Button variant="ghost" size="icon" asChild>
-        <Link href="/sign-in" aria-label="Se connecter">
-          <User className="h-5 w-5" />
-        </Link>
-      </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon" aria-label="Menu de connexion">
+            <User className="h-5 w-5" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem asChild>
+            <Link href="/sign-in">Se connecter</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/sign-up">Créer un compte</Link>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     );
   }
 
