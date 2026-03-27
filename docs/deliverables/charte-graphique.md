@@ -4,40 +4,55 @@
 > **Équipe :** Julien Lemarchand, Thélio Trinité, Agathe Boncompain\
 > **Date :** Mars 2026
 
+> **Sources :** Ce document est la version technique de la charte, extraite de l'implémentation (tokens CSS, composants shadcn/ui, classes Tailwind). Le document de design original est disponible sur [Google Docs](https://docs.google.com/document/d/1lKRaRJAv9yNGHURP-SydDhMh_ijiVEembWwgXMUnPsI/edit?tab=t.0#heading=h.wnh3puvh5rjv).
+
 ---
 
 ## 1. Palette de couleurs
 
-Le design system utilise une palette **neutre (zinc)** en espace colorimétrique OKLCH, avec un mode clair et un mode sombre.
+Le design system utilise une palette **violet / doré** en espace colorimétrique OKLCH, avec un mode clair et un mode sombre.
 
 ### 1.1 Mode clair (par défaut)
 
 | Rôle | Token CSS | Valeur OKLCH | Hex approx. | Usage |
 |------|-----------|-------------|-------------|-------|
-| Background | `--background` | `oklch(1 0 0)` | `#FFFFFF` | Fond de page |
-| Foreground | `--foreground` | `oklch(0.145 0 0)` | `#0A0A0A` | Texte principal |
-| Primary | `--primary` | `oklch(0.205 0 0)` | `#171717` | Boutons, liens principaux |
+| Background | `--background` | `oklch(0.977 0.010 81.8)` | `#FBF7F0` | Fond de page (crème chaud) |
+| Foreground | `--foreground` | `oklch(0.263 0.105 303.5)` | `#30114D` | Texte principal (violet foncé) |
+| Card | `--card` | `oklch(1 0 0)` | `#FFFFFF` | Fond des cartes (blanc) |
+| Card text | `--card-foreground` | `oklch(0.263 0.105 303.5)` | `#30114D` | Texte sur cartes |
+| Primary | `--primary` | `oklch(0.263 0.105 303.5)` | `#30114D` | Boutons, liens principaux (violet foncé) |
 | Primary text | `--primary-foreground` | `oklch(0.985 0 0)` | `#FAFAFA` | Texte sur primary |
-| Secondary | `--secondary` | `oklch(0.97 0 0)` | `#F5F5F5` | Boutons secondaires |
-| Muted | `--muted` | `oklch(0.97 0 0)` | `#F5F5F5` | États désactivés |
-| Muted text | `--muted-foreground` | `oklch(0.556 0 0)` | `#737373` | Texte secondaire |
-| Destructive | `--destructive` | `oklch(0.577 0.245 27.325)` | `#DC2626` | Suppression, erreurs |
-| Border | `--border` | `oklch(0.922 0 0)` | `#E5E5E5` | Bordures |
+| Secondary | `--secondary` | `oklch(0.93 0.020 303.5)` | `#EAE5F3` | Boutons secondaires (lavande clair) |
+| Secondary text | `--secondary-foreground` | `oklch(0.263 0.105 303.5)` | `#30114D` | Texte sur secondary |
+| Muted | `--muted` | `oklch(0.95 0.010 303.5)` | `#F0EDF4` | États désactivés |
+| Muted text | `--muted-foreground` | `oklch(0.50 0.030 303.5)` | `#675F72` | Texte secondaire |
+| Accent | `--accent` | `oklch(0.751 0.100 74.3)` | `#D4A563` | Couleur d'accentuation (doré) |
+| Accent light | `--accent-light` | `oklch(0.817 0.089 81.9)` | `#E0BE80` | Accent clair (doré pâle) |
+| Accent text | `--accent-foreground` | `oklch(0.263 0.105 303.5)` | `#30114D` | Texte sur accent |
+| Destructive | `--destructive` | `oklch(0.577 0.245 27.325)` | `#E7000B` | Suppression, erreurs (rouge) |
+| Border | `--border` | `oklch(0.90 0.020 303.5)` | `#E1DBE9` | Bordures (lavande subtil) |
+| Ring | `--ring` | `oklch(0.713 0.137 307.0)` | `#B98AE5` | Focus ring (violet moyen) |
 
 ### 1.2 Mode sombre
 
-| Rôle | Token CSS | Valeur OKLCH | Hex approx. |
-|------|-----------|-------------|-------------|
-| Background | `--background` | `oklch(0.145 0 0)` | `#0A0A0A` |
-| Foreground | `--foreground` | `oklch(0.985 0 0)` | `#FAFAFA` |
-| Primary | `--primary` | `oklch(0.922 0 0)` | `#E5E5E5` |
-| Card | `--card` | `oklch(0.205 0 0)` | `#171717` |
-| Destructive | `--destructive` | `oklch(0.704 0.191 22.216)` | `#EF4444` |
+| Rôle | Token CSS | Valeur OKLCH | Hex approx. | Usage |
+|------|-----------|-------------|-------------|-------|
+| Background | `--background` | `oklch(0.20 0.06 303.5)` | `#1C0D2C` | Fond de page (violet très foncé) |
+| Foreground | `--foreground` | `oklch(0.985 0 0)` | `#FAFAFA` | Texte principal (blanc cassé) |
+| Card | `--card` | `oklch(0.263 0.105 303.5)` | `#30114D` | Fond des cartes (violet foncé) |
+| Primary | `--primary` | `oklch(0.713 0.137 307.0)` | `#B98AE5` | Boutons, liens (violet moyen) |
+| Primary text | `--primary-foreground` | `oklch(0.263 0.105 303.5)` | `#30114D` | Texte sur primary |
+| Secondary | `--secondary` | `oklch(0.35 0.060 303.5)` | `#413254` | Boutons secondaires |
+| Muted | `--muted` | `oklch(0.35 0.060 303.5)` | `#413254` | États désactivés |
+| Muted text | `--muted-foreground` | `oklch(0.713 0.137 307.0)` | `#B98AE5` | Texte secondaire (violet moyen) |
+| Accent | `--accent` | `oklch(0.751 0.100 74.3)` | `#D4A563` | Accentuation (doré) |
+| Destructive | `--destructive` | `oklch(0.704 0.191 22.216)` | `#FF6467` | Suppression, erreurs (rouge clair) |
+| Border | `--border` | `oklch(1 0 0 / 10%)` | `#FFFFFF1A` | Bordures (blanc 10% opacité) |
 
 ### 1.3 Approche
 
-- **Palette achromatic** : tons de gris neutres (chroma = 0), laissant le contenu photographique des hôtels au premier plan
-- **Destructive en rouge** : seule couleur chromatique de l'interface, réservée aux actions dangereuses (suppression, erreurs)
+- **Palette violet / doré** : teintes violettes (hue ~303) pour la structure et le texte, doré (hue ~74-82) pour l'accentuation — évoque l'univers hôtelier haut de gamme du Clair de Lune
+- **Destructive en rouge** : seule couleur chaude vive de l'interface, réservée aux actions dangereuses (suppression, erreurs)
 - **OKLCH** : espace colorimétrique perceptuellement uniforme, natif Tailwind CSS 4
 - **Light/Dark** : basculement via classe `.dark` sur `<html>`
 
@@ -72,14 +87,14 @@ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
 
 ## 3. Composants UI
 
-L'interface est construite avec **shadcn/ui** (preset New York, base zinc).
+L'interface est construite avec **shadcn/ui** (preset New York), personnalisée avec la palette violet / doré.
 
 ### 3.1 Configuration
 
 | Paramètre | Valeur |
 |-----------|--------|
 | Style | New York |
-| Base color | Zinc |
+| Base color | Personnalisée (violet / doré) |
 | CSS Variables | Activées |
 | Icônes | Lucide |
 | Border radius | `0.625rem` (10px) |
@@ -139,8 +154,3 @@ Page de détail avec galerie d'images, description, prix et informations de la s
 
 > **Export :** Depuis Figma, sélectionner chaque frame (Mobile / Desktop) puis File > Export > PNG (2x). Stocker les fichiers dans `docs/deliverables/assets/`.
 
----
-
-## Références
-
-- [Charte graphique — Google Docs](https://docs.google.com/document/d/1lKRaRJAv9yNGHURP-SydDhMh_ijiVEembWwgXMUnPsI/edit?tab=t.0#heading=h.wnh3puvh5rjv) — Document source de la charte graphique
