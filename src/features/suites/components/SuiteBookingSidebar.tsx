@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Loader2 } from "lucide-react";
+import { Loader2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -81,7 +81,7 @@ export function SuiteBookingSidebar({
           <CardContent className="space-y-4 p-5">
             {/* Price */}
             <div>
-              <span className="text-2xl font-bold tracking-tight">
+              <span className="text-2xl font-semibold tracking-tight">
                 {currencyFormatter.format(pricePerNight)}
               </span>
               <span className="text-sm font-light text-muted-foreground">
@@ -177,25 +177,25 @@ export function SuiteBookingSidebar({
               <div
                 className={`rounded-lg border p-3 text-sm ${
                   availability.available
-                    ? "border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950"
-                    : "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950"
+                    ? "border-accent/30 bg-accent/10"
+                    : "border-destructive/30 bg-destructive/10"
                 }`}
               >
                 {availability.available ? (
                   <div className="space-y-1">
-                    <p className="font-medium text-green-800 dark:text-green-200">
+                    <p className="font-medium text-accent-foreground">
                       Disponible
                     </p>
-                    <p className="text-green-700 dark:text-green-300">
+                    <p className="text-muted-foreground">
                       {availability.nightCount} nuit
                       {availability.nightCount > 1 ? "s" : ""} ·{" "}
-                      <span className="font-semibold">
+                      <span className="font-semibold text-foreground">
                         {currencyFormatter.format(availability.totalPrice)}
                       </span>
                     </p>
                   </div>
                 ) : (
-                  <p className="font-medium text-red-800 dark:text-red-200">
+                  <p className="font-medium text-destructive">
                     Non disponible sur ces dates
                   </p>
                 )}
@@ -223,16 +223,7 @@ export function SuiteBookingSidebar({
               ))}
 
             <p className="flex items-center justify-center gap-1.5 text-center text-[11px] text-muted-foreground">
-              <svg
-                className="size-3"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2}
-                viewBox="0 0 24 24"
-                aria-hidden
-              >
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-              </svg>
+              <ShieldCheck className="size-3" aria-hidden />
               Annulation gratuite disponible
             </p>
           </CardContent>

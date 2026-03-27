@@ -8,6 +8,7 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
+import { priceFormatter } from "@/lib/formatters";
 import type { SuiteSearchResult } from "@/features/search/types/search.types";
 
 interface SuiteSearchCardProps {
@@ -15,11 +16,7 @@ interface SuiteSearchCardProps {
 }
 
 export function SuiteSearchCard({ suite }: SuiteSearchCardProps) {
-  const formattedPrice = new Intl.NumberFormat("fr-FR", {
-    style: "currency",
-    currency: "EUR",
-    maximumFractionDigits: 0,
-  }).format(Number(suite.price));
+  const formattedPrice = priceFormatter.format(Number(suite.price));
 
   return (
     <Card className="overflow-hidden">

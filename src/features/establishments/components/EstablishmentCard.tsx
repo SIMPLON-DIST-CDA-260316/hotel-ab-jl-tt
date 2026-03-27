@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 type EstablishmentCardProps = {
   establishment: {
@@ -30,16 +31,15 @@ export function EstablishmentCard({ establishment }: EstablishmentCardProps) {
       </CardHeader>
       {establishment.description && (
         <CardContent>
-          <p className="text-sm">{establishment.description}</p>
+          <p className="text-sm text-muted-foreground">{establishment.description}</p>
         </CardContent>
       )}
       <CardFooter>
-        <Link
-          href={`/establishments/${establishment.id}`}
-          className="text-sm underline"
-        >
-          Voir détail
-        </Link>
+        <Button asChild variant="outline" size="sm">
+          <Link href={`/establishments/${establishment.id}`}>
+            Voir détail
+          </Link>
+        </Button>
       </CardFooter>
     </Card>
   );

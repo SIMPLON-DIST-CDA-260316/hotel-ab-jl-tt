@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ChevronLeft, Users, Maximize } from "lucide-react";
 import { priceFormatter } from "@/lib/formatters";
 import { SuiteGallery } from "./SuiteGallery";
 import { SuiteSpecs } from "./SuiteSpecs";
@@ -24,30 +25,26 @@ export function SuiteDetail({ suite, isAuthenticated }: SuiteDetailProps) {
         title={suite.title}
       />
 
-      <div className="max-w-5xl mx-auto px-4 md:px-10">
-        <nav className="py-5 text-xs text-zinc-400" aria-label="Fil d'Ariane">
+      <div className="mx-auto max-w-7xl px-6">
+        <nav className="py-5 text-xs text-muted-foreground" aria-label="Fil d'Ariane">
           <Link
             href={`/establishments/${suite.establishment.id}`}
-            className="inline-flex items-center gap-1.5 hover:text-zinc-700 transition-colors"
+            className="inline-flex items-center gap-1.5 transition-colors hover:text-foreground"
           >
-            <svg className="size-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden>
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
+            <ChevronLeft className="size-3.5 shrink-0" aria-hidden />
             {suite.establishment.name}
           </Link>
         </nav>
 
-        <div className="flex items-end justify-between gap-4 mb-6">
+        <div className="mb-6 flex items-end justify-between gap-4">
           <div>
-            <h1 className="font-serif text-4xl md:text-5xl font-semibold text-zinc-900 leading-tight tracking-tight mb-4">
+            <h1 className="mb-4 text-4xl font-semibold leading-tight tracking-tight text-foreground md:text-5xl">
               {suite.title}
             </h1>
-            <div className="flex items-center gap-4 text-zinc-400 text-sm font-light">
+            <div className="flex items-center gap-4 text-sm font-light text-muted-foreground">
               {suite.capacity > 0 && (
                 <span className="inline-flex items-center gap-1.5">
-                  <svg className="size-4 shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden>
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                  </svg>
+                  <Users className="size-4 shrink-0" aria-hidden />
                   {suite.capacity} personne{suite.capacity > 1 ? "s" : ""}
                 </span>
               )}
@@ -55,9 +52,7 @@ export function SuiteDetail({ suite, isAuthenticated }: SuiteDetailProps) {
                 <>
                   <span aria-hidden>·</span>
                   <span className="inline-flex items-center gap-1.5">
-                    <svg className="size-4 shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden>
-                      <path d="M3 3h18v18H3z" /><path d="M3 9h18M9 21V9" />
-                    </svg>
+                    <Maximize className="size-4 shrink-0" aria-hidden />
                     {formattedArea}
                   </span>
                 </>
@@ -65,21 +60,21 @@ export function SuiteDetail({ suite, isAuthenticated }: SuiteDetailProps) {
             </div>
           </div>
           <div className="shrink-0 text-right">
-            <p className="text-2xl font-bold text-zinc-900 tracking-tight">{formattedPrice}</p>
-            <p className="text-sm font-light text-zinc-400">/ nuit</p>
+            <p className="text-2xl font-semibold tracking-tight text-foreground">{formattedPrice}</p>
+            <p className="text-sm font-light text-muted-foreground">/ nuit</p>
           </div>
         </div>
 
-        <div className="flex gap-20 items-start">
-          <div className="flex-1 min-w-0">
+        <div className="flex items-start gap-20">
+          <div className="min-w-0 flex-1">
             <SuiteSpecs amenities={suite.amenities} />
 
             {suite.description && (
-              <section className="border-b border-zinc-100 pb-10 mb-10" aria-labelledby="description-heading">
-                <h2 id="description-heading" className="font-serif text-2xl font-semibold text-zinc-900 mb-6">
+              <section className="mb-10 border-b border-border pb-10" aria-labelledby="description-heading">
+                <h2 id="description-heading" className="mb-6 text-2xl font-semibold text-foreground">
                   La suite
                 </h2>
-                <p className="text-zinc-500 font-light leading-relaxed text-[15px] whitespace-pre-line">
+                <p className="whitespace-pre-line text-[15px] font-light leading-relaxed text-muted-foreground">
                   {suite.description}
                 </p>
               </section>

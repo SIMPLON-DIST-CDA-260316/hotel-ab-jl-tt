@@ -19,8 +19,8 @@ export default async function SuitesPage({ searchParams }: Props) {
   ]);
 
   return (
-    <main id="main-content" className="mx-auto max-w-7xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold">Résultats de votre recherche</h1>
+    <main id="main-content" className="mx-auto max-w-7xl px-6 py-8">
+      <h1 className="mb-6 text-2xl font-semibold">Résultats de votre recherche</h1>
 
       <div className="flex gap-8">
         {/* Desktop sidebar */}

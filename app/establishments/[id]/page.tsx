@@ -29,9 +29,9 @@ export default async function EstablishmentDetailPage({ params }: Props) {
   }
 
   return (
-    <main className="container mx-auto px-4 py-8">
+    <main className="mx-auto max-w-7xl px-6 py-8">
       <header className="mb-8">
-        <h1 className="text-2xl font-bold">{establishment.name}</h1>
+        <h1 className="text-2xl font-semibold">{establishment.name}</h1>
         <p className="text-muted-foreground">
           {establishment.city} — {establishment.address}
         </p>
@@ -49,9 +49,9 @@ export default async function EstablishmentDetailPage({ params }: Props) {
         {establishment.email && (
           <p className="mt-1 text-sm">Email : {establishment.email}</p>
         )}
-        <Button className="mt-2">
+        <Button asChild className="mt-2">
           <Link href={`/establishments/${id}/contact`}>
-            Contacter l'établissement
+            Contacter l&apos;établissement
           </Link>
         </Button>
       </header>
@@ -60,7 +60,7 @@ export default async function EstablishmentDetailPage({ params }: Props) {
       <EstablishmentOptionsSection options={options} />
 
       <section>
-        <h2 className="mb-4 text-xl font-semibold">Nos suites</h2>
+        <h2 className="mb-4 text-2xl font-semibold">Nos suites</h2>
         <Suspense fallback={<SuiteListSkeleton />}>
           <SuiteListServer establishmentId={id} />
         </Suspense>

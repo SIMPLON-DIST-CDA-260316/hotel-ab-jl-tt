@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type Slide = {
@@ -28,11 +29,13 @@ function GalleryNav({ direction, onClick }: GalleryNavProps) {
       aria-label={isPrev ? "Image précédente" : "Image suivante"}
       variant="outline"
       size="icon"
-      className={`absolute ${isPrev ? "left-4" : "right-4"} top-1/2 -translate-y-1/2 rounded-full bg-white/90 backdrop-blur-sm shadow-md hover:bg-white size-11`}
+      className={`absolute ${isPrev ? "left-4" : "right-4"} top-1/2 size-11 -translate-y-1/2 rounded-full bg-white/90 shadow-md backdrop-blur-sm hover:bg-white`}
     >
-      <svg className="w-5 h-5 text-zinc-700" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden>
-        <polyline points={isPrev ? "15 18 9 12 15 6" : "9 18 15 12 9 6"} />
-      </svg>
+      {isPrev ? (
+        <ChevronLeft className="size-5 text-foreground" aria-hidden />
+      ) : (
+        <ChevronRight className="size-5 text-foreground" aria-hidden />
+      )}
     </Button>
   );
 }
@@ -85,7 +88,7 @@ export function SuiteGallery({ mainImage, images, title }: SuiteGalleryProps) {
   const currentSlide = slides[currentIndex];
 
   return (
-    <div className="relative w-full h-[400px] md:h-[560px] overflow-hidden bg-zinc-200">
+    <div className="relative h-[400px] w-full overflow-hidden bg-muted md:h-[560px]">
       <Image
         key={currentIndex}
         src={currentSlide.url}

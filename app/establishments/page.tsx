@@ -7,8 +7,8 @@ export const dynamic = "force-dynamic";
 
 export default function EstablishmentsPage() {
   return (
-    <main className="container mx-auto px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold">Nos établissements</h1>
+    <main className="mx-auto max-w-7xl px-6 py-8">
+      <h1 className="mb-6 text-2xl font-semibold">Nos établissements</h1>
       <Suspense fallback={<EstablishmentListSkeleton />}>
         <EstablishmentListServer />
       </Suspense>
