@@ -18,7 +18,7 @@ type SuiteCardProps = {
 export function SuiteCard({ suite }: SuiteCardProps) {
   return (
     <Card className="overflow-hidden">
-      <div className="relative aspect-video">
+      <div className="relative aspect-[16/10]">
         <Image
           src={suite.mainImage}
           alt={suite.title}

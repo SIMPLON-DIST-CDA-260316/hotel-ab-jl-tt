@@ -44,7 +44,7 @@ export function EstablishmentOptionsSection({
               {item.included ? (
                 <Badge
                   variant="outline"
-                  className="border-green-200 text-green-700 dark:border-green-800 dark:text-green-300"
+                  className="border-accent/30 text-accent-foreground"
                 >
                   Inclus
                 </Badge>
