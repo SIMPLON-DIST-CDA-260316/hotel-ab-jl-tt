@@ -47,53 +47,9 @@ Drizzle offre un SQL-like type-safe avec zero runtime overhead. Le schéma est d
 
 ## 2. Diagramme de cas d'utilisation
 
-Le diagramme de cas d'utilisation identifie les interactions entre les quatre acteurs (visiteur, client, gérant, administrateur) et le système. Les flèches en pointillés `<<hérite>>` indiquent qu'un acteur possède tous les cas d'utilisation de l'acteur dont il hérite.
+Le diagramme de cas d'utilisation identifie les interactions entre les quatre acteurs (visiteur, client, gérant, administrateur) et le système.
 
-```mermaid
-flowchart LR
-    subgraph Acteurs
-        V((Visiteur))
-        C((Client))
-        G((Gérant))
-        A((Admin))
-    end
-
-    subgraph "Système — Hôtel Clair de Lune"
-        UC1[Consulter les établissements]
-        UC2[Consulter les suites]
-        UC3[Contacter un établissement]
-        UC4[Créer un compte]
-        UC5[Se connecter]
-        UC6[Réserver une suite]
-        UC7[Consulter ses réservations]
-        UC8[Annuler une réservation]
-        UC9[Gérer les suites\nde son établissement]
-        UC10[Gérer les établissements]
-        UC11[Gérer les gérants]
-    end
-
-    %% Visiteur — accès public (non authentifié)
-    V --> UC1
-    V --> UC2
-    V --> UC3
-    V --> UC4
-    V --> UC5
-
-    %% Client — hérite du visiteur + réservation
-    C -.-> V
-    C --> UC6
-    C --> UC7
-    C --> UC8
-
-    %% Gérant — hérite du client + gestion suites
-    G -.-> C
-    G --> UC9
-
-    %% Administrateur — hérite du client + gestion back-office
-    A -.-> C
-    A --> UC10
-    A --> UC11
-```
+![Diagramme de cas d'utilisation UML](assets/UML-Clairdelune.png)
 
 > **Héritage des rôles :** L'application utilise un compte unique par utilisateur (pas de double inscription possible). Les actions de réservation sont protégées par `requireSession()` (authentification requise, sans restriction de rôle). Un gérant ou un administrateur peut donc réserver une suite avec son propre compte — il hérite de facto des cas d'utilisation du client.
 

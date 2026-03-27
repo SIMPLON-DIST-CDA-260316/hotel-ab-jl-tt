@@ -138,3 +138,9 @@ Page de détail avec galerie d'images, description, prix et informations de la s
 | ![Suite — mobile](assets/wireframe-suite-mobile.png) | ![Suite — desktop](assets/wireframe-suite-desktop.png) |
 
 > **Export :** Depuis Figma, sélectionner chaque frame (Mobile / Desktop) puis File > Export > PNG (2x). Stocker les fichiers dans `docs/deliverables/assets/`.
+
+---
+
+## Références
+
+- [Charte graphique — Google Docs](https://docs.google.com/document/d/1lKRaRJAv9yNGHURP-SydDhMh_ijiVEembWwgXMUnPsI/edit?tab=t.0#heading=h.wnh3puvh5rjv) — Document source de la charte graphique
