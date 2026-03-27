@@ -55,7 +55,7 @@ export function ContactForm({ establishment }: ContactFormProps) {
     { name: "app_issue", text: "J'ai un souci avec cette application" },
   ];
   return (
-    <Card className="w-full sm:max-w-md">
+    <Card className="w-full">
       <CardContent>
         <Form action={formAction} className="space-y-4">
           <input
@@ -81,10 +81,7 @@ export function ContactForm({ establishment }: ContactFormProps) {
           <div className="flex flex-col gap-2">
             <Label htmlFor="subject">Objet</Label>
             <Select name="subject" defaultValue={formState?.values?.subject}>
-              <SelectTrigger
-                id="subject"
-                className="max-w-[230px] min-w-[200px] sm:max-w-none"
-              >
+              <SelectTrigger id="subject" className="w-full">
                 <SelectValue placeholder="Choisir l'objet" />
               </SelectTrigger>
               <SelectContent>
@@ -108,7 +105,9 @@ export function ContactForm({ establishment }: ContactFormProps) {
               <FieldError>{formState.errors.message}</FieldError>
             )}
           </div>
-          <Button type="submit">Envoyer</Button>
+          <Button type="submit" className="w-full" disabled={pending}>
+            {pending ? "Envoi en cours…" : "Envoyer"}
+          </Button>
           {formState.success && (
             <div className="rounded-lg border border-green-200 bg-green-50 p-6 text-center">
               <p className="font-semibold text-green-800">Message envoyé !</p>
