@@ -8,16 +8,20 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { authClient } from "@/lib/auth-client";
+import { ROLES } from "@/config/roles";
+import type { Role } from "@/types/role.types";
 
 interface UserMenuProps {
   isAuthenticated: boolean;
   userName?: string;
+  userRole?: Role;
 }
 
-export function UserMenu({ isAuthenticated, userName }: UserMenuProps) {
+export function UserMenu({ isAuthenticated, userName, userRole }: UserMenuProps) {
   const router = useRouter();
 
   if (!isAuthenticated) {
@@ -72,6 +76,25 @@ export function UserMenu({ isAuthenticated, userName }: UserMenuProps) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
+        {userRole === ROLES.ADMIN && (
+          <>
+            <DropdownMenuItem asChild>
+              <Link href="/admin/establishments">Gérer les établissements</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/admin/managers">Gérer les gérants</Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
+        {userRole === ROLES.MANAGER && (
+          <>
+            <DropdownMenuItem asChild>
+              <Link href="/manager/suites">Gérer mes suites</Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
         <DropdownMenuItem asChild>
           <Link href="/bookings">Mes réservations</Link>
         </DropdownMenuItem>

@@ -40,6 +40,7 @@ export async function Header() {
         <UserMenu
           isAuthenticated={!!session}
           userName={session?.user.name ?? undefined}
+          userRole={session?.user.role ?? undefined}
         />
       </div>
     </header>
